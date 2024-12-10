@@ -205,7 +205,7 @@ const CpuUsageChart = () => {
           {data[0].data.length > 0 && (
             <ResponsiveLine
               data={data}
-              margin={{ top: 20, right: 80, bottom: 40, left: 50 }} // Reduced margins
+              margin={{ top: 20, right: 100, bottom: 40, left: 30 }} 
               xScale={{ type: 'point' }}
               yScale={{ 
                 type: 'linear',
