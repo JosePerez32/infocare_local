@@ -154,7 +154,7 @@ const PerformanceMetricsCharts = () => {
       // Transform Swap Usage Data
       const swapTransformedData = [
         {
-          id: 'Swap Pages In',
+          id: 'Swap In',
           color: COLOR_PALETTE.swapUsage['in'],
           data: rawData.timestamps.map((time, index) => ({
             x: new Date(time).toLocaleTimeString([], { 
@@ -167,7 +167,7 @@ const PerformanceMetricsCharts = () => {
           }))
         },
         {
-          id: 'Swap Pages Out',
+          id: 'Swap Out',
           color: COLOR_PALETTE.swapUsage['out'],
           data: rawData.timestamps.map((time, index) => ({
             x: new Date(time).toLocaleTimeString([], { 
@@ -183,7 +183,7 @@ const PerformanceMetricsCharts = () => {
   
       const committedMemoryTransformedData = [
         {
-          id: 'Committed Memory',
+          id: 'C-Memory',
           color: COLOR_PALETTE.committedMemory['default'],
           data: rawData.timestamps.map((time, index) => ({
             x: new Date(time).toLocaleTimeString([], { 
@@ -245,7 +245,7 @@ const PerformanceMetricsCharts = () => {
         {data[0].data.length > 0 && (
           <ResponsiveLine
             data={data}
-            margin={{ top: 10, right: 100, bottom: 40, left: 30 }}
+            margin={{ top: 10, right: 100, bottom: 40, left: 58 }}
             xScale={{ type: 'point' }}
             yScale={getDynamicYScale(data, isPercentage)}
             axisTop={null}
