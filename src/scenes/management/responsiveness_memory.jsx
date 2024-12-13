@@ -12,16 +12,52 @@ const PerformanceMetricsCharts = () => {
   const colors = tokens(theme.palette.mode);
   const { source } = useParams();
 
+  // Predefined color palette for different lines
+  const COLOR_PALETTE = {
+    bufferPoolHitRatio: {
+      'BP_1': '#FFA07A', // Light Salmon
+      'BP_2': '#20B2AA', // Light Sea Green
+      'BP_3': '#9370DB', // Medium Purple
+      'BP_4': '#FFD700', // Gold
+      'default': '#FF6384' // Fallback color
+    },
+    bufferPoolPhysicalReads: {
+      'BP_1': '#4169E1', // Royal Blue
+      'BP_2': '#32CD32', // Lime Green
+      'BP_3': '#8A2BE2', // Blue Violet
+      'BP_4': '#FF4500', // Orange Red
+      'default': '#1E90FF' // Dodger Blue
+    },
+    swapUsage: {
+      'in': '#008FD5', // Blue
+      'out': '#71D8BD', // Turquoise
+      'default': '#FF6384' // Pink
+    },
+    committedMemory: {
+      'default': '#FF6384' // Pink
+    }
+  };
+
   // Buffer Pool Data States
   const [bufferPoolData, setBufferPoolData] = useState([
     {
       id: 'BP_1 Hit Ratio',
-      color: '#008FD5',
+      color: COLOR_PALETTE.bufferPoolHitRatio['BP_1'],
       data: []
     },
     {
       id: 'BP_2 Hit Ratio',
-      color: '#71D8BD',
+      color: COLOR_PALETTE.bufferPoolHitRatio['BP_2'],
+      data: []
+    },
+    {
+      id: 'BP_1 Physical Reads',
+      color: COLOR_PALETTE.bufferPoolPhysicalReads['BP_1'],
+      data: []
+    },
+    {
+      id: 'BP_2 Physical Reads',
+      color: COLOR_PALETTE.bufferPoolPhysicalReads['BP_2'],
       data: []
     }
   ]);
@@ -30,12 +66,12 @@ const PerformanceMetricsCharts = () => {
   const [swapUsageData, setSwapUsageData] = useState([
     {
       id: 'Swap Pages In',
-      color: '#008FD5',
+      color: COLOR_PALETTE.swapUsage['in'],
       data: []
     },
     {
       id: 'Swap Pages Out',
-      color: '#71D8BD',
+      color: COLOR_PALETTE.swapUsage['out'],
       data: []
     }
   ]);
@@ -43,19 +79,18 @@ const PerformanceMetricsCharts = () => {
   const [committedMemoryData, setCommittedMemoryData] = useState([
     {
       id: 'Committed Memory',
-      color: '#FF6384',
+      color: COLOR_PALETTE.committedMemory['default'],
       data: []
     }
   ]);
 
   // Common State
-  const [rows] = useState(30);
+  const [rows] = useState(25);
   const [grouping, setGrouping] = useState('sec');
   const [startTime, setStartTime] = useState(() => {
     const now = new Date();
     return now.toISOString().slice(0, 16); // Format for datetime-local input
   });
-
   const fetchPerformanceData = useCallback(async () => {
     try {
       const token = localStorage.getItem('accessToken');
@@ -87,25 +122,40 @@ const PerformanceMetricsCharts = () => {
       const rawData = await response.json();
   
       // Transform Buffer Pool Data
-      const bufferPoolTransformedData = rawData.bufferpools.map(pool => ({
-        id: `${pool.name} Hit Ratio`,
-        color: '#008FD5',
-        data: pool.hitratios.map((hitratio, index) => ({
-          x: new Date(rawData.timestamps[index]).toLocaleTimeString([], { 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            second: '2-digit', 
-            hour12: false 
-          }),
-          y: parseFloat(hitratio || 0),
-        }))
-      }));
+      const bufferPoolTransformedData = rawData.bufferpools.flatMap(pool => [
+        {
+          id: `${pool.name} Hit Ratio`,
+          color: COLOR_PALETTE.bufferPoolHitRatio[pool.name] || COLOR_PALETTE.bufferPoolHitRatio['default'],
+          data: pool.hitratios.map((hitratio, index) => ({
+            x: new Date(rawData.timestamps[index]).toLocaleTimeString([], { 
+              hour: '2-digit', 
+              minute: '2-digit', 
+              second: '2-digit', 
+              hour12: false 
+            }),
+            y: parseFloat(hitratio || 0),
+          }))
+        },
+        {
+          id: `${pool.name} Physical Reads`,
+          color: COLOR_PALETTE.bufferPoolPhysicalReads[pool.name] || COLOR_PALETTE.bufferPoolPhysicalReads['default'],
+          data: pool.reads.physical_reads.map((reads, index) => ({
+            x: new Date(rawData.timestamps[index]).toLocaleTimeString([], { 
+              hour: '2-digit', 
+              minute: '2-digit', 
+              second: '2-digit', 
+              hour12: false 
+            }),
+            y: parseInt(reads || 0),
+          }))
+        }
+      ]);
   
       // Transform Swap Usage Data
       const swapTransformedData = [
         {
           id: 'Swap Pages In',
-          color: '#008FD5',
+          color: COLOR_PALETTE.swapUsage['in'],
           data: rawData.timestamps.map((time, index) => ({
             x: new Date(time).toLocaleTimeString([], { 
               hour: '2-digit', 
@@ -118,7 +168,7 @@ const PerformanceMetricsCharts = () => {
         },
         {
           id: 'Swap Pages Out',
-          color: '#71D8BD',
+          color: COLOR_PALETTE.swapUsage['out'],
           data: rawData.timestamps.map((time, index) => ({
             x: new Date(time).toLocaleTimeString([], { 
               hour: '2-digit', 
@@ -134,7 +184,7 @@ const PerformanceMetricsCharts = () => {
       const committedMemoryTransformedData = [
         {
           id: 'Committed Memory',
-          color: '#FF6384',
+          color: COLOR_PALETTE.committedMemory['default'],
           data: rawData.timestamps.map((time, index) => ({
             x: new Date(time).toLocaleTimeString([], { 
               hour: '2-digit', 
@@ -146,7 +196,7 @@ const PerformanceMetricsCharts = () => {
           }))
         }
       ];
-
+  
       // Update states
       setBufferPoolData(bufferPoolTransformedData);
       setSwapUsageData(swapTransformedData);
@@ -189,12 +239,13 @@ const PerformanceMetricsCharts = () => {
       p="20px"
       borderRadius="8px"
       height="400px"
+      width="100%"
     >
       <Box height="340px">
         {data[0].data.length > 0 && (
           <ResponsiveLine
             data={data}
-            margin={{ top: 10, right: 100, bottom: 40, left: 60 }}
+            margin={{ top: 10, right: 100, bottom: 40, left: 30 }}
             xScale={{ type: 'point' }}
             yScale={getDynamicYScale(data, isPercentage)}
             axisTop={null}
@@ -337,15 +388,25 @@ const PerformanceMetricsCharts = () => {
       </Box>
 
       <Grid container spacing={2}>
-        {/* Buffer Pool Metrics */}
-        <Grid item xs={12}>
+        {/* Buffer Pool Metrics - Now in two columns */}
+        <Grid item xs={12} md={6}>
           <Box>
             <Box mb={2} ml={2}>
               <h3 style={{ color: colors.grey[100], margin: 0 }}>Buffer Pool Hit Ratios</h3>
             </Box>
             {renderLineChart(
-              bufferPoolData, 
+              bufferPoolData.filter(series => series.id.includes('Hit Ratio')), 
               true // Percentage scale
+            )}
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Box>
+            <Box mb={2} ml={2}>
+              <h3 style={{ color: colors.grey[100], margin: 0 }}>Buffer Pool Physical Reads</h3>
+            </Box>
+            {renderLineChart(
+              bufferPoolData.filter(series => series.id.includes('Physical Reads'))
             )}
           </Box>
         </Grid>
