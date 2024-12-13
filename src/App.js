@@ -486,7 +486,7 @@ function App() {
                       <Route path="details/:databaseName/responsiveness" element={<Responsiveness />} />
                       <Route path="details/:source/responsiveness/cpu" element={<ResponsivenessCpu />} />
                       <Route path="details/:source/responsiveness/memory" element={<ResponsivenessMemory />} />
-                      <Route path="details/:databaseName/responsiveness/space" element={<ResponsivenessSpace />} />
+                      <Route path="details/:source/responsiveness/space" element={<ResponsivenessSpace />} />
                       <Route path="details/:databaseName/responsiveness/speed" element={<ResponsivenessSpeed />} />
                       <Route path="details/:databaseName/responsiveness/readyness" element={<ResponsivenessReadyness />} />
                       <Route path="details/:databaseName/security" element={<Security />} />
