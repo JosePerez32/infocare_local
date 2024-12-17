@@ -34,7 +34,7 @@ const CpuUsageChart = () => {
       data: []
     }
   ]);
-  const [rows] = useState(20); // Default changed to 20 rows
+  const [rows, setRows] = useState(120); // Increased rows for hours view
   const [grouping, setGrouping] = useState('sec');
   const [startTime, setStartTime] = useState(() => {
     const now = new Date();
@@ -46,13 +46,19 @@ const CpuUsageChart = () => {
       try {
         const token = localStorage.getItem('accessToken');
   
-        const dateObj = new Date(startTime);
-        const timezoneOffset = dateObj.getTimezoneOffset();
+        // Adjust start time based on grouping
+        let adjustedStartTime = new Date(startTime);
+        if (grouping === 'uur') {
+          // Subtract 6 hours for hour view
+          adjustedStartTime.setHours(adjustedStartTime.getHours() - 6);
+        }
+  
+        const timezoneOffset = adjustedStartTime.getTimezoneOffset();
         const offsetSign = timezoneOffset > 0 ? '-' : '+';
         const offsetHours = String(Math.floor(Math.abs(timezoneOffset) / 60)).padStart(2, '0');
         const offsetMinutes = String(Math.abs(timezoneOffset) % 60).padStart(2, '0');
   
-        const formattedDateTime = dateObj.toISOString().slice(0, -1) + offsetSign + offsetHours + ':' + offsetMinutes;
+        const formattedDateTime = adjustedStartTime.toISOString().slice(0, -1) + offsetSign + offsetHours + ':' + offsetMinutes;
   
         const response = await fetch(
           `${process.env.REACT_APP_API_URL}/dashboards/${organization}/metrics/${source}/cpu_usage?start_time=${encodeURIComponent(
@@ -77,57 +83,64 @@ const CpuUsageChart = () => {
           return;
         }
   
+        // Reverse the arrays to ensure left-to-right display
+        const reversedTime = [...rawData.time].reverse();
+        const reversedCpuUser = [...rawData.cpu_user].reverse();
+        const reversedCpuIdle = [...rawData.cpu_idle].reverse();
+        const reversedCpuIoWait = [...rawData.cpu_iowait].reverse();
+        const reversedCpuSystem = [...rawData.cpu_system].reverse();
+  
         const transformedData = [
           {
             id: 'CPU User',
             color: '#008FD5',
-            data: rawData.time.map((time, index) => ({
+            data: reversedTime.map((time, index) => ({
               x: new Date(time).toLocaleTimeString([], { 
                 hour: '2-digit', 
                 minute: '2-digit', 
                 second: '2-digit', 
                 hour12: false 
               }),
-              y: parseFloat(rawData.cpu_user[index] || 0),
+              y: parseFloat(reversedCpuUser[index] || 0),
             }))
           },
           {
             id: 'CPU Idle',
             color: '#71D8BD',
-            data: rawData.time.map((time, index) => ({
+            data: reversedTime.map((time, index) => ({
               x: new Date(time).toLocaleTimeString([], { 
                 hour: '2-digit', 
                 minute: '2-digit', 
                 second: '2-digit', 
                 hour12: false 
               }),
-              y: parseFloat(rawData.cpu_idle[index] || 0),
+              y: parseFloat(reversedCpuIdle[index] || 0),
             }))
           },
           {
             id: 'CPU IO Wait',
             color: '#FFDE21',
-            data: rawData.time.map((time, index) => ({
+            data: reversedTime.map((time, index) => ({
               x: new Date(time).toLocaleTimeString([], { 
                 hour: '2-digit', 
                 minute: '2-digit', 
                 second: '2-digit', 
                 hour12: false 
               }),
-              y: parseFloat(rawData.cpu_iowait[index] || 0),
+              y: parseFloat(reversedCpuIoWait[index] || 0),
             }))
           },
           {
             id: 'CPU System',
             color: '#FFFFFF', // Changed to white
-            data: rawData.time.map((time, index) => ({
+            data: reversedTime.map((time, index) => ({
               x: new Date(time).toLocaleTimeString([], { 
                 hour: '2-digit', 
                 minute: '2-digit', 
                 second: '2-digit', 
                 hour12: false 
               }),
-              y: parseFloat(rawData.cpu_system[index] || 0),
+              y: parseFloat(reversedCpuSystem[index] || 0),
             }))
           }
         ];
@@ -138,11 +151,20 @@ const CpuUsageChart = () => {
       }
     };
   
+    // Adjust rows and refetch based on grouping
+    if (grouping === 'sec') {
+      setRows(10);
+    } else if (grouping === 'min') {
+      setRows(10);
+    } else if (grouping === 'uur') {
+      setRows(120); // 6 hours worth of data points
+    }
+  
     fetchCpuData();
     const interval = setInterval(fetchCpuData, 5000);
   
     return () => clearInterval(interval);
-  }, [organization, source, startTime, rows, grouping]);
+  }, [organization, source, startTime, grouping]);
 
   return (
     <Box m="20px">
@@ -179,8 +201,6 @@ const CpuUsageChart = () => {
           </FormControl>
 
           <Box display="flex" gap="16px">
-         
-
             <FormControl size="small" sx={{ minWidth: 120 }}>
               <Select
                 value={grouping}
@@ -195,7 +215,7 @@ const CpuUsageChart = () => {
               >
                 <MenuItem value="sec">Seconds</MenuItem>
                 <MenuItem value="min">Minutes</MenuItem>
-                <MenuItem value="hour">Hours</MenuItem>
+                <MenuItem value="uur">Hours</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -220,7 +240,7 @@ const CpuUsageChart = () => {
                 tickSize: 5,
                 tickPadding: 5,
                 tickRotation: -45,
-                legendOffset: 40, // Reduced from 50
+                legendOffset: 40,
                 legendPosition: 'middle',
               }}
               axisLeft={{

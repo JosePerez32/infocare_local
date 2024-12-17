@@ -12,33 +12,62 @@ const PerformanceMetricsCharts = () => {
   const colors = tokens(theme.palette.mode);
   const { source } = useParams();
 
-  // Predefined color palette for different lines
-  const COLOR_PALETTE = {
-    bufferPoolHitRatio: {
-      'BP_1': '#FFA07A', // Light Salmon
-      'BP_2': '#20B2AA', // Light Sea Green
-      'BP_3': '#9370DB', // Medium Purple
-      'BP_4': '#FFD700', // Gold
-      'default': '#FF6384' // Fallback color
-    },
-    bufferPoolPhysicalReads: {
-      'BP_1': '#4169E1', // Royal Blue
-      'BP_2': '#32CD32', // Lime Green
-      'BP_3': '#8A2BE2', // Blue Violet
-      'BP_4': '#FF4500', // Orange Red
-      'default': '#1E90FF' // Dodger Blue
-    },
-    swapUsage: {
-      'in': '#008FD5', // Blue
-      'out': '#71D8BD', // Turquoise
-      'default': '#FF6384' // Pink
-    },
-    committedMemory: {
-      'default': '#FF6384' // Pink
+  // Helper function for timestamp formatting
+  const formatTimestamp = (time, grouping) => {
+    const date = new Date(time);
+    switch(grouping) {
+      case 'sec':
+        return date.toLocaleTimeString([], { 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          second: '2-digit', 
+          hour12: false 
+        });
+      case 'min':
+        return date.toLocaleTimeString([], { 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          hour12: false 
+        });
+      case 'hour':
+        return date.toLocaleDateString([], { 
+          month: 'short', 
+          day: 'numeric', 
+          hour: '2-digit', 
+          hour12: false 
+        });
+      default:
+        return date.toLocaleTimeString();
     }
   };
 
-  // Buffer Pool Data States
+  // Predefined color palette for different lines
+  const COLOR_PALETTE = {
+    bufferPoolHitRatio: {
+      'BP_1': '#FFA07A',
+      'BP_2': '#20B2AA',
+      'BP_3': '#9370DB',
+      'BP_4': '#FFD700',
+      'default': '#FF6384'
+    },
+    bufferPoolPhysicalReads: {
+      'BP_1': '#4169E1',
+      'BP_2': '#32CD32',
+      'BP_3': '#8A2BE2',
+      'BP_4': '#FF4500',
+      'default': '#1E90FF'
+    },
+    swapUsage: {
+      'in': '#008FD5',
+      'out': '#71D8BD',
+      'default': '#FF6384'
+    },
+    committedMemory: {
+      'default': '#FF6384'
+    }
+  };
+
+  // State declarations
   const [bufferPoolData, setBufferPoolData] = useState([
     {
       id: 'BP_1 Hit Ratio',
@@ -62,7 +91,6 @@ const PerformanceMetricsCharts = () => {
     }
   ]);
 
-  // Swap and Committed Memory Data States
   const [swapUsageData, setSwapUsageData] = useState([
     {
       id: 'Swap Pages In',
@@ -89,8 +117,10 @@ const PerformanceMetricsCharts = () => {
   const [grouping, setGrouping] = useState('sec');
   const [startTime, setStartTime] = useState(() => {
     const now = new Date();
-    return now.toISOString().slice(0, 16); // Format for datetime-local input
+    now.setHours(now.getHours() - 6);
+    return now.toISOString().slice(0, 16);
   });
+
   const fetchPerformanceData = useCallback(async () => {
     try {
       const token = localStorage.getItem('accessToken');
@@ -127,27 +157,17 @@ const PerformanceMetricsCharts = () => {
           id: `${pool.name} Hit Ratio`,
           color: COLOR_PALETTE.bufferPoolHitRatio[pool.name] || COLOR_PALETTE.bufferPoolHitRatio['default'],
           data: pool.hitratios.map((hitratio, index) => ({
-            x: new Date(rawData.timestamps[index]).toLocaleTimeString([], { 
-              hour: '2-digit', 
-              minute: '2-digit', 
-              second: '2-digit', 
-              hour12: false 
-            }),
+            x: formatTimestamp(rawData.timestamps[index], grouping),
             y: parseFloat(hitratio || 0),
-          }))
+          })).reverse() // Reverse for right to left display
         },
         {
           id: `${pool.name} Physical Reads`,
           color: COLOR_PALETTE.bufferPoolPhysicalReads[pool.name] || COLOR_PALETTE.bufferPoolPhysicalReads['default'],
           data: pool.reads.physical_reads.map((reads, index) => ({
-            x: new Date(rawData.timestamps[index]).toLocaleTimeString([], { 
-              hour: '2-digit', 
-              minute: '2-digit', 
-              second: '2-digit', 
-              hour12: false 
-            }),
+            x: formatTimestamp(rawData.timestamps[index], grouping),
             y: parseInt(reads || 0),
-          }))
+          })).reverse() // Reverse for right to left display
         }
       ]);
   
@@ -157,27 +177,17 @@ const PerformanceMetricsCharts = () => {
           id: 'Swap In',
           color: COLOR_PALETTE.swapUsage['in'],
           data: rawData.timestamps.map((time, index) => ({
-            x: new Date(time).toLocaleTimeString([], { 
-              hour: '2-digit', 
-              minute: '2-digit', 
-              second: '2-digit', 
-              hour12: false 
-            }),
+            x: formatTimestamp(time, grouping),
             y: rawData.swap_usage?.swap_pages_in?.[index] || 0,
-          }))
+          })).reverse() // Reverse for right to left display
         },
         {
           id: 'Swap Out',
           color: COLOR_PALETTE.swapUsage['out'],
           data: rawData.timestamps.map((time, index) => ({
-            x: new Date(time).toLocaleTimeString([], { 
-              hour: '2-digit', 
-              minute: '2-digit', 
-              second: '2-digit', 
-              hour12: false 
-            }),
+            x: formatTimestamp(time, grouping),
             y: rawData.swap_usage?.swap_pages_out?.[index] || 0,
-          }))
+          })).reverse() // Reverse for right to left display
         }
       ];
   
@@ -186,14 +196,9 @@ const PerformanceMetricsCharts = () => {
           id: 'C-Memory',
           color: COLOR_PALETTE.committedMemory['default'],
           data: rawData.timestamps.map((time, index) => ({
-            x: new Date(time).toLocaleTimeString([], { 
-              hour: '2-digit', 
-              minute: '2-digit', 
-              second: '2-digit', 
-              hour12: false 
-            }),
+            x: formatTimestamp(time, grouping),
             y: rawData.committed_memory?.[index] || 0,
-          }))
+          })).reverse() // Reverse for right to left display
         }
       ];
   
@@ -221,7 +226,6 @@ const PerformanceMetricsCharts = () => {
     const minY = Math.min(...allYValues);
     const maxY = Math.max(...allYValues);
 
-    // Add a buffer if min and max are equal
     const buffer = minY === maxY ? minY * 0.1 : 0;
 
     return {
@@ -274,6 +278,7 @@ const PerformanceMetricsCharts = () => {
             pointLabelYOffset={-12}
             useMesh={true}
             enableGridX={false}
+            sortByValue={true} // Ensure right to left sorting
             theme={{
               background: colors.primary[400],
               textColor: colors.grey[100],
@@ -345,7 +350,6 @@ const PerformanceMetricsCharts = () => {
             value={startTime}
             onChange={(e) => {
               setStartTime(e.target.value);
-              fetchPerformanceData(); // Immediately fetch data when date changes
             }}
             size="small"
             sx={{
@@ -370,7 +374,6 @@ const PerformanceMetricsCharts = () => {
             value={grouping}
             onChange={(e) => {
               setGrouping(e.target.value);
-              fetchPerformanceData(); // Immediately fetch data when grouping changes
             }}
             sx={{
               backgroundColor: colors.primary[400],
@@ -382,7 +385,7 @@ const PerformanceMetricsCharts = () => {
           >
             <MenuItem value="sec">Seconds</MenuItem>
             <MenuItem value="min">Minutes</MenuItem>
-            <MenuItem value="hour">Hours</MenuItem>
+            <MenuItem value="uur">Hours</MenuItem>
           </Select>
         </FormControl>
       </Box>

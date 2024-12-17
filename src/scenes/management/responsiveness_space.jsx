@@ -19,7 +19,7 @@ const SpaceUsageChart = () => {
       data: []
     },
     {
-      id: ' Log Used',
+      id: 'Log Used',
       color: '#71D8BD',
       data: []
     }
@@ -28,6 +28,8 @@ const SpaceUsageChart = () => {
   const [grouping, setGrouping] = useState('sec');
   const [startTime, setStartTime] = useState(() => {
     const now = new Date();
+    // Subtract 6 hours from current time
+    now.setHours(now.getHours() - 6);
     return now.toISOString().slice(0, 19);
   });
 
@@ -79,7 +81,7 @@ const SpaceUsageChart = () => {
                 hour12: false 
               }),
               y: parseFloat(rawData.log_pct_usage[index] || 0),
-            }))
+            })).reverse() // Reverse to go right to left
           },
           {
             id: 'Log Used',
@@ -92,7 +94,7 @@ const SpaceUsageChart = () => {
                 hour12: false 
               }),
               y: parseInt(rawData.total_log_used[index] || 0),
-            }))
+            })).reverse() // Reverse to go right to left
           }
         ];
   
@@ -157,7 +159,7 @@ const SpaceUsageChart = () => {
               >
                 <MenuItem value="sec">Seconds</MenuItem>
                 <MenuItem value="min">Minutes</MenuItem>
-                <MenuItem value="hour">Hours</MenuItem>
+                <MenuItem value="uur">Hours</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -215,6 +217,7 @@ const SpaceUsageChart = () => {
               useMesh={true}
               enableArea={true}
               enableGridX={false}
+              sortByValue={true} // Ensure right to left sorting
               theme={{
                 background: colors.primary[400],
                 textColor: colors.grey[100],
