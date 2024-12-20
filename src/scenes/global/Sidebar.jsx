@@ -243,8 +243,8 @@ const Sidebar = () => {
               />
             </MenuItem>
             <MenuItem
-              title="Maps"
-              to="/map"
+              title="Ticketing"
+              to="/ticketing"
               icon={<SchemaIcon />}
               selected={selected}
               setSelected={setSelected}

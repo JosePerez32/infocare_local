@@ -29,7 +29,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorized from "./components/Unauthorized";
 import Technical from "./scenes/technical";
 import CreateUser from "./scenes/users/createUser";
-import Maps from "./scenes/map/map";
+import Ticketing from "./scenes/ticketing/ticketing";
 import Logging from './scenes/logging/logging';
 import ManagementDetails from './scenes/management/management_details';
 import TechnicalDetails from './scenes/technical/technical_details';
@@ -487,7 +487,7 @@ function App() {
                       <Route path="details/:source/responsiveness/cpu" element={<ResponsivenessCpu />} />
                       <Route path="details/:source/responsiveness/memory" element={<ResponsivenessMemory />} />
                       <Route path="details/:source/responsiveness/space" element={<ResponsivenessSpace />} />
-                      <Route path="details/:databaseName/responsiveness/speed" element={<ResponsivenessSpeed />} />
+                      <Route path="details/:source/responsiveness/speed" element={<ResponsivenessSpeed />} />
                       <Route path="details/:databaseName/responsiveness/readyness" element={<ResponsivenessReadyness />} />
                       <Route path="details/:databaseName/security" element={<Security />} />
                       <Route path="details/:databaseName/security/encryption" element={<SecurityEncryption />} />
@@ -549,10 +549,10 @@ function App() {
 
 
               <Route
-                path="/map"
+                path="/ticketing"
                 element={
                   <ProtectedRoute allowedRoles={['writer', 'reader', 'admin']}>
-                    <Maps />
+                    <Ticketing />
                   </ProtectedRoute>
                 }
               />

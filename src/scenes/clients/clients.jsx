@@ -11,6 +11,7 @@ import {
   TextField,
   Chip,
   Fade,
+  Button,
 } from "@mui/material";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
@@ -18,6 +19,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import BusinessIcon from "@mui/icons-material/Business";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import BuildIcon from "@mui/icons-material/Build";
 
 const Clients = () => {
   const theme = useTheme();
@@ -35,6 +38,16 @@ const Clients = () => {
       employees: "1000+",
       projects: ["Logistic"],
       description: "Leading logistic company",
+      managementDetails: {
+        contactPerson: "John Doe",
+        email: "john.doe@psa.com",
+        strategicFocus: "Global Logistics Optimization"
+      },
+      technicalDetails: {
+        primaryTechnology: "Logistics Management Software",
+        integrationCapabilities: "API-driven Platform",
+        cloudInfrastructure: "Hybrid Cloud"
+      }
     },
     {
       id: 2,
@@ -45,8 +58,17 @@ const Clients = () => {
       employees: "5000+",
       projects: ["Banking"],
       description: "Banking",
+      managementDetails: {
+        contactPerson: "Jane Smith",
+        email: "jane.smith@belfius.be",
+        strategicFocus: "Digital Banking Transformation"
+      },
+      technicalDetails: {
+        primaryTechnology: "Fintech Platform",
+        integrationCapabilities: "Microservices Architecture",
+        cloudInfrastructure: "Public Cloud"
+      }
     },
-   
   ];
 
   const filteredClients = clients.filter((client) =>
@@ -56,7 +78,7 @@ const Clients = () => {
   return (
     <Box m="20px">
       {/* HEADER */}
-      <Box display="flex" justifyContent="space-between" alignItems="center">
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Header title="CLIENTS" subtitle="List of clients" />
       </Box>
 
@@ -114,15 +136,44 @@ const Clients = () => {
                   sx={{ objectFit: "cover" }}
                 />
                 <CardContent>
+                  {/* NEW: Static Buttons */}
+                  <Box display="flex" justifyContent="center" gap={2} mb={2}>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: colors.greenAccent[500],
+                        color: colors.primary[100],
+                        '&:hover': {
+                          backgroundColor: colors.greenAccent[600],
+                        }
+                      }}
+                    >
+                      Management
+                    </Button>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: colors.blueAccent[500],
+                        color: colors.primary[100],
+                        '&:hover': {
+                          backgroundColor: colors.blueAccent[600],
+                        }
+                      }}
+                    >
+                      Technical
+                    </Button>
+                  </Box>
+
                   <Typography
                     variant="h5"
                     component="div"
                     gutterBottom
-                    sx={{ color: colors.grey[100], fontWeight: "bold" }}
+                    sx={{ color: colors.grey[100], fontWeight: "bold", textAlign: 'center' }}
                   >
                     {client.name}
                   </Typography>
 
+                  {/* Common Details */}
                   <Box display="flex" alignItems="center" mb={1}>
                     <BusinessIcon sx={{ color: colors.grey[300], mr: 1 }} />
                     <Typography variant="body2" color={colors.grey[300]}>
@@ -143,6 +194,7 @@ const Clients = () => {
                       {client.employees} employees
                     </Typography>
                   </Box>
+
                   <Typography
                     variant="body2"
                     color={colors.grey[300]}
@@ -150,6 +202,21 @@ const Clients = () => {
                   >
                     {client.description}
                   </Typography>
+
+                  <Box mb={2}>
+                    <Typography variant="subtitle2" color={colors.greenAccent[400]} mb={1}>
+                      Management Details
+                    </Typography>
+                    <Typography variant="body2" color={colors.grey[300]}>
+                      Contact: {client.managementDetails.contactPerson}
+                    </Typography>
+                    <Typography variant="body2" color={colors.grey[300]}>
+                      Email: {client.managementDetails.email}
+                    </Typography>
+                    <Typography variant="body2" color={colors.grey[300]}>
+                      Strategic Focus: {client.managementDetails.strategicFocus}
+                    </Typography>
+                  </Box>
 
                   <Box display="flex" gap={1} flexWrap="wrap">
                     {client.projects.map((project, index) => (
