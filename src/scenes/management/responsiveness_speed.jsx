@@ -120,7 +120,7 @@ const WorkloadThroughputCharts = () => {
       <Box height="400px">
         <ResponsiveLine
           data={data}
-          margin={{ top: 20, right: 140, bottom: 40, left: 60 }}
+          margin={{ top: 20, right: 140, bottom: 40, left: 40 }}
           xScale={{ type: 'point' }}
           yScale={{ 
             type: 'linear',
@@ -198,7 +198,7 @@ const WorkloadThroughputCharts = () => {
               anchor: 'bottom-right',
               direction: 'column',
               justify: false,
-              translateX: 100,
+              translateX: 150,              
               translateY: 0,
               itemsSpacing: 0,
               itemDirection: 'left-to-right',

@@ -169,7 +169,7 @@ const SpaceUsageChart = () => {
           {data[0].data.length > 0 && (
             <ResponsiveLine
               data={data}
-              margin={{ top: 20, right: 140, bottom: 40, left: 60 }} 
+              margin={{ top: 20, right: 140, bottom: 40, left: 40 }} 
               xScale={{ type: 'point' }}
               yScale={{ 
                 type: 'linear',
