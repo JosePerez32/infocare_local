@@ -1,10 +1,10 @@
-# React Admin Dashboard
+### Om lokaal te draaien
+Maak een file `.env.development.local` aan in de root folder van het project met onderstaande inhoud
+```
+REACT_APP_API_URL="http://api.infocare.test"
+```
 
-Build a COMPLETE React Admin Dashboard App | React, Material UI, Data Grid, Light & Dark Mode
-
-Video: https://www.youtube.com/watch?v=wYpCWwD1oz0
-
-For all related questions and discussions about this project, check out the discord: https://discord.gg/2FfPeEk2mX
+Om de development server te starten `npm run start`
 
 HOE TESTEN  :
 STAP 1: PAS DE HOST FILE in c:\Windows\System32\Drivers\etc\hosts en voeg deze twee toe
