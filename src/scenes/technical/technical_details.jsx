@@ -13,7 +13,7 @@ const TechnicalDetails = () => {
   const navigate = useNavigate();
   const { source } = useParams(); // Retrieve source from the URL parameters
   const [detailsData, setDetailsData] = useState(null);
-
+  const [availabilityData, setAvailabilityData] = useState({ response: 0, memory: 0, space: 0 });//This Line is just added
   useEffect(() => {
     const fetchDetailsData = async () => {
       try {
@@ -38,11 +38,16 @@ const TechnicalDetails = () => {
     fetchDetailsData();
   }, [databaseName,organization,source]);
 
-  if (!detailsData) return <Typography>Loading...</Typography>;
-
+  //if (!detailsData) return <Typography>Loading...</Typography>;
+//This is going to conetent the new lines
+  //The line bellow are just been commented
   const handleBoxClick = (route) => {
     navigate(`/technical/details/${databaseName}/${route}`);
   };
+  if (!detailsData) return <Typography>Loading...</Typography>;
+
+  // Sumar los valores de availability
+  const totalAvailability = availabilityData.response + availabilityData.memory + availabilityData.space;
 
   const GaugeBox = ({ title, value, route }) => (
     <Box

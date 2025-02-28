@@ -6,7 +6,7 @@ import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { useParams, useLocation } from "react-router-dom";
 
-const Availability = () => {
+const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
   const { databaseName } = useParams(); // Get database name from the URL
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -35,16 +35,28 @@ const Availability = () => {
         setResponseData(data.response);
         setMemoryData(data.memory);
         setSpaceData(data.space);
-    
-
-        console.log(data); // Check the fetched data
+        // Push back the results to the tachnical_details.jsx page
+        if (onDataUpdate) {
+          onDataUpdate({
+            response: data.response,
+            memory: data.memory,
+            space: data.space,
+          });
+        }
       } catch (error) {
-        console.error("Error fetching recovery data:", error);
+        console.error("Error fetching availability data:", error);
       }
-    };
+      };
+      //Finish of the pushing
+
+     //   console.log(data); // Check the fetched data
+     // } catch (error) {
+     //   console.error("Error fetching recovery data:", error);
+     // }
+   // };
 
     fetchAvailibilityData();
-  }, [databaseName, organization,source]);
+  }, [databaseName, organization,source, onDataUpdate]); //onDataUpdate is just added
 
   return (
 
