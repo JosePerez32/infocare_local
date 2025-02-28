@@ -144,7 +144,7 @@ const Technical = () => {
                   }}
                   arc={{
                     colorArray: ['#EA4228', '#5BE12C'],
-                    subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
+                    subArcs: [{ limit: 33 }, { limit: 66 }, {}],
                     padding: 0.02,
                     width: 0.3
                   }}

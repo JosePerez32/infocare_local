@@ -82,7 +82,7 @@ backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
             type="radial"
             arc={{
               colorArray: ['#5BE12C', '#EA4228'],
-              subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
+              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
               padding: 0.02,
               width: 0.3
             }}

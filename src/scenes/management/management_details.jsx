@@ -128,7 +128,7 @@ const ManagementDetails = () => {
 
   return (
     <Box m="20px">
-      <Header title={`Details for ${source}`} subtitle="Details" />
+      <Header title={`Details for XX${source}`} subtitle="Details" />
       {alertVisible && <Alert variant="outlined" severity="success">Gauge chart order changed and saved</Alert>}
       <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
         {gaugeOrder.map((gauge, index) => (

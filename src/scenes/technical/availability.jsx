@@ -10,7 +10,7 @@ const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
   const { databaseName } = useParams(); // Get database name from the URL
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [responseData, setResponseData] = useState(0);
+  const [responseData, setResponseData] = useState(50);
   const [memoryData, setMemoryData] = useState([]);
   const [spaceData, setSpaceData] = useState([]);
   const { source } = useParams(); // Retrieve source from the URL parameters
@@ -56,12 +56,14 @@ const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
    // };
 
     fetchAvailibilityData();
-  }, [databaseName, organization,source, onDataUpdate]); //onDataUpdate is just added
+  }, [databaseName, organization,source, onDataUpdate]); //onDataUpdate is just added Jose 
 
   return (
 
     <Box m="20px">
-      <Header title={`Availibility for ${databaseName}`} subtitle="Availibility" />
+      <Header title={`Availibility for ${databaseName} Total: ${responseData}`} subtitle="Availibility"    />
+      
+    
       <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
         <Box
           style={{ cursor: "pointer", backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }} // Change background color, padding, and border radius
@@ -73,8 +75,8 @@ const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
             value={responseData}
             type="radial"
             arc={{
-              colorArray: ['#5BE12C', '#EA4228'],
-              subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
+              colorArray: ['#EA4228','#5BE12C'],
+              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
               padding: 0.02,
               width: 0.3
             }}
@@ -89,8 +91,8 @@ backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
             value={memoryData}
             type="radial"
             arc={{
-              colorArray: ['#5BE12C', '#EA4228'],
-              subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
+              colorArray: ['#EA4228','#5BE12C'],
+              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
               padding: 0.02,
               width: 0.3
             }}
@@ -105,8 +107,8 @@ backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
             value={spaceData}
             type="radial"
             arc={{
-              colorArray: ['#5BE12C', '#EA4228'],
-              subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
+              colorArray: ['#EA4228','#5BE12C'],
+              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
               padding: 0.02,
               width: 0.3
             }}

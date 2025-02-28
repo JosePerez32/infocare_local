@@ -1,29 +1,30 @@
-import { Box, useTheme, Typography } from "@mui/material";
+import { Box, useTheme, Typography, TextField } from "@mui/material"; // Importar TextField
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import GaugeComponent from "react-gauge-component";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-
+//import 
 const TechnicalDetails = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { databaseName } = useParams();
   const { organization } = useLocation().state || {};
   const navigate = useNavigate();
-  const { source } = useParams(); // Retrieve source from the URL parameters
+  const { source } = useParams();
   const [detailsData, setDetailsData] = useState(null);
-  const [availabilityData, setAvailabilityData] = useState({ response: 0, memory: 0, space: 0 });//This Line is just added
+  const [availabilityData, setAvailabilityData] = useState(null);
+
   useEffect(() => {
     const fetchDetailsData = async () => {
       try {
-        const token = localStorage.getItem('accessToken'); // Retrieve token from localStorage
+        const token = localStorage.getItem('accessToken');
 
         const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/dashboards/${organization}/management/sources/${source}`, 
+          `${process.env.REACT_APP_API_URL}/dashboards/${organization}/management/sources/${source}`,
           {
             headers: {
-              'Authorization': `Bearer ${token}`, // Add token to Authorization header
+              'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json',
             },
           }
@@ -36,18 +37,23 @@ const TechnicalDetails = () => {
     };
 
     fetchDetailsData();
-  }, [databaseName,organization,source]);
+  }, [databaseName, organization, source]);
 
-  //if (!detailsData) return <Typography>Loading...</Typography>;
-//This is going to conetent the new lines
-  //The line bellow are just been commented
   const handleBoxClick = (route) => {
     navigate(`/technical/details/${databaseName}/${route}`);
   };
+
+  const handleAvailabilityDataUpdate = (data) => {
+    setAvailabilityData(data);
+  };
+
   if (!detailsData) return <Typography>Loading...</Typography>;
 
   // Sumar los valores de availability
-  const totalAvailability = availabilityData.response + availabilityData.memory + availabilityData.space;
+  //const totalAvailability = availabilityData.response + availabilityData.memory + availabilityData.space;
+  const totalAvailability = availabilityData
+  ? availabilityData.response + availabilityData.memory + availabilityData.space
+  : 0;
 
   const GaugeBox = ({ title, value, route }) => (
     <Box
@@ -58,28 +64,50 @@ const TechnicalDetails = () => {
         padding: "20px",
         borderRadius: "8px",
       }}
-    >
+    > 
+    
       <Typography variant="h6" color={colors.grey[100]}>
         {title}
+      </Typography>
+      <Typography variant="body1" color={colors.greenAccent[500]}>
+      Total: {value} {/* Aquí se muestra el valor de totalAvailability */}
       </Typography>
       <GaugeComponent
         value={value}
         type="radial"
         arc={{
-          colorArray: ['#5BE12C', '#EA4228'],
-          subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
+          colorArray: ['#EA4228','#5BE12C'],
+          subArcs: [{ limit: 33 }, { limit: 66 }, {}],
           padding: 0.02,
           width: 0.3
         }}
       />
     </Box>
   );
-
+  
   return (
     <Box m="20px">
-      <Header title={`Details for ${databaseName}`} subtitle="Details" />
+      {/* Header con el título y el cuadro de texto */}
+      <Box display="flex" alignItems="center" justifyContent="space-between">
+        <Header title={`Details for ${databaseName}`} subtitle="Technical" />
+        <TextField
+          label="Total Availability"
+          variant="outlined"
+          value={totalAvailability} //Changed for totalAvailability - Jose
+          InputProps={{
+            readOnly: true, // Hacer el campo de solo lectura
+          }}
+          sx={{
+            backgroundColor: colors.primary[400], // Fondo del cuadro de texto
+            borderRadius: "4px",
+            width: "200px", // Ancho del cuadro de texto
+          }}
+        />
+      </Box>
+
+      {/* Gauges */}
       <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
-        <GaugeBox title="Availability" value={detailsData.availability} route="availability" />
+        <GaugeBox title="Availability" value={totalAvailability} route="availability" /> 
         <GaugeBox title="Efficiency" value={detailsData.efficiency} route="efficiency" />
         <GaugeBox title="Security" value={detailsData.security} route="security" />
         <GaugeBox title="Organization" value={detailsData.organization} route="organization" />
