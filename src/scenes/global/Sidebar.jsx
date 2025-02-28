@@ -200,14 +200,7 @@ const Sidebar = () => {
         {hasAccess(["writer", "admin"]) && (
           <>
             <SectionTitle title="Views" isCollapsed={isCollapsed} />
-            <MenuItem
-              title="Management View"
-              to="/management"
-              icon={<ManageAccountsIcon />}
-              selected={selected}
-              setSelected={setSelected}
-              isCollapsed={isCollapsed}
-            />
+            
             <MenuItem
               title="Technical View"
               to="/technical"
@@ -264,14 +257,7 @@ const Sidebar = () => {
               setSelected={setSelected}
               isCollapsed={isCollapsed}
             />
-            <MenuItem
-              title="Management View"
-              to="/management"
-              icon={<ManageAccountsIcon />}
-              selected={selected}
-              setSelected={setSelected}
-              isCollapsed={isCollapsed}
-            />
+            
           </>
         )}
 
