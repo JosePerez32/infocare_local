@@ -52,9 +52,9 @@ const TechnicalDetails = () => {
   // Sumar los valores de availability
   //const totalAvailability = availabilityData.response + availabilityData.memory + availabilityData.space;
   const totalAvailability = availabilityData
-  ? availabilityData.response + availabilityData.memory + availabilityData.space
+  /*? availabilityData.response + availabilityData.memory + availabilityData.space
   : 0;
-
+*/
   const GaugeBox = ({ title, value, route }) => (
     <Box
       onClick={() => handleBoxClick(route)}
@@ -70,7 +70,7 @@ const TechnicalDetails = () => {
         {title}
       </Typography>
       <Typography variant="body1" color={colors.greenAccent[500]}>
-      Total: {value} {/* Aquí se muestra el valor de totalAvailability */}
+       {value} {/* Aquí se muestra el valor de totalAvailability */}
       </Typography>
       <GaugeComponent
         value={value}
@@ -107,10 +107,10 @@ const TechnicalDetails = () => {
 
       {/* Gauges */}
       <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
-        <GaugeBox title="Availability" value={totalAvailability} route="availability" /> 
-        <GaugeBox title="Efficiency" value={detailsData.efficiency} route="efficiency" />
-        <GaugeBox title="Security" value={detailsData.security} route="security" />
-        <GaugeBox title="Organization" value={detailsData.organization} route="organization" />
+        <GaugeBox title="Jens" /*value={totalAvailability}*/ route="availability" /> 
+        <GaugeBox title="Elias" /*value={detailsData.efficiency}*/ route="efficiency" />
+        <GaugeBox title="Sina" /*value={detailsData.security}*/ route="security" />
+        <GaugeBox title="Jean-Marie" /*value={detailsData.organization}*/ route="organization" />
       </Box>
     </Box>
   );

@@ -10,9 +10,9 @@ const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
   const { databaseName } = useParams(); // Get database name from the URL
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [responseData, setResponseData] = useState(50);
-  const [memoryData, setMemoryData] = useState([]);
-  const [spaceData, setSpaceData] = useState([]);
+  const [responseData, setResponseData] = useState(52);
+  const [memoryData, setMemoryData] = useState(33);
+  const [spaceData, setSpaceData] = useState(98);
   const { source } = useParams(); // Retrieve source from the URL parameters
   const { organization } = useLocation().state || {};
  

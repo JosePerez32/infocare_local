@@ -63,8 +63,8 @@ const Organization = () => {
             value={designData}
             type="radial"
             arc={{
-              colorArray: ['#5BE12C', '#EA4228'],
-              subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
+              colorArray: ['#EA4228','#5BE12C'],
+              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
               padding: 0.02,
               width: 0.3
             }}
@@ -79,8 +79,8 @@ backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
             value={comparisonData}
             type="radial"
             arc={{
-              colorArray: ['#5BE12C', '#EA4228'],
-              subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
+              colorArray: ['#EA4228','#5BE12C'],
+              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
               padding: 0.02,
               width: 0.3
             }}
@@ -95,8 +95,8 @@ backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
             value={statisticsData}
             type="radial"
             arc={{
-              colorArray: ['#5BE12C', '#EA4228'],
-              subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
+              colorArray: ['#EA4228','#5BE12C'],
+              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
               padding: 0.02,
               width: 0.3
             }}
@@ -112,8 +112,8 @@ backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
             value={scriptsData}
             type="radial"
             arc={{
-              colorArray: ['#5BE12C', '#EA4228'],
-              subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
+              colorArray: ['#EA4228','#5BE12C'],
+              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
               padding: 0.02,
               width: 0.3
             }}
