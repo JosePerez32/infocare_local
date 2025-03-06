@@ -202,7 +202,7 @@ const Sidebar = () => {
             <SectionTitle title="Views" isCollapsed={isCollapsed} />
             
             <MenuItem
-              title="Technical View"
+              title="Monitoring"
               to="/technical"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
@@ -250,7 +250,7 @@ const Sidebar = () => {
           <>
             <SectionTitle title="Views" isCollapsed={isCollapsed} />
             <MenuItem
-              title="Technical View"
+              title="Monitoring"
               to="/technical"
               icon={<ContactsOutlinedIcon />}
               selected={selected}

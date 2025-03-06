@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Alert } from "@mui/material";
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import GaugeComponent from "react-gauge-component";
@@ -16,7 +16,8 @@ const Efficiency = () => {
   const [lockingData, setLockingData] = useState([]);
   const { source } = useParams(); // Retrieve source from the URL parameters
   const { organization } = useLocation().state || {};
-
+  const [gaugeOrder, setGaugeOrder] = useState(["index", "connections", "logging", "locking"]); // jp: State for the gauge order
+  const [alertVisible, setAlertVisible] = useState(false); // jp: State to show an alert
  
 
   useEffect(() => {
@@ -48,78 +49,100 @@ const Efficiency = () => {
 
     fetchEfficiencyData();
   }, [databaseName,source,organization]);
+// jp: Functions for drag and drop
+const handleDragStart = (index) => (event) => {
+  event.dataTransfer.setData("text/plain", index); // Save the index for the dragged element
+};
 
+const handleDrop = (index) => (event) => {
+  event.preventDefault();
+  const fromIndex = event.dataTransfer.getData("text/plain"); // Get the index of the dragged element
+  const newOrder = [...gaugeOrder]; // Copy the currently order
+  const [movedItem] = newOrder.splice(fromIndex, 1); // Romove the element of his original position
+  newOrder.splice(index, 0, movedItem); // Insert the element in the new position 
+  setGaugeOrder(newOrder); // Update the state with the new order
+
+  // Shows a temporary alert
+  setAlertVisible(true);
+  setTimeout(() => setAlertVisible(false), 3000);
+};
+
+const handleDragOver = (event) => {
+  event.preventDefault(); // Allow you to drop the element
+};
   return (
 
     <Box m="20px">
       <Header title={`Efficiency for ${databaseName}`} subtitle="Efficiency" />
-      <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
-        <Box
-          style={{ cursor: "pointer", backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }} // Change background color, padding, and border radius
-        >
-          <Typography variant="h6" color={colors.grey[100]}>
-            Index
-          </Typography>
-          <GaugeComponent
-            value={indexData}
-            type="radial"
-            arc={{
-              colorArray: ['#EA4228','#5BE12C'],
-              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
-              padding: 0.02,
-              width: 0.3
-            }}
-          />
-        </Box>
-        <Box  style={{             cursor: "pointer",
-backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
-          <Typography variant="h6" color={colors.grey[100]}>
-          Connections
-          </Typography>
-          <GaugeComponent
-            value={connectionsData}
-            type="radial"
-            arc={{
-              colorArray: ['#EA4228','#5BE12C'],
-              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
-              padding: 0.02,
-              width: 0.3
-            }}
-          />
-        </Box>
-        <Box 
-        style={{ cursor: "pointer", backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
-          <Typography variant="h6" color={colors.grey[100]}>
-            Logging
-          </Typography>
-          <GaugeComponent
-            value={loggingData}
-            type="radial"
-            arc={{
-              colorArray: ['#EA4228','#5BE12C'],
-              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
-              padding: 0.02,
-              width: 0.3
-            }}
-          />
-        </Box>
 
-        <Box 
-        style={{ cursor: "pointer", backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
-          <Typography variant="h6" color={colors.grey[100]}>
-            Locking
-          </Typography>
-          <GaugeComponent
-            value={lockingData}
-            type="radial"
-            arc={{
-              colorArray: ['#EA4228','#5BE12C'],
-              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
-              padding: 0.02,
-              width: 0.3
-            }}
-          />
-        </Box>
+     {/* jp: Alert para cambios en el orden */}
+     {alertVisible && (
+        <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
+          Gauge chart order changed!
+        </Alert>
+      )}
+
+
+      <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
+        
+      {gaugeOrder.map((gaugeName, index) => {
+          let gaugeValue;
+          let gaugeTitle;
+
+          switch (gaugeName) {
+            case "index":
+              gaugeValue = indexData;
+              gaugeTitle = "Index";
+              break;
+            case "connections":
+              gaugeValue = connectionsData;
+              gaugeTitle = "Connections";
+              break;
+            case "logging":
+              gaugeValue = loggingData;
+              gaugeTitle = "Logging";
+              break;
+            case "locking":
+              gaugeValue = lockingData;
+              gaugeTitle = "Locking";
+              break;
+            default:
+              gaugeValue = 0;
+              gaugeTitle = "Unknown";
+          }
+
+          return (
+            <Box
+              key={index}
+              draggable // jp: Makes the element draggable
+              onDragStart={handleDragStart(index)} // jp: Runs when the drag starts
+              onDrop={handleDrop(index)} // jp: Runs when the element is dropped
+              onDragOver={handleDragOver} // jp: Makes the element droppable
+              style={{
+                cursor: "pointer",
+                backgroundColor: colors.primary[400],
+                padding: "20px",
+                borderRadius: "8px",
+              }}
+            >
+              <Typography variant="h6" color={colors.grey[100]}>
+                {gaugeTitle}
+              </Typography>
+              <GaugeComponent
+                value={gaugeValue}
+                type="radial"
+                arc={{
+                  colorArray: ['#EA4228', '#5BE12C'],
+                  subArcs: [{ limit: 33 }, { limit: 66 }, {}],
+                  padding: 0.02,
+                  width: 0.3
+                }}
+              />
+            </Box>
+          );
+        })}
+
+
 
       </Box>
     </Box>
