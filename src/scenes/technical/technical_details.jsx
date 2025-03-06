@@ -1,4 +1,4 @@
-import { Box, useTheme, Typography, TextField } from "@mui/material"; // Importar TextField
+import { Box, useTheme, Typography, TextField, Alert } from "@mui/material"; // Importar TextField
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import GaugeComponent from "react-gauge-component";
@@ -14,6 +14,8 @@ const TechnicalDetails = () => {
   const { source } = useParams();
   const [detailsData, setDetailsData] = useState(null);
   const [availabilityData, setAvailabilityData] = useState(null);
+  const [gaugeOrder, setGaugeOrder] = useState(["availability", "efficiency", "security", "organization"]); // State for the gauges order
+  const [alertVisible, setAlertVisible] = useState(false); // State to show alerts
 
   useEffect(() => {
     const fetchDetailsData = async () => {
@@ -46,7 +48,25 @@ const TechnicalDetails = () => {
   const handleAvailabilityDataUpdate = (data) => {
     setAvailabilityData(data);
   };
+// Funtions to drag and drop
+const handleDragStart = (index) => (event) => {
+  event.dataTransfer.setData("text/plain", index); // Save the index of the dragged element
+};
 
+const handleDrop = (index) => (event) => {
+  event.preventDefault();
+  const fromIndex = event.dataTransfer.getData("text/plain"); // Get the index of the dragged element
+  const newOrder = [...gaugeOrder]; // Copy the currently state
+  const [movedItem] = newOrder.splice(fromIndex, 1); // Remove the element of the original state
+  newOrder.splice(index, 0, movedItem); // Insert the element in the new position
+  setGaugeOrder(newOrder); // Up date the state with the new order
+// Shows a temporal alert
+setAlertVisible(true);
+setTimeout(() => setAlertVisible(false), 3000);
+};
+  const handleDragOver = (event) => {
+    event.preventDefault(); // Allow you to drop the element
+  };
   if (!detailsData) return <Typography>Loading...</Typography>;
 
   // Sumar los valores de availability
@@ -55,8 +75,13 @@ const TechnicalDetails = () => {
   /*? availabilityData.response + availabilityData.memory + availabilityData.space
   : 0;
 */
-  const GaugeBox = ({ title, value, route }) => (
+  const GaugeBox = ({ title, value, route, index }) => ( //index was addes for the draganddrop property
     <Box
+    key={index}
+      draggable // Make the element be draggable
+      onDragStart={handleDragStart(index)} // This execute when the dragging starts
+      onDrop={handleDrop(index)} // This execute when the element is dropped
+      onDragOver={handleDragOver} // Allow to the element to be dropped
       onClick={() => handleBoxClick(route)}
       style={{
         cursor: "pointer",
@@ -104,15 +129,38 @@ const TechnicalDetails = () => {
           }}
         />
       </Box>
-
+      {/* Alert for the changes in the order */}
+      {alertVisible && (
+        <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
+          Gauge chart order changed!
+        </Alert>
+      )}
+      {}
       {/* Gauges */}
       <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
-        <GaugeBox title="Jens" /*value={totalAvailability}*/ route="availability" /> 
-        <GaugeBox title="Elias" /*value={detailsData.efficiency}*/ route="efficiency" />
-        <GaugeBox title="Sina" /*value={detailsData.security}*/ route="security" />
-        <GaugeBox title="Jean-Marie" /*value={detailsData.organization}*/ route="organization" />
+        {gaugeOrder.map((route, index) => {
+          const titleMap = {
+            availability: "Jens",
+            efficiency: "Elias",
+            security: "Sina",
+            organization: "Jean-Marie",
+          };
+          const title = titleMap[route];
+          const value = detailsData[route] || 0; // Obtener el valor de detailsData o usar 0 como valor predeterminado
+
+          return (
+            <GaugeBox
+              key={route}
+              title={title}
+              value={value}
+              route={route}
+              index={index}
+            />
+          );
+        })}
       </Box>
     </Box>
+    
   );
 };
 
