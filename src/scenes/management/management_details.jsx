@@ -114,7 +114,7 @@ const ManagementDetails = () => {
         value={value}
         type="radial"
         arc={{
-          colorArray: ['#5BE12C', '#EA4228'],
+          colorArray: ['#EA4228','#5BE12C'],
           subArcs: [{ limit: 33 }, { limit: 66 }, /*{}, {},*/ {}],
           padding: 0.02,
           width: 0.3

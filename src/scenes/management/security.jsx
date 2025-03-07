@@ -1,4 +1,4 @@
-import { Box, useTheme, Typography } from "@mui/material";
+import { Box, useTheme, Typography, Alert } from "@mui/material"; // jp: Agregar Alert
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import GaugeComponent from "react-gauge-component";
@@ -16,9 +16,9 @@ const Security = () => {
     encryption: 0,
     users: 0,
     masking: 0,
-    
   });
-
+  const [gaugeOrder, setGaugeOrder] = useState(["encryption", "masking", "users"]); // jp: Estado para el orden de los gauges
+  const [alertVisible, setAlertVisible] = useState(false); // jp: Estado para mostrar alertas
 
   useEffect(() => {
     const fetchSecurityData = async () => {
@@ -39,7 +39,6 @@ const Security = () => {
           encryption: data.encryption,
           users: data.users,
           masking: data.masking,
-         
         });
       } catch (error) {
         console.error("Error fetching security data:", error);
@@ -56,8 +55,35 @@ const Security = () => {
     return () => clearInterval(interval);
   }, [databaseName, organization, source]); // Re-run if databaseName changes
 
-  const SecurityBox = ({ title, value, route }) => (
+  // jp: Funciones para drag and drop
+  const handleDragStart = (index) => (event) => {
+    event.dataTransfer.setData("text/plain", index); // Guarda el índice del elemento arrastrado
+  };
+
+  const handleDrop = (index) => (event) => {
+    event.preventDefault();
+    const fromIndex = event.dataTransfer.getData("text/plain"); // Obtiene el índice del elemento arrastrado
+    const newOrder = [...gaugeOrder]; // Copia el orden actual
+    const [movedItem] = newOrder.splice(fromIndex, 1); // Remueve el elemento de su posición original
+    newOrder.splice(index, 0, movedItem); // Inserta el elemento en la nueva posición
+    setGaugeOrder(newOrder); // Actualiza el estado con el nuevo orden
+
+    // Muestra una alerta temporal
+    setAlertVisible(true);
+    setTimeout(() => setAlertVisible(false), 3000);
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault(); // Permite que el elemento se pueda soltar
+  };
+
+  const SecurityBox = ({ title, value, route, index }) => (
     <Box
+      key={index}
+      draggable // jp: Hace que el elemento sea arrastrable
+      onDragStart={handleDragStart(index)} // jp: Se ejecuta cuando comienza el arrastre
+      onDrop={handleDrop(index)} // jp: Se ejecuta cuando se suelta el elemento
+      onDragOver={handleDragOver} // jp: Permite que el elemento se pueda soltar
       onClick={() => navigate(`/management/details/${databaseName}/security/${route}`)}
       style={{
         cursor: "pointer",
@@ -74,7 +100,7 @@ const Security = () => {
         type="radial"
         arc={{
           colorArray: [ '#EA4228' ,'#5BE12C'],
-          subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
+          subArcs: [{ limit: 33 }, { limit: 66 }, {}],
           padding: 0.02,
           width: 0.3
         }}
@@ -85,11 +111,52 @@ const Security = () => {
   return (
     <Box m="20px">
       <Header title={`Security Details for ${databaseName}`} subtitle="Overall Security" />
+
+      {/* jp: Alert para cambios en el orden */}
+      {alertVisible && (
+        <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
+          Gauge chart order changed!
+        </Alert>
+      )}
+
       <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
-        <SecurityBox title="Encryption" value={securityData.encryption} route="encryption" />
-        <SecurityBox title="Masking" value={securityData.masking} route="masking" />
-        <SecurityBox title="Users" value={securityData.users} route="users" />
-        
+        {gaugeOrder.map((gaugeName, index) => {
+          let gaugeValue;
+          let gaugeTitle;
+          let gaugeRoute;
+
+          switch (gaugeName) {
+            case "encryption":
+              gaugeValue = securityData.encryption;
+              gaugeTitle = "Encryption";
+              gaugeRoute = "encryption";
+              break;
+            case "masking":
+              gaugeValue = securityData.masking;
+              gaugeTitle = "Masking";
+              gaugeRoute = "masking";
+              break;
+            case "users":
+              gaugeValue = securityData.users;
+              gaugeTitle = "Users";
+              gaugeRoute = "users";
+              break;
+            default:
+              gaugeValue = 0;
+              gaugeTitle = "Unknown";
+              gaugeRoute = "";
+          }
+
+          return (
+            <SecurityBox
+              key={index}
+              title={gaugeTitle}
+              value={gaugeValue}
+              route={gaugeRoute}
+              index={index}
+            />
+          );
+        })}
       </Box>
     </Box>
   );

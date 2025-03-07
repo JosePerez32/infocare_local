@@ -39,6 +39,7 @@ const Efficiency = () => {
         setConnectionsData(data.connections);
         setLoggingData(data.logging);
         setLockingData(data.locking);
+        
     
 
         console.log(data); // Check the fetched data
