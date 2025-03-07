@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Alert } from "@mui/material"; //jp: Alert imported for the temporary message
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import GaugeComponent from "react-gauge-component";
@@ -11,12 +11,14 @@ const Organization = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [designData, setDesignData] = useState(0);
-  const [comparisonData, setComparisonData] = useState([]);
-  const [statisticsData, setStatisticsData] = useState([]);
-  const [scriptsData, setScriptsData] = useState([]);
+  const [comparisonData, setComparisonData] = useState(0);
+  const [statisticsData, setStatisticsData] = useState(0);
+  const [scriptsData, setScriptsData] = useState(0);
   const { source } = useParams(); // Retrieve source from the URL parameters
   const { organization } = useLocation().state || {};
- 
+  const [gaugeOrder, setGaugeOrder] = useState(["design", "comparison", "statistics", "scripts"]); // jp: State for the gauge order
+  const [alertVisible, setAlertVisible] = useState(false); // jp: State to show an alert
+
 
   useEffect(() => {
     const fetchOrganizationData = async () => {
@@ -48,77 +50,101 @@ const Organization = () => {
     fetchOrganizationData();
   }, [databaseName,organization,source]);
 
+  
+// jp: Functions for drag and drop
+const handleDragStart = (index) => (event) => {
+  event.dataTransfer.setData("text/plain", index); // Save the design for the dragged element
+};
+
+const handleDrop = (index) => (event) => {
+  event.preventDefault();
+  const fromIndex = event.dataTransfer.getData("text/plain"); // Get the design of the dragged element
+  const newOrder = [...gaugeOrder]; // Copy the currently order
+  const [movedItem] = newOrder.splice(fromIndex, 1); // Romove the element of his original position
+  newOrder.splice(index, 0, movedItem); // Insert the element in the new position 
+  setGaugeOrder(newOrder); // Update the state with the new order
+
+  // Shows a temporary alert
+  setAlertVisible(true);
+  setTimeout(() => setAlertVisible(false), 3000);
+};
+
+const handleDragOver = (event) => {
+  event.preventDefault(); // Allow you to drop the element
+};
   return (
 
     <Box m="20px">
-      <Header title={`Efficiency for ${databaseName}`} subtitle="Efficiency" />
-      <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
-        <Box
-          style={{ cursor: "pointer", backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }} // Change background color, padding, and border radius
-        >
-          <Typography variant="h6" color={colors.grey[100]}>
-            Design
-          </Typography>
-          <GaugeComponent
-            value={designData}
-            type="radial"
-            arc={{
-              colorArray: ['#EA4228','#5BE12C'],
-              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
-              padding: 0.02,
-              width: 0.3
-            }}
-          />
-        </Box>
-        <Box  style={{             cursor: "pointer",
-backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
-          <Typography variant="h6" color={colors.grey[100]}>
-          Comparison
-          </Typography>
-          <GaugeComponent
-            value={comparisonData}
-            type="radial"
-            arc={{
-              colorArray: ['#EA4228','#5BE12C'],
-              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
-              padding: 0.02,
-              width: 0.3
-            }}
-          />
-        </Box>
-        <Box 
-        style={{ cursor: "pointer", backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
-          <Typography variant="h6" color={colors.grey[100]}>
-            Statistics
-          </Typography>
-          <GaugeComponent
-            value={statisticsData}
-            type="radial"
-            arc={{
-              colorArray: ['#EA4228','#5BE12C'],
-              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
-              padding: 0.02,
-              width: 0.3
-            }}
-          />
-        </Box>
+      <Header title={`Organization for ${databaseName}`} subtitle="Efficiency" />
 
-        <Box 
-        style={{ cursor: "pointer", backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
-          <Typography variant="h6" color={colors.grey[100]}>
-            Scripts
-          </Typography>
-          <GaugeComponent
-            value={scriptsData}
-            type="radial"
-            arc={{
-              colorArray: ['#EA4228','#5BE12C'],
-              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
-              padding: 0.02,
-              width: 0.3
-            }}
-          />
-        </Box>
+       {/* jp: Alert para cambios en el orden */}
+        {alertVisible && (
+        <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
+          Gauge chart order changed!
+        </Alert>
+        )}
+
+
+      <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
+        
+      {gaugeOrder.map((gaugeName, index) => {
+          let gaugeValue;
+          let gaugeTitle;
+
+          switch (gaugeName) {
+            case "design":
+              gaugeValue = designData;
+              gaugeTitle = "Design";
+              break;
+            case "comparison":
+              gaugeValue = comparisonData;
+              gaugeTitle = "Comparison";
+              break;
+            case "statistics":
+              gaugeValue = statisticsData;
+              gaugeTitle = "Statistics";
+              break;
+            case "scripts":
+              gaugeValue = scriptsData;
+              gaugeTitle = "Scripts";
+              break;
+            default:
+              gaugeValue = 0;
+              gaugeTitle = "Unknown";
+          }
+
+          return (
+            <Box
+              key={index}
+              draggable // jp: Makes the element draggable
+              onDragStart={handleDragStart(index)} // jp: Runs when the drag starts
+              onDrop={handleDrop(index)} // jp: Runs when the element is dropped
+              onDragOver={handleDragOver} // jp: Makes the element droppable
+              style={{
+                cursor: "pointer",
+                backgroundColor: colors.primary[400],
+                padding: "20px",
+                borderRadius: "8px",
+              }}
+            >
+              <Typography variant="h6" color={colors.grey[100]}>
+                {gaugeTitle}
+              </Typography>
+              <GaugeComponent
+                value={gaugeValue}
+                type="radial"
+                arc={{
+                  colorArray: ['#EA4228', '#5BE12C'],
+                  subArcs: [{ limit: 33 }, { limit: 66 }, {}],
+                  padding: 0.02,
+                  width: 0.3
+                }}
+              />
+            </Box>
+          );
+        })}
+
+
 
       </Box>
     </Box>

@@ -18,10 +18,10 @@ const Management = () => {
   // New state for gauge customization
   const [colorScheme, setColorScheme] = useState('red-green');
   const [thresholds, setThresholds] = useState({
-    low: 20,
-    medium: 40,
-    high: 60,
-    veryHigh: 80
+    low: 33,
+    //medium: 40,
+    high: 66,
+    //veryHigh: 80
   });
 
   // Color scheme options
@@ -212,9 +212,9 @@ const Management = () => {
                     colorArray: colorSchemes[colorScheme],
                     subArcs: [
                       { limit: thresholds.low },
-                      { limit: thresholds.medium },
+                     /* { limit: thresholds.medium },*/
                       { limit: thresholds.high },
-                      { limit: thresholds.veryHigh },
+                     /* { limit: thresholds.veryHigh },*/
                       { limit: 100 }
                     ],
                     padding: 0.02,

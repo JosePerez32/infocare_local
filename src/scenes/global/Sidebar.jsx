@@ -202,6 +202,16 @@ const Sidebar = () => {
             <SectionTitle title="Views" isCollapsed={isCollapsed} />
             
             <MenuItem
+              title="Management View"
+              to="/management"
+              icon={<ManageAccountsIcon />}
+              selected={selected}
+              setSelected={setSelected}
+              isCollapsed={isCollapsed}
+            />
+            
+
+            <MenuItem
               title="Monitoring"
               to="/technical"
               icon={<ContactsOutlinedIcon />}

@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Alert } from "@mui/material"; //jp: Add the Alert bibliothec here 
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import GaugeComponent from "react-gauge-component";
@@ -15,7 +15,7 @@ const Security = () => {
   const [sslData, setsslData] = useState([]);
   const { source } = useParams(); // Retrieve source from the URL parameters
   const { organization } = useLocation().state || {};
-
+  const [alertVisible, setAlertVisible] = useState(false); // jp: State to show an alert
  
  
 
@@ -47,6 +47,37 @@ const Security = () => {
 
     fetchSecurityData();
   }, [databaseName, organization,source]);
+
+
+// jp: Functions for drag and drop
+const handleDragStart = (index) => (event) => {
+  event.dataTransfer.setData("text/plain", index); // Save the index for the dragged element
+};
+
+const handleDrop = (index) => (event) => {
+  event.preventDefault();
+  const fromIndex = event.dataTransfer.getData("text/plain"); // Get the index of the dragged element
+  const newOrder = [...gaugeOrder]; // Copy the currently order
+  const [movedItem] = newOrder.splice(fromIndex, 1); // Romove the element of his original position
+  newOrder.splice(index, 0, movedItem); // Insert the element in the new position 
+  setGaugeOrder(newOrder); // Update the state with the new order
+
+  // Shows a temporary alert
+  setAlertVisible(true);
+  setTimeout(() => setAlertVisible(false), 3000);
+};
+
+const handleDragOver = (event) => {
+  event.preventDefault(); // Allow you to drop the element
+};
+
+
+
+
+
+
+
+
 
   return (
 
