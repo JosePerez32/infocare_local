@@ -115,7 +115,7 @@ const ManagementDetails = () => {
         type="radial"
         arc={{
           colorArray: ['#5BE12C', '#EA4228'],
-          subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
+          subArcs: [{ limit: 33 }, { limit: 66 }, /*{}, {},*/ {}],
           padding: 0.02,
           width: 0.3
         }}
@@ -127,8 +127,8 @@ const ManagementDetails = () => {
   if (!detailsData) return <Typography>Loading...</Typography>;
 
   return (
-    <Box m="20px">
-      <Header title={`Details for XX${source}`} subtitle="Details" />
+    <Box m="20px">      
+      <Header title={`Details for ${source.toUpperCase()}`} subtitle="Details" />
       {alertVisible && <Alert variant="outlined" severity="success">Gauge chart order changed and saved</Alert>}
       <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
         {gaugeOrder.map((gauge, index) => (

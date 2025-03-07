@@ -20,7 +20,7 @@ const Management = () => {
   const [thresholds, setThresholds] = useState({
     low: 33,
     //medium: 40,
-    high: 66,
+    high: 66
     //veryHigh: 80
   });
 
@@ -201,9 +201,9 @@ const Management = () => {
                       type: "inner",
                       ticks: [
                         { value: thresholds.low },
-                        { value: thresholds.medium },
+                       /* { value: thresholds.medium },*/
                         { value: thresholds.high },
-                        { value: thresholds.veryHigh },
+                        /*{ value: thresholds.veryHigh },*/
                         { value: 100 }
                       ]
                     }
