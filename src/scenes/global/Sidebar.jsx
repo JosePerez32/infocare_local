@@ -13,6 +13,7 @@ import BookIcon from "@mui/icons-material/Book";
 import GroupIcon from "@mui/icons-material/Group";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+import AddToQueueIcon from '@mui/icons-material/AddToQueue';
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 
@@ -220,6 +221,14 @@ const Sidebar = () => {
               isCollapsed={isCollapsed}
             />
             
+            <MenuItem
+              title="Enviroment monitoring"
+              to="/enviroment"
+              icon={<AddToQueueIcon/>}
+              selected={selected}
+              setSelected={setSelected}
+              isCollapsed={isCollapsed}
+            />
             <SectionTitle title="Application" isCollapsed={isCollapsed} />
             <MenuItem
               title="Users"

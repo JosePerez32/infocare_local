@@ -33,6 +33,7 @@ import Ticketing from "./scenes/ticketing/ticketing";
 import Logging from './scenes/logging/logging';
 import ManagementDetails from './scenes/management/management_details';
 import TechnicalDetails from './scenes/technical/technical_details';
+import EnviromentMonitoring from './scenes/enviroment';
 import Recovery from './scenes/management/recovery';
 import RecoveryDrp from './scenes/management/recover_drp';
 import RecoveryBackups from './scenes/management/recover_backups';
@@ -510,6 +511,7 @@ function App() {
                     <Routes>
                       <Route path="/" element={<Technical />} />
                       <Route path="details/:databaseName" element={<TechnicalDetails />} />
+                      <Route path="details/:databaseName" element={<EnviromentMonitoring />} />
                       <Route path="details/:databaseName/availability" element={<Availability />} />
                       <Route path="details/:databaseName/efficiency" element={<Efficiency />} />
                       <Route path="details/:databaseName/organization" element={<Organization />} />
@@ -517,6 +519,26 @@ function App() {
                     </Routes>
                   </ProtectedRoute>
                 }
+                
+              />
+               {/* Protected Technical Routes */}
+               <Route
+                path="/enviroment/*"
+                element={
+                  <ProtectedRoute allowedRoles={['reader', 'writer', 'admin']}>
+                    <Routes>
+                      <Route path="/" element={<EnviromentMonitoring />} />
+                      
+                      <Route path="details/:databaseName" element={<TechnicalDetails />} />
+                      <Route path="details/:databaseName" element={<EnviromentMonitoring />} />
+                      <Route path="details/:databaseName/availability" element={<Availability />} />
+                      <Route path="details/:databaseName/efficiency" element={<Efficiency />} />
+                      <Route path="details/:databaseName/organization" element={<Organization />} />
+                      <Route path="details/:databaseName/technical_recover" element={<Recover />} />
+                    </Routes>
+                  </ProtectedRoute>
+                }
+                
               />
 
               {/* Protected Admin Routes */}
