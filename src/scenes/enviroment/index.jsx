@@ -5,6 +5,7 @@ import GaugeComponent from 'react-gauge-component';
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
+
   const Enviroment = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -53,11 +54,11 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
     fetchSourceData();
   }, [organization]);
   
+ 
   const handleSourceClick = (source) => {
     const session = localStorage.getItem('session'); // Assuming 'session' is stored in localStorage
     navigate(`details/${source.name}`, { state: { organization, session } });
   };
-  
 
   // Drag and drop handlers
   const handleDragStart = (index) => {
@@ -95,7 +96,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
       {!isNestedRoute && (
         <Header
           title="Enviroment monitoring"
-          subtitle={`Technical view of ${organization}`}
+          //subtitle={`Technical view of ${organization}`}
         />
       )}
       {alertVisible && <Alert variant="outlined" severity="success">Gauge chart order changed and saved</Alert>}
@@ -112,7 +113,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
                 onDragStart={handleDragStart(index)}
                 onDrop={handleDrop(index)}
                 onDragOver={handleDragOver}
-                //onClick={() => handleSourceClick(source)}
+                onClick={() => handleSourceClick(source)}
                 style={{
                   backgroundColor: colors.primary[400],
                   borderRadius: "8px",

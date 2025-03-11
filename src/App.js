@@ -33,7 +33,7 @@ import Ticketing from "./scenes/ticketing/ticketing";
 import Logging from './scenes/logging/logging';
 import ManagementDetails from './scenes/management/management_details';
 import TechnicalDetails from './scenes/technical/technical_details';
-import EnviromentMonitoring from './scenes/enviroment';
+//import Technical from "./pages/Technical";
 import Recovery from './scenes/management/recovery';
 import RecoveryDrp from './scenes/management/recover_drp';
 import RecoveryBackups from './scenes/management/recover_backups';
@@ -56,6 +56,11 @@ import ResponsivenessReadyness from './scenes/management/responsiveness_readynes
 import Calendar from "./scenes/calendar/calendar";
 import Clients from "./scenes/clients/clients";
 import  UserIdleLogout  from './components/UserIdleLogout';
+import Enviroment from './scenes/enviroment';
+import EnviromentMonitoring from "./scenes/enviroment/new_page";
+//import NewPage from "./scenes/enviroment/new_page"; // Import the new component
+//
+
 
 
 
@@ -498,6 +503,7 @@ function App() {
                       <Route path="details/:databaseName/recovery/drp" element={<RecoveryDrp />} />
                       <Route path="details/:databaseName/recovery/backups" element={<RecoveryBackups />} />
                       <Route path="details/:databaseName/recovery/logging" element={<RecoveryLogging />} />
+
                     </Routes>
                   </ProtectedRoute>
                 }
@@ -511,7 +517,6 @@ function App() {
                     <Routes>
                       <Route path="/" element={<Technical />} />
                       <Route path="details/:databaseName" element={<TechnicalDetails />} />
-                      <Route path="details/:databaseName" element={<EnviromentMonitoring />} />
                       <Route path="details/:databaseName/availability" element={<Availability />} />
                       <Route path="details/:databaseName/efficiency" element={<Efficiency />} />
                       <Route path="details/:databaseName/organization" element={<Organization />} />
@@ -527,14 +532,10 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['reader', 'writer', 'admin']}>
                     <Routes>
-                      <Route path="/" element={<EnviromentMonitoring />} />
-                      
-                      <Route path="details/:databaseName" element={<TechnicalDetails />} />
+                       {/* Otras rutas */}
+                      <Route path="/" element={<Enviroment />} />
+                      {/* New dinamic route */}
                       <Route path="details/:databaseName" element={<EnviromentMonitoring />} />
-                      <Route path="details/:databaseName/availability" element={<Availability />} />
-                      <Route path="details/:databaseName/efficiency" element={<Efficiency />} />
-                      <Route path="details/:databaseName/organization" element={<Organization />} />
-                      <Route path="details/:databaseName/technical_recover" element={<Recover />} />
                     </Routes>
                   </ProtectedRoute>
                 }

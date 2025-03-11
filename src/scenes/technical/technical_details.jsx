@@ -106,6 +106,18 @@ setTimeout(() => setAlertVisible(false), 3000);
           padding: 0.02,
           width: 0.3
         }}
+        labels={{
+          tickLabels: {
+            type: "inner",
+            ticks: [
+              { value: 20 },
+              { value: 40 },
+              { value: 60 },
+              { value: 80 },
+              { value: 100 }
+            ]
+          }
+        }}
       />
     </Box>
   );
@@ -157,6 +169,7 @@ setTimeout(() => setAlertVisible(false), 3000);
               index={index}
             />
           );
+          
         })}
       </Box>
     </Box>

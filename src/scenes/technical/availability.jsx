@@ -131,6 +131,18 @@ const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
           <GaugeComponent
             value={gaugeValue}
             type="radial"
+            labels={{
+              tickLabels: {
+                type: "inner",
+                ticks: [
+                  { value: 20 },
+                  { value: 40 },
+                  { value: 60 },
+                  { value: 80 },
+                  { value: 100 }
+                ]
+              }
+            }}
             arc={{
               colorArray: ['#EA4228','#5BE12C'],
               subArcs: [{ limit: 33 }, { limit: 66 }, {}],

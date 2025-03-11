@@ -5,8 +5,9 @@ import GaugeComponent from "react-gauge-component";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { useParams, useLocation } from "react-router-dom";
+//import Enviroment from ".";
 
-const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
+const Enviroment = ({onDataUpdate}) => { //Ths is just added by Jose
   const { databaseName } = useParams(); // Get database name from the URL
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -15,7 +16,7 @@ const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
   const [spaceData, setSpaceData] = useState(98);
   const { source } = useParams(); // Retrieve source from the URL parameters
   const { organization } = useLocation().state || {};
-  const [gaugeOrder, setGaugeOrder] = useState(["response", "memory", "space"]); // State for the gauges order
+  const [gaugeOrder, setGaugeOrder] = useState(["workload", "change", "objects"]); // State for the gauges order
   const [alertVisible, setAlertVisible] = useState(false); // State to show the alert
 
 
@@ -83,7 +84,7 @@ const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
   return (
 
     <Box m="20px">
-      <Header title={`Availibility for ${databaseName} Total: ${responseData}`} subtitle="Availibility"    />
+      <Header title={`Characteristics`} subtitle="Availibility"    />
       
     {/* Alert for the change in the order */}
     {alertVisible && (
@@ -99,17 +100,17 @@ const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
           let gaugeTitle;
 /*This is new from 97 to ...*/
           switch (gaugeName) {
-            case "response":
+            case "workload":
               gaugeValue = responseData;
-              gaugeTitle = "Response";
+              gaugeTitle = "Workload";
               break;
-            case "memory":
+            case "change":
               gaugeValue = memoryData;
-              gaugeTitle = "Memory";
+              gaugeTitle = "Change";
               break;
-            case "space":
+            case "objects":
               gaugeValue = spaceData;
-              gaugeTitle = "Space";
+              gaugeTitle = "Objects";
               break;
             default:
               gaugeValue = 0;
@@ -131,6 +132,18 @@ const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
           <GaugeComponent
             value={gaugeValue}
             type="radial"
+            labels={{
+              tickLabels: {
+                type: "inner",
+                ticks: [
+                  { value: 20 },
+                  { value: 40 },
+                  { value: 60 },
+                  { value: 80 },
+                  { value: 100 }
+                ]
+              }
+            }}
             arc={{
               colorArray: ['#EA4228','#5BE12C'],
               subArcs: [{ limit: 33 }, { limit: 66 }, {}],
@@ -147,4 +160,4 @@ const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
   );
 };
 
-export default Availability;
+export default Enviroment;

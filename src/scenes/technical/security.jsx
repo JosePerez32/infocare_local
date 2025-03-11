@@ -93,6 +93,18 @@ const handleDragOver = (event) => {
           <GaugeComponent
             value={publicData}
             type="radial"
+            labels={{
+              tickLabels: {
+                type: "inner",
+                ticks: [
+                  { value: 20 },
+                  { value: 40 },
+                  { value: 60 },
+                  { value: 80 },
+                  { value: 100 }
+                ]
+              }
+            }}
             arc={{
               colorArray: ['#5BE12C', '#EA4228'],
               subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
@@ -109,6 +121,18 @@ backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
           <GaugeComponent
             value={usersData}
             type="radial"
+            labels={{
+              tickLabels: {
+                type: "inner",
+                ticks: [
+                  { value: 20 },
+                  { value: 40 },
+                  { value: 60 },
+                  { value: 80 },
+                  { value: 100 }
+                ]
+              }
+            }}
             arc={{
               colorArray: ['#5BE12C', '#EA4228'],
               subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
@@ -125,6 +149,18 @@ backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
           <GaugeComponent
             value={sslData}
             type="radial"
+            labels={{
+              tickLabels: {
+                type: "inner",
+                ticks: [
+                  { value: 20 },
+                  { value: 40 },
+                  { value: 60 },
+                  { value: 80 },
+                  { value: 100 }
+                ]
+              }
+            }}
             arc={{
               colorArray: ['#5BE12C', '#EA4228'],
               subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
@@ -142,6 +178,18 @@ backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }}>
           <GaugeComponent
             value={scriptsData}
             type="radial"
+            labels={{
+              tickLabels: {
+                type: "inner",
+                ticks: [
+                  { value: 20 },
+                  { value: 40 },
+                  { value: 60 },
+                  { value: 80 },
+                  { value: 100 }
+                ]
+              }
+            }}
             arc={{
               colorArray: ['#5BE12C', '#EA4228'],
               subArcs: [{ limit: 10 }, { limit: 30 }, {}, {}, {}],
