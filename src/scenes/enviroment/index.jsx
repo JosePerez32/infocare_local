@@ -4,6 +4,9 @@ import Header from "../../components/Header";
 import GaugeComponent from 'react-gauge-component';
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import '../styles-jp/title.css'
+import Style from '../styles-jp/title.css'
+
 
 
   const Enviroment = () => {
@@ -94,10 +97,17 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
   return (
     <Box m="20px">
       {!isNestedRoute && (
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%" }}>
+
         <Header
+          
           title="Enviroment monitoring"
-          //subtitle={`Technical view of ${organization}`}
+          subtitle={``}
+          className="header-title"
+          
         />
+        </div>
+
       )}
       {alertVisible && <Alert variant="outlined" severity="success">Gauge chart order changed and saved</Alert>}
       {!isNestedRoute && (
@@ -125,35 +135,10 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
                   justifyContent: "center"
                 }}
               >
-                <Typography variant="h6" color={colors.grey[100]}>
+                <Typography variant="h6" color={colors.grey[100]} className="header-subtitle" >
                   {source.name}
                 </Typography>
-                <GaugeComponent
-                  value={source.health}
-                  type="radial"
-                  labels={{
-                    tickLabels: {
-                      type: "inner",
-                      ticks: [
-                        { value: 20 },
-                        { value: 40 },
-                        { value: 60 },
-                        { value: 80 },
-                        { value: 100 }
-                      ]
-                    }
-                  }}
-                  arc={{
-                    colorArray: ['#EA4228', '#5BE12C'],
-                    subArcs: [{ limit: 33 }, { limit: 66 }, {}],
-                    padding: 0.02,
-                    width: 0.3
-                  }}
-                  pointer={{
-                    elastic: true,
-                    animationDelay: 0
-                  }}
-                />
+                
               </Box>
             );
           })}
