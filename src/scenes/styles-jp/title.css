@@ -1,0 +1,42 @@
+.header-title {
+    border: 2px solid #333; /* Borde sólido de 2px con color gris oscuro */
+    border-radius: 8px; /* Bordes redondeados */ 
+    text-align: center; /* Centra el texto */
+    font-size: 15rem; /* Tamaño de la fuente */
+    font-weight: bold; /* Negrita */
+    color: #590808; /* Color del texto */
+    font-family: 'Arial', sans-serif; /* Fuente */
+    text-transform: uppercase; /* Convertir texto a mayúsculas */
+    margin: 0; /* Elimina el margen predeterminado */
+    margin-bottom: 20px; /* Espacio debajo del marco */
+    width: 100%; /* Ancho completo */
+    max-width: 800px; /* Ancho máximo (ajusta según tus necesidades) */
+    margin-left: auto; /* Centrar horizontalmente */
+    margin-right: auto; /* Centrar horizontalmente */
+    padding: 1rem 0; /* Añade espacio alrededor del texto */
+  }
+  .button-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .custom-button {
+    background-color: #4FD1C5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    flex: 1;
+    margin: 0 10px;
+  }
+  
+  .custom-button:hover {
+    background-color: #38A89D;
+  }
