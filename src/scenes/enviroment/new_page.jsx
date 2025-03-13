@@ -5,6 +5,7 @@ import GaugeComponent from "react-gauge-component";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { useParams, useLocation } from "react-router-dom";
+import LineChart from '../../components/LineChart';
 //import Enviroment from ".";
 
 const Enviroment = ({onDataUpdate}) => { //Ths is just added by Jose
@@ -18,7 +19,18 @@ const Enviroment = ({onDataUpdate}) => { //Ths is just added by Jose
   const { organization } = useLocation().state || {};
   const [gaugeOrder, setGaugeOrder] = useState(["workload", "change", "objects"]); // State for the gauges order
   const [alertVisible, setAlertVisible] = useState(false); // State to show the alert
-
+ 
+  const texts = ["SELECT", "INSERT", "UPDATE", "DELETE", "LOCKS", "DEADLOCK", "WAIT TIME"];
+  const workloadData = [
+    {
+      id: "workload",
+      color: "hsl(120, 70%, 50%)",
+      data: Array.from({ length: 30 }, (_, i) => ({ 
+        x: i, 
+        y: Math.floor(Math.random() * 100) // Número aleatorio entre 0 y 99
+      })),
+    },
+  ];
 
   useEffect(() => {
     const fetchAvailibilityData = async () => {
@@ -84,7 +96,8 @@ const Enviroment = ({onDataUpdate}) => { //Ths is just added by Jose
   return (
 
     <Box m="20px">
-      <Header title={`Characteristics`} subtitle="Availibility"    />
+      
+      <Header title={`Workload for ${databaseName}` } subtitle=""    />
       
     {/* Alert for the change in the order */}
     {alertVisible && (
@@ -92,72 +105,23 @@ const Enviroment = ({onDataUpdate}) => { //Ths is just added by Jose
           Gauge chart order changed!
         </Alert>
       )}
-
-      <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
-      
-      {gaugeOrder.map((gaugeName, index) => {
-          let gaugeValue;
-          let gaugeTitle;
-/*This is new from 97 to ...*/
-          switch (gaugeName) {
-            case "workload":
-              gaugeValue = responseData;
-              gaugeTitle = "Workload";
-              break;
-            case "change":
-              gaugeValue = memoryData;
-              gaugeTitle = "Change";
-              break;
-            case "objects":
-              gaugeValue = spaceData;
-              gaugeTitle = "Objects";
-              break;
-            default:
-              gaugeValue = 0;
-              gaugeTitle = "Unknown";
-          }
-
-          return ( /*Here this is new*/ 
-        <Box
-        key={index}
-              draggable // This make drag the element
-              onDragStart={handleDragStart(index)} // Executes when dragging starts
-              onDrop={handleDrop(index)} // This execute self when you drop the element
-              onDragOver={handleDragOver} // This allow you to loss the element
-          style={{ cursor: "pointer", backgroundColor: colors.primary[400], padding: "20px", borderRadius: "8px" }} // Change background color, padding, and border radius
-        >
-          <Typography variant="h6" color={colors.grey[100]}>
-            {gaugeTitle}
-          </Typography>
-          <GaugeComponent
-            value={gaugeValue}
-            type="radial"
-            labels={{
-              tickLabels: {
-                type: "inner",
-                ticks: [
-                  { value: 20 },
-                  { value: 40 },
-                  { value: 60 },
-                  { value: 80 },
-                  { value: 100 }
-                ]
-              }
-            }}
-            arc={{
-              colorArray: ['#EA4228','#5BE12C'],
-              subArcs: [{ limit: 33 }, { limit: 66 }, {}],
-              padding: 0.02,
-              width: 0.3
-            }}
-          />
+       {/* Contenedor de gráficos */}
+       <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
+         {["SELECT", "INSERT", "UPDATE", "DELETE", "LOCKS", "DEADLOCK", "WAIT TIME"].map((text, index) => (
+          <Box key={index} height="200px">
+            <Typography variant="h4" gutterBottom>
+              {text}
+            </Typography>
+            <LineChart data={workloadData} yAxisLegend="Workload" xAxisLegend="Hours" />
+            </Box>
+          ))}
         </Box>
-          );
-        })}
-        
-      </Box>
     </Box>
+    
   );
+ 
+  
+  
 };
 
 export default Enviroment;

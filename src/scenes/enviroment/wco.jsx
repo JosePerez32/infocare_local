@@ -1,5 +1,8 @@
 import { Box, Button } from "@mui/material";
-const botones = () => {
+import { useNavigate } from "react-router-dom";
+const Botones = () => {
+  const navigate = useNavigate();
+
  return (
           <Box
           display="flex"
@@ -20,6 +23,7 @@ const botones = () => {
                 color: "white",
               },
             }}
+            onClick={() => navigate("/enviroment/workload")} // Surf to a new_page.jsx
           >
             WORKLOAD
           </Button>
@@ -61,4 +65,4 @@ const botones = () => {
           </Box>
  );
 };
-export default botones;
+export default Botones;

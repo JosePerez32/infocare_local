@@ -58,6 +58,7 @@ import Clients from "./scenes/clients/clients";
 import  UserIdleLogout  from './components/UserIdleLogout';
 import Enviroment from './scenes/enviroment';
 import EnviromentMonitoring from "./scenes/enviroment/new_page";
+import NewPage from './scenes/enviroment/new_page';
 //import NewPage from "./scenes/enviroment/new_page"; // Import the new component
 //
 
@@ -536,6 +537,8 @@ function App() {
                       <Route path="/" element={<Enviroment />} />
                       {/* New dinamic route */}
                       <Route path="details/:databaseName" element={<EnviromentMonitoring />} />
+                      
+                      <Route path="workload" element={<NewPage />} /> {/* Ruta relativa */}
                     </Routes>
                   </ProtectedRoute>
                 }
