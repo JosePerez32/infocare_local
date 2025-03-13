@@ -4,9 +4,8 @@ import Header from "../../components/Header";
 import GaugeComponent from 'react-gauge-component';
 import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import '../styles-jp/title.css'
-import Style from '../styles-jp/title.css'
-
+import '../styles-jp/title.css';
+import Botones from './wco.jsx';
 
 
   const Enviroment = () => {
@@ -138,15 +137,26 @@ import Style from '../styles-jp/title.css'
                 <Typography variant="h6" color={colors.grey[100]} className="header-subtitle" >
                   {source.name}
                 </Typography>
-                
-              </Box>
+                  {/* Imagen */}
+                  <img
+                      src="./assets/db.png" 
+                      alt="Database" // Texto alternativo
+                      style={{
+                      width: "30%", // La imagen ocupa el 100% del ancho del contenedor
+                      height: "auto", // La altura se ajusta automáticamente
+                      maxWidth: "250px", // Ancho máximo de la imagen (ajusta según tus necesidades)
+                      borderRadius: "8px", // Bordes redondeados
+                      marginTop: "10px", // Espacio entre el subtítulo y la imagen
+                      }}
+                  />
+                  <Botones />
+                </Box>
             );
-          })}
+          })} 
         </Box>
       )}
       {isNestedRoute && <Outlet />}
     </Box>
   );
 };
-
 export default Enviroment;
