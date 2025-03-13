@@ -188,30 +188,11 @@ const Sidebar = () => {
       <Divider sx={{ my: 1 }} />
 
       <List>
-        <SectionTitle title="Dashboard" isCollapsed={isCollapsed} />
-        <MenuItem
-          title="Home"
-          to="/"
-          icon={<HomeOutlinedIcon />}
-          selected={selected}
-          setSelected={setSelected}
-          isCollapsed={isCollapsed}
-        />
+        
+        
 
         {hasAccess(["writer", "admin"]) && (
           <>
-            <SectionTitle title="Views" isCollapsed={isCollapsed} />
-            
-            <MenuItem
-              title="Management View"
-              to="/management"
-              icon={<ManageAccountsIcon />}
-              selected={selected}
-              setSelected={setSelected}
-              isCollapsed={isCollapsed}
-            />
-            
-
             <MenuItem
               title="Monitoring"
               to="/technical"
@@ -220,7 +201,7 @@ const Sidebar = () => {
               setSelected={setSelected}
               isCollapsed={isCollapsed}
             />
-            
+            <Divider sx={{ my: 2 }} />
             <MenuItem
               title="Enviroment monitoring"
               to="/enviroment"
@@ -229,9 +210,9 @@ const Sidebar = () => {
               setSelected={setSelected}
               isCollapsed={isCollapsed}
             />
-            <SectionTitle title="Application" isCollapsed={isCollapsed} />
+            <Divider sx={{ my: 2 }} />
             <MenuItem
-              title="Users"
+              title="Support"
               icon={<PeopleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -254,19 +235,14 @@ const Sidebar = () => {
                 isCollapsed={isCollapsed}
               />
             </MenuItem>
-            <MenuItem
-              title="Ticketing"
-              to="/ticketing"
-              icon={<SchemaIcon />}
-              selected={selected}
-              setSelected={setSelected}
-              isCollapsed={isCollapsed}
-            />
+            
           </>
         )}
 
         {hasAccess(["reader"]) && (
-          <>
+          <> 
+          <Divider sx={{ my: 2 }} />
+
             <SectionTitle title="Views" isCollapsed={isCollapsed} />
             <MenuItem
               title="Monitoring"
