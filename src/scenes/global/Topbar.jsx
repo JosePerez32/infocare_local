@@ -48,16 +48,17 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
     '/readiness': 'Readiness',
     '/security': 'Security',
     '/recovery': 'Recovery',
+    '/enironment': 'Environment',
   };
 
   const pathnames = location.pathname.split('/').filter((x) => x);
 
   const getBreadcrumbName = (pathname, part, index, parts) => {
-    if (part.startsWith('details/')) {
-      return `Details of ${part.split('/')[1]}`;
-    }
     if (breadcrumbNameMap[part]) {
       return breadcrumbNameMap[part];
+    }
+    if (part.startsWith('details/')) {
+      return `Details of ${part.split('/')[1]}`;
     }
     return part.charAt(0).toUpperCase() + part.slice(1);
   };

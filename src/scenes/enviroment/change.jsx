@@ -6,6 +6,7 @@ import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { useParams, useLocation } from "react-router-dom";
 import  BarChart from '../../components/BarChart';
+import ChangeButtons from "./his-det-back";
 import  LineChart from '../line';
 import { Bar } from "react-chartjs-2";
 //import Enviroment from ".";
@@ -22,16 +23,15 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
   const [gaugeOrder, setGaugeOrder] = useState(["workload", "change", "objects"]); // State for the gauges order
   const [alertVisible, setAlertVisible] = useState(false); // State to show the alert
 
- 
-  const texts = ["SELECT", "INSERT", "UPDATE", "DELETE", "LOCKS", "DEADLOCK", "WAIT TIME"];
-  const workloadData = [
+  const changeData = [
     {
-      id: "workload",
-      color: "hsl(120, 70%, 50%)",
-      data: Array.from({ length: 30 }, (_, i) => ({ 
-        x: i, 
-        y: Math.floor(Math.random() * 100) // Número aleatorio entre 0 y 99
-      })),
+      id: "Porcent",
+      color: "hsl(240, 70%, 50%)",
+      data: [
+        { x: "Production(Only)", y: Math.floor(Math.random() * 100) }, // Dato para "Production(Only)"
+        { x: "Difference", y: Math.floor(Math.random() * 100) }, // Dato para "Difference"
+        { x: "Acceptation(Only)", y: Math.floor(Math.random() * 100) }, // Dato para "Acceptation(Only)"
+      ],
     },
   ];
 
@@ -100,28 +100,33 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
     
     <Box m="20px">
       
-      <Header title={`Change for ${databaseName}` } subtitle=""    />
       
     {/* Alert for the change in the order */}
+      <Header title={`Change` } subtitle="Source. \n Target:\n"    />
     {alertVisible && (
         <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
           Gauge chart order changed!
         </Alert>
       )}
        {/* Contenedor de gráficos */}
+       <Box m="10px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
+       <ChangeButtons />
+       </Box>
        <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
-         
-                      <BarChart title='test'/>
-
-        </Box>
         
-    </Box>
-    
-   
-  );
- 
-  
-  
-};
+       {["TABLE", "INDEX", "VIEW"].map((text, index) => (
+          <Box key={index} height="200px">
+            <Typography variant="h4" gutterBottom>
+              {text}
+            </Typography>
+            
+            <BarChart data={changeData} yAxisLegend="Sales" xAxisLegend="" />
 
+            </Box>
+          ))}
+        </Box>
+
+    </Box>
+  );
+};
 export default Change;

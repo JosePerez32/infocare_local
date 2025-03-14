@@ -57,8 +57,11 @@ import Calendar from "./scenes/calendar/calendar";
 import Clients from "./scenes/clients/clients";
 import  UserIdleLogout  from './components/UserIdleLogout';
 import Enviroment from './scenes/enviroment';
-import EnviromentMonitoring from "./scenes/enviroment/new_page";
-import NewPage from './scenes/enviroment/new_page';
+import Workload from "./scenes/enviroment/new_page";
+import Change from './scenes/enviroment/change';
+import History from './scenes/enviroment/history';
+import Details from './scenes/enviroment/details';
+
 //import NewPage from "./scenes/enviroment/new_page"; // Import the new component
 //
 
@@ -529,16 +532,17 @@ function App() {
               />
                {/* Protected Technical Routes */}
                <Route
-                path="/enviroment/*"
+                path="/environment/*"
                 element={
                   <ProtectedRoute allowedRoles={['reader', 'writer', 'admin']}>
-                    <Routes>
                        {/* Otras rutas */}
+                    <Routes>
                       <Route path="/" element={<Enviroment />} />
                       {/* New dinamic route */}
-                      <Route path="details/:databaseName" element={<EnviromentMonitoring />} />
-                      
-                      <Route path="workload" element={<NewPage />} /> {/* Ruta relativa */}
+                      <Route path="workload" element={<Workload />} />
+                      <Route path="change" element={<Change />} /> {/* Ruta relativa */}
+                      <Route path="change/history" element={<History />} />
+                      <Route path="change/details" element={<Details />} />
                     </Routes>
                   </ProtectedRoute>
                 }

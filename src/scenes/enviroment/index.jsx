@@ -122,7 +122,7 @@ import Botones from './wco.jsx';
                 onDragStart={handleDragStart(index)}
                 onDrop={handleDrop(index)}
                 onDragOver={handleDragOver}
-                onClick={() => handleSourceClick(source)}
+                //onClick={() => handleSourceClick(source)}
                 style={{
                   backgroundColor: colors.primary[400],
                   borderRadius: "8px",

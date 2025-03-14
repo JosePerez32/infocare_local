@@ -5,10 +5,13 @@ import GaugeComponent from "react-gauge-component";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { useParams, useLocation } from "react-router-dom";
-import LineChart from '../../components/LineChart';
+import  BarChart from '../../components/BarChart';
+import ChangeButtons from "./his-det-back";
+import  LineChart from '../line';
+import { Bar } from "react-chartjs-2";
 //import Enviroment from ".";
 
-const Workload = ({onDataUpdate}) => { //Ths is just added by Jose
+const Details = ({onDataUpdate}) => { //Ths is just added by Jose
   const { databaseName } = useParams(); // Get database name from the URL
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -19,16 +22,16 @@ const Workload = ({onDataUpdate}) => { //Ths is just added by Jose
   const { organization } = useLocation().state || {};
   const [gaugeOrder, setGaugeOrder] = useState(["workload", "change", "objects"]); // State for the gauges order
   const [alertVisible, setAlertVisible] = useState(false); // State to show the alert
- 
-  const texts = ["SELECT", "INSERT", "UPDATE", "DELETE", "LOCKS", "DEADLOCK", "WAIT TIME"];
-  const workloadData = [
+
+  const changeData = [
     {
-      id: "workload",
-      color: "hsl(120, 70%, 50%)",
-      data: Array.from({ length: 30 }, (_, i) => ({ 
-        x: i, 
-        y: Math.floor(Math.random() * 100) // Número aleatorio entre 0 y 99
-      })),
+      id: "Porcent",
+      color: "hsl(240, 70%, 50%)",
+      data: [
+        { x: "Production(Only)", y: Math.floor(Math.random() * 100) }, // Dato para "Production(Only)"
+        { x: "Difference", y: Math.floor(Math.random() * 100) }, // Dato para "Difference"
+        { x: "Acceptation(Only)", y: Math.floor(Math.random() * 100) }, // Dato para "Acceptation(Only)"
+      ],
     },
   ];
 
@@ -94,35 +97,36 @@ const Workload = ({onDataUpdate}) => { //Ths is just added by Jose
     event.preventDefault(); // Allow you to drop the element
   };
   return (
-
+    
     <Box m="20px">
       
-      <Header title={`Workload for ${databaseName}` } subtitle=""    />
       
     {/* Alert for the change in the order */}
+      <Header title={`Change` } subtitle="Source. \n Target:\n"    />
     {alertVisible && (
         <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
           Gauge chart order changed!
         </Alert>
       )}
        {/* Contenedor de gráficos */}
+       <Box m="10px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
+       <ChangeButtons />
+       </Box>
        <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
-         {["SELECT", "INSERT", "UPDATE", "DELETE", "LOCKS", "DEADLOCK", "WAIT TIME"].map((text, index) => (
+        
+       {["TABLE", "INDEX", "VIEW"].map((text, index) => (
           <Box key={index} height="200px">
             <Typography variant="h4" gutterBottom>
               {text}
             </Typography>
-            <LineChart data={workloadData} yAxisLegend="Workload" xAxisLegend="Hours" />
+            
+            <BarChart data={changeData} yAxisLegend="Sales" xAxisLegend="" />
+
             </Box>
           ))}
-          
         </Box>
-    </Box>
-    
-  );
- 
-  
-  
-};
 
-export default Workload;
+    </Box>
+  );
+};
+export default Details;
