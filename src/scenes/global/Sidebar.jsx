@@ -203,7 +203,7 @@ const Sidebar = () => {
             />
             <Divider sx={{ my: 2 }} />
             <MenuItem
-              title="Enviroment monitoring"
+              title="Environment"
               to="/enviroment"
               icon={<AddToQueueIcon/>}
               selected={selected}
