@@ -16,7 +16,7 @@ const Efficiency = () => {
   const [lockingData, setLockingData] = useState([]);
   const { source } = useParams(); // Retrieve source from the URL parameters
   const { organization } = useLocation().state || {};
-  const [gaugeOrder, setGaugeOrder] = useState(["index", "connections", "logging", "locking"]); // jp: State for the gauge order
+  const [gaugeOrder, setGaugeOrder] = useState(["logging", "backup", "storage"]); // jp: State for the gauge order
   const [alertVisible, setAlertVisible] = useState(false); // jp: State to show an alert
  
 
@@ -38,7 +38,7 @@ const Efficiency = () => {
         setIndexData(data.index);
         setConnectionsData(data.connections);
         setLoggingData(data.logging);
-        setLockingData(data.locking);
+        //setLockingData(data.locking);
         
     
 
@@ -91,22 +91,22 @@ const handleDragOver = (event) => {
           let gaugeTitle;
 
           switch (gaugeName) {
-            case "index":
-              gaugeValue = indexData;
-              gaugeTitle = "Index";
-              break;
-            case "connections":
-              gaugeValue = connectionsData;
-              gaugeTitle = "Connections";
-              break;
             case "logging":
-              gaugeValue = loggingData;
+              gaugeValue = indexData;
               gaugeTitle = "Logging";
               break;
-            case "locking":
+            case "backup":
+              gaugeValue = connectionsData;
+              gaugeTitle = "Backup";
+              break;
+            case "storage":
+              gaugeValue = loggingData;
+              gaugeTitle = "Storage";
+              break;
+            /*case "locking":
               gaugeValue = lockingData;
               gaugeTitle = "Locking";
-              break;
+              break;*/
             default:
               gaugeValue = 0;
               gaugeTitle = "Unknown";

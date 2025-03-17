@@ -11,12 +11,12 @@ const Organization = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [designData, setDesignData] = useState(0);
-  const [comparisonData, setComparisonData] = useState(0);
+  //const [comparisonData, setComparisonData] = useState(0);
   const [statisticsData, setStatisticsData] = useState(0);
-  const [scriptsData, setScriptsData] = useState(0);
+  //const [scriptsData, setScriptsData] = useState(0);
   const { source } = useParams(); // Retrieve source from the URL parameters
   const { organization } = useLocation().state || {};
-  const [gaugeOrder, setGaugeOrder] = useState(["design", "comparison", "statistics", "scripts"]); // jp: State for the gauge order
+  const [gaugeOrder, setGaugeOrder] = useState(["design", /*"comparison",*/ "statistics"/*, "scripts"*/]); // jp: State for the gauge order
   const [alertVisible, setAlertVisible] = useState(false); // jp: State to show an alert
 
 
@@ -36,9 +36,9 @@ const Organization = () => {
         );     
         const data = await response.json();
         setDesignData(data.design);
-        setComparisonData(data.comparison);
+        //setComparisonData(data.comparison);
         setStatisticsData(data.statistics);
-        setScriptsData(data.scripts);
+        //setScriptsData(data.scripts);
     
 
         console.log(data); // Check the fetched data
@@ -96,18 +96,18 @@ const handleDragOver = (event) => {
               gaugeValue = designData;
               gaugeTitle = "Design";
               break;
-            case "comparison":
+            /*case "comparison":
               gaugeValue = comparisonData;
               gaugeTitle = "Comparison";
-              break;
+              break;*/
             case "statistics":
               gaugeValue = statisticsData;
               gaugeTitle = "Statistics";
               break;
-            case "scripts":
+            /*case "scripts":
               gaugeValue = scriptsData;
               gaugeTitle = "Scripts";
-              break;
+              break;*/
             default:
               gaugeValue = 0;
               gaugeTitle = "Unknown";

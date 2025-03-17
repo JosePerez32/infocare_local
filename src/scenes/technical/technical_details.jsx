@@ -14,7 +14,7 @@ const TechnicalDetails = () => {
   const { source } = useParams();
   const [detailsData, setDetailsData] = useState(null);
   const [availabilityData, setAvailabilityData] = useState(null);
-  const [gaugeOrder, setGaugeOrder] = useState(["availability", "efficiency", "security"]); // State for the gauges order
+  const [gaugeOrder, setGaugeOrder] = useState(["availability", "efficiency","organization"]); // State for the gauges order
   const [alertVisible, setAlertVisible] = useState(false); // State to show alerts
 
   useEffect(() => {
@@ -142,8 +142,8 @@ setTimeout(() => setAlertVisible(false), 3000);
           const titleMap = {
             availability: "Performance - Test ",
             efficiency: "Recoverability ",
-            security: "Organization",
-            //organization: "Jean-Marie",
+            //security: "Organization",
+            organization: "Organization",
           };
           const title = titleMap[route];
           const value = detailsData[route] ; // Obtener el valor de detailsData o usar 0 como valor predeterminado

@@ -83,7 +83,7 @@ const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
   return (
 
     <Box m="20px">
-      <Header title={`Availibility for ${databaseName} Total: ${responseData}`} subtitle="Availibility"    />
+      <Header title={`Performance for ${databaseName} `} subtitle=""    />
       
     {/* Alert for the change in the order */}
     {alertVisible && (
@@ -101,7 +101,7 @@ const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
           switch (gaugeName) {
             case "response":
               gaugeValue = responseData;
-              gaugeTitle = "Response";
+              gaugeTitle = "CPU";
               break;
             case "memory":
               gaugeValue = memoryData;
