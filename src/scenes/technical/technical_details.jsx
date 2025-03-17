@@ -14,7 +14,7 @@ const TechnicalDetails = () => {
   const { source } = useParams();
   const [detailsData, setDetailsData] = useState(null);
   const [availabilityData, setAvailabilityData] = useState(null);
-  const [gaugeOrder, setGaugeOrder] = useState(["availability", "efficiency", "security", "organization"]); // State for the gauges order
+  const [gaugeOrder, setGaugeOrder] = useState(["availability", "efficiency", "security"]); // State for the gauges order
   const [alertVisible, setAlertVisible] = useState(false); // State to show alerts
 
   useEffect(() => {
@@ -140,13 +140,13 @@ setTimeout(() => setAlertVisible(false), 3000);
       <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
         {gaugeOrder.map((route, index) => {
           const titleMap = {
-            availability: "Jens",
-            efficiency: "Elias",
-            security: "Sina",
-            organization: "Jean-Marie",
+            availability: "Performance ",
+            efficiency: "Recoverability ",
+            security: "Organization",
+            //organization: "Jean-Marie",
           };
           const title = titleMap[route];
-          const value = detailsData[route] || 0; // Obtener el valor de detailsData o usar 0 como valor predeterminado
+          const value = detailsData[route] ; // Obtener el valor de detailsData o usar 0 como valor predeterminado
 
           return (
             <GaugeBox

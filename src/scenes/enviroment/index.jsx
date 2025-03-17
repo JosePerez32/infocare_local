@@ -42,7 +42,7 @@ import Botones from './wco.jsx';
         setGaugeData(filledGaugeData);
 
         // Load saved order from localStorage, if exists
-        const savedOrder = localStorage.getItem('order_technical');
+        const savedOrder = localStorage.getItem('order_monitoring');
         if (savedOrder) {
           setGaugeOrder(JSON.parse(savedOrder));
         } else {
@@ -79,7 +79,7 @@ import Botones from './wco.jsx';
       setGaugeOrder(newOrder);
 
       // Save the new order in localStorage
-      localStorage.setItem('order_technical', JSON.stringify(newOrder));
+      localStorage.setItem('order_monitoring', JSON.stringify(newOrder));
 
       // Show alert on order change
       setAlertVisible(true);
@@ -91,7 +91,7 @@ import Botones from './wco.jsx';
     event.preventDefault(); // Allow the drop
   };
 
-  const isNestedRoute = location.pathname.includes('/technical/details');
+  const isNestedRoute = location.pathname.includes('/monitoring/details');
 
   return (
     <Box m="20px">
