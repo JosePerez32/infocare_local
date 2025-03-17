@@ -280,7 +280,7 @@ const Sidebar = () => {
          <Divider sx={{ my: 2 }} />
         
         <MenuItem
-          title="ILMT"
+          title="ILMT - test 2"
           to="/ilmt"
           icon={<HelpOutlineOutlinedIcon />}
           selected={selected}
