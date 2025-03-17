@@ -277,7 +277,16 @@ const Sidebar = () => {
             />
           </>
         )}
-
+         <Divider sx={{ my: 2 }} />
+        
+        <MenuItem
+          title="ILMT"
+          to="/ilmt"
+          icon={<HelpOutlineOutlinedIcon />}
+          selected={selected}
+          setSelected={setSelected}
+          isCollapsed={isCollapsed}
+        />
         <Divider sx={{ my: 2 }} />
         
         <MenuItem

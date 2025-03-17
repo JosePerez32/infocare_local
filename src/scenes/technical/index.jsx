@@ -94,8 +94,8 @@ const Technical = () => {
     <Box m="20px">
       {!isNestedRoute && (
         <Header
-          title="Technical"
-          subtitle={`Technical view of ${organization}`}
+          title="Monitoring"
+          subtitle={`View of ${organization}`}
         />
       )}
       {alertVisible && <Alert variant="outlined" severity="success">Gauge chart order changed and saved</Alert>}

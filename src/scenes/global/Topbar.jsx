@@ -35,7 +35,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
     '/': 'Home',
     '/dashboard': 'Dashboard',
     '/management': 'Management',
-    '/technical': 'Technical',
+    //'/technical': 'Technical',
     '/invoices': 'Invoices',
     '/form': 'Form',
     '/faq': 'FAQ',
@@ -78,7 +78,9 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
       if (pathnames[i] === 'details' && i + 1 < pathnames.length) {
         combinedPathnames.push(`details/${pathnames[i + 1]}`);
         i++; // Skip the next item as we've combined it
-      } else {
+      }
+     
+      else {
         combinedPathnames.push(pathnames[i]);
       }
     }
@@ -109,15 +111,16 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
       }}
     >
       <Tooltip title={title}>
-        <IconButton
-          color="inherit"
-          sx={{
-            color: theme.palette.mode === "dark" ? "inherit" : "inherit",
-            "&:hover": { color: "#71D8BD" },
-          }}
-        >
-          {children}
-        </IconButton>
+      <IconButton
+        color="inherit"
+        sx={{
+          color: theme.palette.mode === "dark" ? "inherit" : "#333", // Cambia el color en modo claro
+          "&:hover": { color: "#71D8BD" }, // Color al hacer hover
+        }}
+      >
+        {children}
+      </IconButton>
+
       </Tooltip>
     </ListItemButton>
   );

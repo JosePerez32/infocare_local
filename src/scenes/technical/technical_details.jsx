@@ -126,20 +126,8 @@ setTimeout(() => setAlertVisible(false), 3000);
     <Box m="20px">
       {/* Header con el título y el cuadro de texto */}
       <Box display="flex" alignItems="center" justifyContent="space-between">
-        <Header title={`Details for ${databaseName}`} subtitle="Technical" />
-        <TextField
-          label="Total Availability"
-          variant="outlined"
-          value={totalAvailability} //Changed for totalAvailability - Jose
-          InputProps={{
-            readOnly: true, // Hacer el campo de solo lectura
-          }}
-          sx={{
-            backgroundColor: colors.primary[400], // Fondo del cuadro de texto
-            borderRadius: "4px",
-            width: "200px", // Ancho del cuadro de texto
-          }}
-        />
+        <Header title={`Details for ${databaseName}`} subtitle="Monitoring" />
+       
       </Box>
       {/* Alert for the changes in the order */}
       {alertVisible && (
