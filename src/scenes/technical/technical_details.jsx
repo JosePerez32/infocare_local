@@ -140,7 +140,7 @@ setTimeout(() => setAlertVisible(false), 3000);
       <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
         {gaugeOrder.map((route, index) => {
           const titleMap = {
-            availability: "Performance - Test ",
+            availability: "Performance ",
             efficiency: "Recoverability ",
             //security: "Organization",
             organization: "Organization",
