@@ -60,8 +60,8 @@ import Enviroment from './scenes/enviroment';
 import Workload from "./scenes/enviroment/new_page";
 import Change from './scenes/enviroment/change';
 import History from './scenes/enviroment/history';
-import Details from './scenes/enviroment/details';
-
+import Details from './scenes/enviroment/change_details';
+import ChangeHistory from './scenes/enviroment/change_history';
 //import NewPage from "./scenes/enviroment/new_page"; // Import the new component
 //
 
@@ -542,7 +542,9 @@ function App() {
                       <Route path="workload" element={<Workload />} />
                       <Route path="change" element={<Change />} /> {/* Ruta relativa */}
                       <Route path="change/history" element={<History />} />
-                      <Route path="change/details" element={<Details />} />
+                      <Route path="change/history/change_history" element={<ChangeHistory />} />
+                      <Route path="change/history/change_details" element={<Details />} />
+                      
                     </Routes>
                   </ProtectedRoute>
                 }

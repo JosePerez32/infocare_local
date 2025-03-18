@@ -92,6 +92,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
       else {
         combinedPathnames.push(pathnames[i]);
       }
+      
     }
     return combinedPathnames;
   };

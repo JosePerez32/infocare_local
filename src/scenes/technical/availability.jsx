@@ -109,7 +109,7 @@ const Availability = ({onDataUpdate}) => { //Ths is just added by Jose
               break;
             case "space":
               gaugeValue = spaceData;
-              gaugeTitle = "Space";
+              gaugeTitle = "Speed";
               break;
             default:
               gaugeValue = 0;
