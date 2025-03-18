@@ -16,6 +16,8 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import AddToQueueIcon from '@mui/icons-material/AddToQueue';
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import DonutLargeIcon from '@mui/icons-material/DonutLarge';
+import PublicIcon from '@mui/icons-material/Public';
 
 const SectionTitle = ({ title, isCollapsed }) => {
   if (isCollapsed) return null;
@@ -195,7 +197,7 @@ const Sidebar = () => {
           <>
             <MenuItem
               title="Monitoring"
-              to="/technical"
+              to="/monitoring"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -205,7 +207,7 @@ const Sidebar = () => {
             <MenuItem
               title="Environment"
               to="/environment"
-              icon={<AddToQueueIcon/>}
+              icon={<PublicIcon/>}
               selected={selected}
               setSelected={setSelected}
               isCollapsed={isCollapsed}
@@ -246,7 +248,7 @@ const Sidebar = () => {
             <SectionTitle title="Views" isCollapsed={isCollapsed} />
             <MenuItem
               title="Monitoring"
-              to="/technical"
+              to="/monitoring"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -282,7 +284,7 @@ const Sidebar = () => {
         <MenuItem
           title="ILMT"
           to="/ilmt"
-          icon={<HelpOutlineOutlinedIcon />}
+          icon={<DonutLargeIcon />}
           selected={selected}
           setSelected={setSelected}
           isCollapsed={isCollapsed}

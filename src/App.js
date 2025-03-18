@@ -27,12 +27,12 @@ import Management from "./scenes/management";
 import Users from "./scenes/users";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorized from "./components/Unauthorized";
-import Technical from "./scenes/technical";
+import Monitoring from "./scenes/technical";
 import CreateUser from "./scenes/users/createUser";
 import Ticketing from "./scenes/ticketing/ticketing";
 import Logging from './scenes/logging/logging';
 import ManagementDetails from './scenes/management/management_details';
-import TechnicalDetails from './scenes/technical/technical_details';
+import MonitoringDetails from './scenes/technical/technical_details';
 //import Technical from "./pages/Technical";
 import Recovery from './scenes/management/recovery';
 import RecoveryDrp from './scenes/management/recover_drp';
@@ -515,12 +515,12 @@ function App() {
 
               {/* Protected Technical Routes */}
               <Route
-                path="/technical/*"
+                path="/monitoring/*"
                 element={
                   <ProtectedRoute allowedRoles={['reader', 'writer', 'admin']}>
                     <Routes>
-                      <Route path="/" element={<Technical />} />
-                      <Route path="details/:databaseName" element={<TechnicalDetails />} />
+                      <Route path="/" element={<Monitoring />} />
+                      <Route path="details/:databaseName" element={<MonitoringDetails />} />
                       <Route path="details/:databaseName/availability" element={<Availability />} />
                       <Route path="details/:databaseName/efficiency" element={<Efficiency />} />
                       <Route path="details/:databaseName/organization" element={<Organization />} />

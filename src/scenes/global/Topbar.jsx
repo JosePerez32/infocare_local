@@ -35,7 +35,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
     '/': 'Home',
     '/dashboard': 'Dashboard',
     '/management': 'Management',
-    //'/technical': 'Technical',
+    '/monitoring': 'Monitoring',
     '/invoices': 'Invoices',
     '/form': 'Form',
     '/faq': 'FAQ',
@@ -58,11 +58,20 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
       return breadcrumbNameMap[part];
     }
     if (part.startsWith('details/')) {
+      // Verifica si la parte anterior es "technical"
+      if (index > 0 && parts[index - 1] === 'technical') {
+        return `Monitoring of ${part.split('/')[1]}`; // Cambia "Details" por "Monitoring"
+      }
       return `Details of ${part.split('/')[1]}`;
     }
+    // Si la parte contiene "technical", cámbiala a "Monitoring" y capitaliza
+    if (part.toLowerCase().includes('technical')) {
+      return 'Monitoring';
+    }
+    // Capitaliza la primera letra de la parte
     return part.charAt(0).toUpperCase() + part.slice(1);
   };
-
+  
   const getLinkTo = (index, parts) => {
     const path = parts.slice(0, index + 1);
     if (path.some(part => part.startsWith('details/'))) {
