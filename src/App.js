@@ -540,11 +540,11 @@ function App() {
                       <Route path="/" element={<Enviroment />} />
                       {/* New dinamic route */}
                       <Route path="workload" element={<Workload />} />
+
                       <Route path="change" element={<Change />} /> {/* Ruta relativa */}
                       <Route path="change/history" element={<History />} />
                       <Route path="change/history/change_history" element={<ChangeHistory />} />
                       <Route path="change/history/change_details" element={<Details />} />
-                      
                     </Routes>
                   </ProtectedRoute>
                 }

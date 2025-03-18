@@ -1,4 +1,4 @@
-import { Box, Typography, Alert } from "@mui/material";
+import { Box, Typography, Alert, Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import GaugeComponent from "react-gauge-component";
@@ -20,7 +20,8 @@ const Details = ({onDataUpdate}) => { //Ths is just added by Jose
   const { organization } = useLocation().state || {};
   const [gaugeOrder, setGaugeOrder] = useState(["table", "index", "view"]); // State for the gauges order
   const [alertVisible, setAlertVisible] = useState(false); // State to show the alert
- 
+ // console.log("Source:", source);
+ const [origen, setSource] = useState(null); // Estado para almacenar el valor de source
   const texts = ["TABLE", "INDEX", "VIEW"];
   const workloadData = [
     {
@@ -67,12 +68,14 @@ const Details = ({onDataUpdate}) => { //Ths is just added by Jose
         setResponseData(data.response);
         setMemoryData(data.memory);
         setSpaceData(data.space);
+        setSource(data.source);
         // Push back the results to the tachnical_details.jsx page
         if (onDataUpdate) {
           onDataUpdate({
             response: data.response,
             memory: data.memory,
             space: data.space,
+            origen: data.source,
           });
         }
       } catch (error) {
@@ -116,26 +119,31 @@ const Details = ({onDataUpdate}) => { //Ths is just added by Jose
       
       <Header title={`Details of change` } subtitle=""    />
       
-    {/* Alert for the change in the order */}
-    {alertVisible && (
-        <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
-          Gauge chart order changed!
-        </Alert>
-      )}
-       {/* Contenedor de gráficos */}
-       <Box m="50px" display="grid" gridTemplateColumns="repeat(1, 1fr)" gap="50px" sx={{
-        display: 'block',
-        justifyContent: 'center', // Centra horizontalmente
-        alignItems: 'center', // Centra verticalmente
-        height: '50vh', // Ocupa toda la altura de la pantalla
-      }}>
-        
+      
+      <Grid container spacing={2}>
+  <Grid item xs={6}>
+    <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
+    Source: PRD_FRTS <br /><br />Target  :
+    </Typography>
+  </Grid>
+  <Grid item xs={6}>
+    <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
+      TIME<br /><br />TIME {/* Aquí puedes agregar el valor de Target si es dinámico */}
+    </Typography>
+  </Grid>
+</Grid>  
          {["TABLE", "INDEX", "VIEW"].map((text, index) => (
-                    <Tables key={index} height="200px"></Tables>
+                <Box key={index} sx={{ textAlign: 'center' }}> {/* Contenedor para el título y la tabla */}
+                <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'Withe' }}>
+                    {text} {/* Título de la tabla */}
+                </Typography>
+                <Tables key={index} height="200px"></Tables> {/* Tabla */}
+            </Box>
+                    
           ))}
           
         </Box>
-    </Box>
+        
     
   );
  
