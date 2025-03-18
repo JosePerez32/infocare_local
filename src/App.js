@@ -62,6 +62,9 @@ import Change from './scenes/enviroment/change';
 import History from './scenes/enviroment/history';
 import Details from './scenes/enviroment/change_details';
 import ChangeHistory from './scenes/enviroment/change_history';
+import Objects from './scenes/enviroment/objects';
+import ObjHistory from './scenes/enviroment/object_history'
+import ObjDetails from './scenes/enviroment/object_details'
 //import NewPage from "./scenes/enviroment/new_page"; // Import the new component
 //
 
@@ -545,6 +548,9 @@ function App() {
                       <Route path="change/history" element={<History />} />
                       <Route path="change/history/change_history" element={<ChangeHistory />} />
                       <Route path="change/history/change_details" element={<Details />} />
+                      <Route path="objects" element={<Objects />} />
+                      <Route path="objects/history" element={<ObjHistory />} />
+                      <Route path="objects/details" element={<ObjDetails />} />
                     </Routes>
                   </ProtectedRoute>
                 }

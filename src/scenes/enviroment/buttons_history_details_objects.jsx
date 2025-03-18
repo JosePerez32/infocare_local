@@ -1,6 +1,6 @@
 import { Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-const Botones = () => {
+const ObjectTopButtons = () => {
   const navigate = useNavigate();
 
  return (
@@ -15,17 +15,20 @@ const Botones = () => {
             variant="outlined"
             sx={{
               flex: 1,
-              margin: "0 2px",
+              margin: "0 1px",
               borderColor: "#71D8BD",
               color: "#71D8BD",
+              height: "50px", // Altura fija
+                fontSize: "1.5rem", // Tamaño del texto más grande
               "&:hover": {
                 backgroundColor: "#71D8BD",
                 color: "white",
+                
               },
             }}
-            onClick={() => navigate("/environment/workload")} // Surf to a new_page.jsx
+            onClick={() => navigate("/environment/objects/history")} // Surf to a new_page.jsx
           >
-            WORKLOAD
+            History
           </Button>
       
           {/* Botón CHANGE */}
@@ -33,38 +36,25 @@ const Botones = () => {
             variant="outlined"
             sx={{
               flex: 1,
-              margin: "0 2px",
+              margin: "0 1px",
               borderColor: "#71D8BD",
               color: "#71D8BD",
+              height: "50px", // Altura fija
+                fontSize: "1.5rem", // Tamaño del texto más grande
               "&:hover": {
                 backgroundColor: "#71D8BD",
                 color: "white",
+                
               },
             }}
-            onClick={() => navigate("/environment/change")}
+            onClick={() => navigate("/environment/objects/details")} // Surf to a new_page.jsx
           >
-            CHANGE
+            Details 
           </Button>
       
-          {/* Botón OBJECTS */}
-          <Button
-            variant="outlined"
-            sx={{
-              flex: 1,
-              margin: "0 2px",
-              borderColor: "#71D8BD",
-              color: "#71D8BD",
-              "&:hover": {
-                backgroundColor: "#71D8BD",
-                color: "white",
-              },
-            }}
-            onClick={() => navigate("/environment/objects")}
-          >
-            OBJECTS
-          </Button>
+          
       
           </Box>
  );
 };
-export default Botones;
+export default ObjectTopButtons;

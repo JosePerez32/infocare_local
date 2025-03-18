@@ -282,7 +282,7 @@ const Sidebar = () => {
          <Divider sx={{ my: 2 }} />
         
         <MenuItem
-          title="ILMT - test 2"
+          title="ILMT"
           to="/ilmt"
           icon={<DonutLargeIcon />}
           selected={selected}
