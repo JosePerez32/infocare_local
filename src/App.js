@@ -27,11 +27,19 @@ import Management from "./scenes/management";
 import Users from "./scenes/users";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorized from "./components/Unauthorized";
+<<<<<<< HEAD
 import Monitoring from "./scenes/monitoring";
+=======
+import Monitoring from "./scenes/technical";
+>>>>>>> 5cf7c49a0133c2736375d73ffb961e090d743372
 import CreateUser from "./scenes/users/createUser";
 import Ticketing from "./scenes/ticketing/ticketing";
 import Logging from './scenes/logging/logging';
 import ManagementDetails from './scenes/management/management_details';
+<<<<<<< HEAD
+=======
+import MonitoringDetails from './scenes/technical/technical_details';
+>>>>>>> 5cf7c49a0133c2736375d73ffb961e090d743372
 //import Technical from "./pages/Technical";
 import Recovery from './scenes/management/recovery';
 import RecoveryDrp from './scenes/management/recover_drp';
@@ -526,12 +534,16 @@ function App() {
                   <ProtectedRoute allowedRoles={['reader', 'writer', 'admin']}>
                     <Routes>
                       <Route path="/" element={<Monitoring />} />
+<<<<<<< HEAD
                       <Route path="details/:databaseName" element={<DataMonitoring />} />
                       <Route path="details/:databaseName/performance" element={<Performance />} />
                       <Route path="details/:databaseName/recoverability" element={<Recoverability />} />
 
 
 
+=======
+                      <Route path="details/:databaseName" element={<MonitoringDetails />} />
+>>>>>>> 5cf7c49a0133c2736375d73ffb961e090d743372
                       <Route path="details/:databaseName/availability" element={<Availability />} />
                       <Route path="details/:databaseName/efficiency" element={<Efficiency />} />
                       <Route path="details/:databaseName/organization" element={<Organization />} />

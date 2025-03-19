@@ -62,9 +62,12 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
       if (index > 0 && parts[index - 1] === 'technical') {
         return `Monitoring of ${part.split('/')[1]}`; // Cambia "Details" por "Monitoring"
       }
+<<<<<<< HEAD
       if (index > 0 && parts[index - 1] === 'monitoring') {
         return `Monitoring of ${part.split('/')[1]}`; // Cambia "Details" por "Monitoring"
       }
+=======
+>>>>>>> 5cf7c49a0133c2736375d73ffb961e090d743372
       return `Details of ${part.split('/')[1]}`;
     }
     // Si la parte contiene "technical", cámbiala a "Monitoring" y capitaliza
