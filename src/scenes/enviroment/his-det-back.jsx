@@ -23,7 +23,7 @@ const ChangeButtons = () => {
                 color: "white",
               },
             }}
-            onClick={() => navigate("/environment/change/history/change_history")} // Surf to a new_page.jsx
+            onClick={() => navigate("/environment/change/history")} // Surf to a new_page.jsx
           >
             History
           </Button>
@@ -41,7 +41,7 @@ const ChangeButtons = () => {
                 color: "white",
               },
             }}
-            onClick={() => navigate("/environment/change/history/change_details")} // Surf to a new_page.jsx
+            onClick={() => navigate("/environment/change/details")} // Surf to a new_page.jsx
           >
             Details 
           </Button>

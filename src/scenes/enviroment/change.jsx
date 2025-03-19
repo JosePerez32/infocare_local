@@ -102,7 +102,7 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
       
       
     {/* Alert for the change in the order */}
-      <Header title={`Change` } subtitle="Source. \n Target:\n"    />
+      <Header title={`Change` } subtitle=""    />
     {alertVisible && (
         <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
           Gauge chart order changed!
@@ -112,7 +112,7 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
        <Box m="10px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
        <ChangeButtons />
        </Box>
-       <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
+       <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="5px">
         
        {["TABLE", "INDEX", "VIEW"].map((text, index) => (
           <Box key={index} height="200px">

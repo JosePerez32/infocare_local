@@ -546,8 +546,8 @@ function App() {
 
                       <Route path="change" element={<Change />} /> {/* Ruta relativa */}
                       <Route path="change/history" element={<History />} />
-                      <Route path="change/history/change_history" element={<ChangeHistory />} />
-                      <Route path="change/history/change_details" element={<Details />} />
+                      <Route path="change/history" element={<ChangeHistory />} />
+                      <Route path="change/details" element={<Details />} />
                       <Route path="objects" element={<Objects />} />
                       <Route path="objects/history" element={<ObjHistory />} />
                       <Route path="objects/details" element={<ObjDetails />} />
