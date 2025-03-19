@@ -19,6 +19,7 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import DonutLargeIcon from '@mui/icons-material/DonutLarge';
 import PublicIcon from '@mui/icons-material/Public';
 import ReportIcon from '@mui/icons-material/Report';
+import ArticleIcon from '@mui/icons-material/Article';
 
 const SectionTitle = ({ title, isCollapsed }) => {
   if (isCollapsed) return null;
@@ -223,8 +224,8 @@ const Sidebar = () => {
             >
               <MenuItem
               title="Ticket"
-              to="/environment"
-              icon={<ReportIcon/>}
+              to="/ticketing"
+              icon={<ArticleIcon/>}
               selected={selected}
               setSelected={setSelected}
               isCollapsed={isCollapsed}

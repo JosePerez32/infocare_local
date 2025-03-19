@@ -27,12 +27,11 @@ import Management from "./scenes/management";
 import Users from "./scenes/users";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorized from "./components/Unauthorized";
-import Monitoring from "./scenes/technical";
+import Monitoring from "./scenes/monitoring";
 import CreateUser from "./scenes/users/createUser";
 import Ticketing from "./scenes/ticketing/ticketing";
 import Logging from './scenes/logging/logging';
 import ManagementDetails from './scenes/management/management_details';
-import MonitoringDetails from './scenes/technical/technical_details';
 //import Technical from "./pages/Technical";
 import Recovery from './scenes/management/recovery';
 import RecoveryDrp from './scenes/management/recover_drp';
@@ -64,6 +63,11 @@ import ChangeHistory from './scenes/enviroment/change_history';
 import Objects from './scenes/enviroment/objects';
 import ObjHistory from './scenes/enviroment/object_history'
 import ObjDetails from './scenes/enviroment/object_details'
+import Performance from "./scenes/monitoring/performance";
+import DataMonitoring from "./scenes/monitoring/data_monitoring";
+import MonitoringDetails from './scenes/technical/technical_details';
+import Recoverability from "./scenes/monitoring/recoverability";
+
 //import NewPage from "./scenes/enviroment/new_page"; // Import the new component
 //
 
@@ -522,7 +526,12 @@ function App() {
                   <ProtectedRoute allowedRoles={['reader', 'writer', 'admin']}>
                     <Routes>
                       <Route path="/" element={<Monitoring />} />
-                      <Route path="details/:databaseName" element={<MonitoringDetails />} />
+                      <Route path="details/:databaseName" element={<DataMonitoring />} />
+                      <Route path="details/:databaseName/performance" element={<Performance />} />
+                      <Route path="details/:databaseName/recoverability" element={<Recoverability />} />
+
+
+
                       <Route path="details/:databaseName/availability" element={<Availability />} />
                       <Route path="details/:databaseName/efficiency" element={<Efficiency />} />
                       <Route path="details/:databaseName/organization" element={<Organization />} />
@@ -541,8 +550,8 @@ function App() {
                     <Routes>
                       <Route path="/" element={<Enviroment />} />
                       {/* New dinamic route */}
-                      <Route path="workload" element={<Workload />} />
-
+                      <Route path="workload/:databaseName" element={<Workload />} />
+                      /environment/workload/${databaseName}
                       <Route path="change" element={<Change />} /> {/* Ruta relativa */}
                       <Route path="change/history" element={<ChangeHistory />} />
                       <Route path="change/details" element={<Details />} />

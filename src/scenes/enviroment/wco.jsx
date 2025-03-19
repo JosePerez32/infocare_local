@@ -1,6 +1,6 @@
 import { Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-const Botones = () => {
+const Botones = ({databaseName}) => {
   const navigate = useNavigate();
 
  return (
@@ -23,8 +23,11 @@ const Botones = () => {
                 color: "white",
               },
             }}
-            onClick={() => navigate("/environment/workload")} // Surf to a new_page.jsx
-          >
+            onClick={() =>  navigate(`/environment/workload/${databaseName}`, {      state: { organization: localStorage.getItem('organization') }, // Pasa organization si es necesario
+          })
+        }
+          
+            >
             WORKLOAD
           </Button>
       
