@@ -59,7 +59,6 @@ import  UserIdleLogout  from './components/UserIdleLogout';
 import Enviroment from './scenes/enviroment';
 import Workload from "./scenes/enviroment/new_page";
 import Change from './scenes/enviroment/change';
-import History from './scenes/enviroment/history';
 import Details from './scenes/enviroment/change_details';
 import ChangeHistory from './scenes/enviroment/change_history';
 import Objects from './scenes/enviroment/objects';
@@ -545,7 +544,6 @@ function App() {
                       <Route path="workload" element={<Workload />} />
 
                       <Route path="change" element={<Change />} /> {/* Ruta relativa */}
-                      <Route path="change/history" element={<History />} />
                       <Route path="change/history" element={<ChangeHistory />} />
                       <Route path="change/details" element={<Details />} />
                       <Route path="objects" element={<Objects />} />

@@ -23,7 +23,7 @@ const Chanhist = ({onDataUpdate}) => { //Ths is just added by Jose
   const texts = ["TABLE", "INDEX", "VIEW"];
   const workloadData = [
     {
-      id: "table", // Identificador único para la primera línea
+      id: "Target only", // Identificador único para la primera línea
       color: "hsl(0, 0%, 0%)", // Negro
       data: Array.from({ length: 30 }, (_, i) => ({
         x: i,
@@ -31,7 +31,7 @@ const Chanhist = ({onDataUpdate}) => { //Ths is just added by Jose
       })),
     },
     {
-      id: "index", // Identificador único para la segunda línea
+      id: "Difference", // Identificador único para la segunda línea
       color: "hsl(0, 100%, 50%)", // Rojo
       data: Array.from({ length: 30 }, (_, i) => ({
         x: i,
@@ -39,7 +39,7 @@ const Chanhist = ({onDataUpdate}) => { //Ths is just added by Jose
       })),
     },
     {
-      id: "view", // Identificador único para la tercera línea
+      id: "Source only", // Identificador único para la tercera línea
       color: "hsl(60, 100%, 50%)", // Amarillo
       data: Array.from({ length: 30 }, (_, i) => ({
         x: i,
@@ -128,7 +128,7 @@ const Chanhist = ({onDataUpdate}) => { //Ths is just added by Jose
             <Typography variant="h4" gutterBottom>
               {text}
             </Typography>
-            <LineChart data={workloadData} yAxisLegend="Workload" xAxisLegend="Hours" />
+            <LineChart data={workloadData} yAxisLegend="" xAxisLegend="Days" />
             </Box>
           ))}
           

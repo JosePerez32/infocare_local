@@ -23,7 +23,7 @@ const History = ({onDataUpdate}) => { //Ths is just added by Jose
   const [gaugeOrder, setGaugeOrder] = useState(["workload", "change", "objects"]); // State for the gauges order
   const [alertVisible, setAlertVisible] = useState(false); // State to show the alert
 
-  const changeData = [
+  /*const changeData = [
     {
       id: "Porcent",
       color: "hsl(240, 70%, 50%)",
@@ -33,8 +33,33 @@ const History = ({onDataUpdate}) => { //Ths is just added by Jose
         { x: "Acceptation(Only)", y: Math.floor(Math.random() * 100) }, // Dato para "Acceptation(Only)"
       ],
     },
+  ];*/
+  const changeData = [
+    {
+      id: "workload1", // Identificador único para la primera línea
+      color: "hsl(0, 0%, 0%)", // Negro
+      data: Array.from({ length: 30 }, (_, i) => ({
+        x: i,
+        y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
+      })),
+    },
+    {
+      id: "workload2", // Identificador único para la segunda línea
+      color: "hsl(0, 100%, 50%)", // Rojo
+      data: Array.from({ length: 30 }, (_, i) => ({
+        x: i,
+        y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
+      })),
+    },
+    {
+      id: "workload3", // Identificador único para la tercera línea
+      color: "hsl(60, 100%, 50%)", // Amarillo
+      data: Array.from({ length: 30 }, (_, i) => ({
+        x: i,
+        y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
+      })),
+    },
   ];
-
   useEffect(() => {
     const fetchAvailibilityData = async () => {
       try {
@@ -102,7 +127,7 @@ const History = ({onDataUpdate}) => { //Ths is just added by Jose
       
       
     {/* Alert for the change in the order */}
-      <Header title={`Change` } subtitle="Source. \n Target:\n"    />
+      <Header title={`Change of history` } subtitle=""    />
     {alertVisible && (
         <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
           Gauge chart order changed!
