@@ -18,6 +18,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import DonutLargeIcon from '@mui/icons-material/DonutLarge';
 import PublicIcon from '@mui/icons-material/Public';
+import ReportIcon from '@mui/icons-material/Report';
 
 const SectionTitle = ({ title, isCollapsed }) => {
   if (isCollapsed) return null;
@@ -221,6 +222,14 @@ const Sidebar = () => {
               isCollapsed={isCollapsed}
             >
               <MenuItem
+              title="Ticket"
+              to="/environment"
+              icon={<ReportIcon/>}
+              selected={selected}
+              setSelected={setSelected}
+              isCollapsed={isCollapsed}
+            />
+              <MenuItem
                 title="Create User"
                 to="/createUser"
                 icon={<GroupAddIcon />}
@@ -237,6 +246,15 @@ const Sidebar = () => {
                 isCollapsed={isCollapsed}
               />
             </MenuItem>
+            <Divider sx={{ my: 2 }} />
+            <MenuItem
+              title="Q-reports"
+              to="/environment"
+              icon={<ReportIcon/>}
+              selected={selected}
+              setSelected={setSelected}
+              isCollapsed={isCollapsed}
+            />
             
           </>
         )}

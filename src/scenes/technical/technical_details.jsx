@@ -126,7 +126,7 @@ setTimeout(() => setAlertVisible(false), 3000);
     <Box m="20px">
       {/* Header con el título y el cuadro de texto */}
       <Box display="flex" alignItems="center" justifyContent="space-between">
-        <Header title={`Details for ${databaseName}`} subtitle="Monitoring" />
+        <Header title={`Details for ${databaseName}`} subtitle="" />
        
       </Box>
       {/* Alert for the changes in the order */}

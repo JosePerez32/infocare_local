@@ -132,14 +132,13 @@ const Dashboard = ({ accessToken }) => {
               fontWeight="bold"
               sx={{ mb: 2 }}
             >
-              INFOCARE
+              
             </Typography>
             <Typography 
               variant="h4" 
               color={colors.grey[200]}
               sx={{ mb: 3 }}
             >
-              Welcome to InfoCare
             </Typography>
           </Grid>
           <Grid item xs={12} md={6}>

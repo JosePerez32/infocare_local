@@ -1,14 +1,12 @@
 import { Box, Typography, Alert } from "@mui/material";
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
-import GaugeComponent from "react-gauge-component";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { useParams, useLocation } from "react-router-dom";
 import LineChart from '../../components/LineChart';
-//import Enviroment from ".";
 
-const Workload = ({onDataUpdate}) => { //Ths is just added by Jose
+const Workload = ({ onDataUpdate }) => {
   const { databaseName } = useParams(); // Get database name from the URL
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -19,18 +17,18 @@ const Workload = ({onDataUpdate}) => { //Ths is just added by Jose
   const { organization } = useLocation().state || {};
   const [gaugeOrder, setGaugeOrder] = useState(["workload", "change", "objects"]); // State for the gauges order
   const [alertVisible, setAlertVisible] = useState(false); // State to show the alert
- 
+
   const texts = ["SELECT", "INSERT", "UPDATE", "DELETE", "LOCKS", "DEADLOCK", "WAIT TIME"];
-  const workloadData = [
-    {
-      id: "workload",
-      color: "hsl(120, 70%, 50%)",
-      data: Array.from({ length: 30 }, (_, i) => ({ 
-        x: i, 
-        y: Math.floor(Math.random() * 100) // Número aleatorio entre 0 y 99
-      })),
-    },
-  ];
+
+  // Crear workloadData con el mismo id que el texto mapeado
+  const workloadData = texts.map((text) => ({
+    id: text, // Usar el texto como id
+    color: "hsl(120, 70%, 50%)",
+    data: Array.from({ length: 30 }, (_, i) => ({
+      x: i % 5 === 0 ? i : null, // Solo asigna valor a x cada 5 iteraciones
+      y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
+    })).filter((item) => item.x !== null), // Filtra los elementos donde x no sea null,
+  }));
 
   useEffect(() => {
     const fetchAvailibilityData = async () => {
@@ -38,19 +36,19 @@ const Workload = ({onDataUpdate}) => { //Ths is just added by Jose
         const token = localStorage.getItem('accessToken'); // Retrieve token from localStorage
 
         const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/dashboards/${organization}/technical/sources/${source}/availability`, 
+          `${process.env.REACT_APP_API_URL}/dashboards/${organization}/technical/sources/${source}/availability`,
           {
             headers: {
               'Authorization': `Bearer ${token}`, // Add token to Authorization header
               'Content-Type': 'application/json',
             },
           }
-        );        
+        );
         const data = await response.json();
         setResponseData(data.response);
         setMemoryData(data.memory);
         setSpaceData(data.space);
-        // Push back the results to the tachnical_details.jsx page
+        // Push back the results to the technical_details.jsx page
         if (onDataUpdate) {
           onDataUpdate({
             response: data.response,
@@ -61,20 +59,14 @@ const Workload = ({onDataUpdate}) => { //Ths is just added by Jose
       } catch (error) {
         console.error("Error fetching availability data:", error);
       }
-      };
-      //Finish of the pushing
-
-     //   console.log(data); // Check the fetched data
-     // } catch (error) {
-     //   console.error("Error fetching recovery data:", error);
-     // }
-   // };
+    };
 
     fetchAvailibilityData();
-  }, [databaseName, organization,source, onDataUpdate]); //onDataUpdate is just added Jose 
-  // Funtions for the drag and drop
+  }, [databaseName, organization, source, onDataUpdate]);
+
+  // Functions for the drag and drop
   const handleDragStart = (index) => (event) => {
-    event.dataTransfer.setData("text/plain", index); // Save the index for the drag element 
+    event.dataTransfer.setData("text/plain", index); // Save the index for the drag element
   };
 
   const handleDrop = (index) => (event) => {
@@ -83,9 +75,9 @@ const Workload = ({onDataUpdate}) => { //Ths is just added by Jose
     const newOrder = [...gaugeOrder]; // Copy the currently copy
     const [movedItem] = newOrder.splice(fromIndex, 1); // Remove the element of the original position
     newOrder.splice(index, 0, movedItem); // Insert the element in the new position
-    setGaugeOrder(newOrder); // Uodate the state with the new order
+    setGaugeOrder(newOrder); // Update the state with the new order
 
-    // SHows a temporally alert
+    // Shows a temporary alert
     setAlertVisible(true);
     setTimeout(() => setAlertVisible(false), 3000);
   };
@@ -93,36 +85,63 @@ const Workload = ({onDataUpdate}) => { //Ths is just added by Jose
   const handleDragOver = (event) => {
     event.preventDefault(); // Allow you to drop the element
   };
-  return (
 
+  return (
     <Box m="20px">
-      
-      <Header title={`Workload for ${databaseName}` } subtitle=""    />
-      
-    {/* Alert for the change in the order */}
-    {alertVisible && (
+      <Header title={`Workload for ${databaseName}`} subtitle="" />
+
+      {/* Alert for the change in the order */}
+      {alertVisible && (
         <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
           Gauge chart order changed!
         </Alert>
       )}
-       {/* Contenedor de gráficos */}
-       <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
-         {["SELECT", "INSERT", "UPDATE", "DELETE", "LOCKS", "DEADLOCK", "WAIT TIME"].map((text, index) => (
-          <Box key={index} height="200px">
+
+      {/* Contenedor de gráficos */}
+      <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
+        {texts.map((text, index) => (
+          <Box key={index} height="200px" position="relative">
             <Typography variant="h4" gutterBottom>
-              {text}
+              {text} {/* Mostrar el texto mapeado */}
             </Typography>
-            <LineChart data={workloadData} yAxisLegend="Workload" xAxisLegend="Hours" />
-            </Box>
-          ))}
-          
-        </Box>
+            <LineChart
+              data={[workloadData[index]]}
+              yAxisLegend=""
+              xAxisLegend="Hours"
+              axisBottom={{
+                tickValues: "" // Mostrar solo cada 5 cifras
+              }}
+            />
+            {/* Líneas verticales solo para la primera y segunda gráfica */}
+            {index < 2 && (
+              <Box
+                position="absolute"
+                right={0}
+                top={0}
+                bottom={0}
+                width="3px"
+                bgcolor={theme.palette.mode === "dark" ? "white" : "black"} // Cambia de color según el modo
+                zIndex={1} // Asegurar que la línea esté por encima del gráfico
+                height="100%" // Extender la línea hasta el final del contenedor
+              />
+            )}
+            {index < 9 && (
+              <Box
+                position="absolute"
+                right={0}
+                top={0}
+                bottom={0}
+                width="3px"
+                bgcolor={theme.palette.mode === "dark" ? "white" : "black"} // Cambia de color según el modo
+                zIndex={4} // Asegurar que la línea esté por encima del gráfico
+                height="100%" // Extender la línea hasta el final del contenedor
+              />
+            )}
+          </Box>
+        ))}
+      </Box>
     </Box>
-    
   );
- 
-  
-  
 };
 
 export default Workload;

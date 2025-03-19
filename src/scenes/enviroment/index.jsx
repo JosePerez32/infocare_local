@@ -100,7 +100,7 @@ import Botones from './wco.jsx';
 
         <Header
           
-          title="Enviroment monitoring"
+          title="Environment monitoring"
           subtitle={``}
           className="header-title"
           
@@ -139,7 +139,7 @@ import Botones from './wco.jsx';
                 </Typography>
                   {/* Imagen */}
                   <img
-                      src="./assets/db.png" 
+                      src="./assets/database-management.png" 
                       alt="Database" // Texto alternativo
                       style={{
                       width: "30%", // La imagen ocupa el 100% del ancho del contenedor
