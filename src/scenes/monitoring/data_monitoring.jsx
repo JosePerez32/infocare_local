@@ -87,7 +87,7 @@ const DataMonitor = () => {
       onDrop={handleDrop(index)} // jp: Se ejecuta cuando se suelta el elemento
       onDragOver={handleDragOver} // jp: Permite que el elemento se pueda soltar
       onClick={() =>
-        navigate(`/monitoring/details/${databaseName}/${route}`, {
+        navigate(`/monitoring/details/${databaseName}`, {
           state: { organization }
         })
       }

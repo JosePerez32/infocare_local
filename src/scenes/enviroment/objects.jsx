@@ -124,7 +124,7 @@ const Objects = ({onDataUpdate}) => { //Ths is just added by Jose
         </Grid>  
        {/* Contenedor de gráficos */}
        <Box m="10px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
-       <ObjectTopButtons />
+       <ObjectTopButtons databaseName={databaseName}/>
        </Box>
        
        <ObjectButtons></ObjectButtons>

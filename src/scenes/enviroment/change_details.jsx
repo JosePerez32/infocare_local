@@ -123,7 +123,7 @@ const Details = ({onDataUpdate}) => { //Ths is just added by Jose
       <Grid container spacing={2}>
   <Grid item xs={6}>
     <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
-    Source: PRD_FRTS <br /><br />Target  :
+    Source: {databaseName} <br /><br />Target  :
     </Typography>
   </Grid>
   <Grid item xs={6}>

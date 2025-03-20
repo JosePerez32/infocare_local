@@ -151,7 +151,7 @@ const workloadData = [
       
       <Header title={`Objects of history` } subtitle=""    />
       <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'white', textAlign: 'left' }}>
-      DATABASE:     PRD_FRST<br /><br /> {/* Aquí puedes agregar el valor de Target si es dinámico */}
+      DATABASE:     {databaseName}<br /><br /> {/* Aquí puedes agregar el valor de Target si es dinámico */}
     </Typography>
     {/* Alert for the change in the order */}
     {alertVisible && (

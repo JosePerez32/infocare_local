@@ -36,7 +36,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
     '/': 'Home',
     '/dashboard': 'Dashboard',
     '/management': 'Management',
-    '/monitoring': 'Monitoring',
+    //'/monitoring': 'Monitoring',
     '/invoices': 'Invoices',
     '/form': 'Form',
     '/faq': 'FAQ',
@@ -56,16 +56,12 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
 
   const getBreadcrumbName = (pathname, part, index, parts) => {
     if (breadcrumbNameMap[part]) {
-    
       return breadcrumbNameMap[part];
-
     }
-  
     // Si la parte contiene "technical", cámbiala a "Monitoring" y capitaliza
     if (part.toLowerCase().includes('technical')) {
       return 'Monitoring';
     }
-  
     // Si la parte comienza con "details/"
     if (part.startsWith('details/')) {
       const detailName = part.split('/')[1]; // Extrae el nombre después de "details/"
@@ -76,11 +72,19 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
         return `Monitoring of ${detailName.toLowerCase()}`; // Convierte a minúsculas, por ejemplo
       }
       // Si no cumple con las condiciones anteriores, devuelve "Details of [nombre]"
-      return `Details of ${detailName}`;
+      return `Monitoring of ${detailName}`;
+      
+    }
+    if (index > 0 && parts[index - 1] === 'Monitoring of ') {
+      // Aquí puedes realizar alguna transformación o lógica adicional
+      return ``; // Convierte a minúsculas, por ejemplo
+    }
+    else{
+      return part.charAt(0).toUpperCase() + part.slice(1);
     }
   
     // Capitaliza la primera letra de la parte si no cumple con ninguna condición anterior
-    return part.charAt(0).toUpperCase() + part.slice(1);
+    //return part.charAt(0).toUpperCase() + part.slice(1);
   };
   
   const getLinkTo = (index, parts) => {

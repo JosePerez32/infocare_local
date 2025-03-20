@@ -110,7 +110,7 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
       )}
        {/* Contenedor de gráficos */}
        <Box m="10px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
-       <ChangeButtons />
+       <ChangeButtons databaseName={databaseName}/>
        </Box>
        <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="5px">
         

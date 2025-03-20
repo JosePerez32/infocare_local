@@ -1,6 +1,6 @@
 import { Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-const ObjectTopButtons = () => {
+const ObjectTopButtons = ({databaseName}) => {
   const navigate = useNavigate();
 
  return (
@@ -26,7 +26,7 @@ const ObjectTopButtons = () => {
                 
               },
             }}
-            onClick={() => navigate("/environment/objects/history")} // Surf to a new_page.jsx
+            onClick={() => navigate(`/environment/objects/${databaseName}/history`)} // Surf to a new_page.jsx
           >
             History
           </Button>
@@ -47,7 +47,7 @@ const ObjectTopButtons = () => {
                 
               },
             }}
-            onClick={() => navigate("/environment/objects/details")} // Surf to a new_page.jsx
+            onClick={() => navigate(`/environment/objects/${databaseName}/details`)} // Surf to a new_page.jsx
           >
             Details 
           </Button>

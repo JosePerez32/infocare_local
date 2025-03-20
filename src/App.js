@@ -60,7 +60,7 @@ import Enviroment from './scenes/enviroment';
 import Workload from "./scenes/enviroment/new_page";
 import WorkloadDB from "./scenes/enviroment/wco";
 import Change from './scenes/enviroment/change';
-import Details from './scenes/enviroment/change_details';
+import ChangeDetails from './scenes/enviroment/change_details';
 import ChangeHistory from './scenes/enviroment/change_history';
 import Objects from './scenes/enviroment/objects';
 import ObjHistory from './scenes/enviroment/object_history'
@@ -69,6 +69,8 @@ import Performance from "./scenes/monitoring/performance";
 import DataMonitoring from "./scenes/monitoring/data_monitoring";
 import MonitoringDetails from './scenes/technical/technical_details';
 import Recoverability from "./scenes/monitoring/recoverability";
+import ReportPage from "./scenes/ilmt";
+import QReport from "./scenes/ilmt";
 
 //import NewPage from "./scenes/enviroment/new_page"; // Import the new component
 //
@@ -551,11 +553,11 @@ function App() {
                       <Route path="workload/:databaseName" element={<Workload />} />
 
                       <Route path="change/:databaseName" element={<Change />} /> {/* Ruta relativa */}
-                      <Route path="change/history" element={<ChangeHistory />} />
-                      <Route path="change/details" element={<Details />} />
+                      <Route path="change/:databaseName/history" element={<ChangeHistory />} />
+                      <Route path="change/:databaseName/details" element={<ChangeDetails />} />
                       <Route path="objects/:databaseName" element={<Objects />} />
-                      <Route path="objects/history" element={<ObjHistory />} />
-                      <Route path="objects/details" element={<ObjDetails />} />
+                      <Route path="objects/:databaseName/history" element={<ObjHistory />} />
+                      <Route path="objects/:databaseName/details" element={<ObjDetails />} />
                     </Routes>
                   </ProtectedRoute>
                 }
@@ -611,6 +613,9 @@ function App() {
 
               {/* Common Routes */}
               <Route path="/faq" element={<FAQ />} />
+              <Route path="/ilmt" element={<ReportPage />} />
+              <Route path="/q-reports" element={<QReport />} />
+
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
             </Routes>
