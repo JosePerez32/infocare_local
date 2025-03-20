@@ -23,6 +23,7 @@ import { useLocation, Link as RouterLink } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import CreateIcon from '@mui/icons-material/Create';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { source } from 'framer-motion/client';
 
 const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
   const theme = useTheme();
@@ -48,33 +49,37 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
     '/readiness': 'Readiness',
     '/security': 'Security',
     '/recovery': 'Recovery',
-    '/enironment': 'Environment',
+    '/environment': 'Environment',    
   };
 
   const pathnames = location.pathname.split('/').filter((x) => x);
 
   const getBreadcrumbName = (pathname, part, index, parts) => {
     if (breadcrumbNameMap[part]) {
+    
       return breadcrumbNameMap[part];
+
     }
-    if (part.startsWith('details/')) {
-      // Verifica si la parte anterior es "technical"
-      if (index > 0 && parts[index - 1] === 'technical') {
-        return `Monitoring of ${part.split('/')[1]}`; // Cambia "Details" por "Monitoring"
-      }
-<<<<<<< HEAD
-      if (index > 0 && parts[index - 1] === 'monitoring') {
-        return `Monitoring of ${part.split('/')[1]}`; // Cambia "Details" por "Monitoring"
-      }
-=======
->>>>>>> 5cf7c49a0133c2736375d73ffb961e090d743372
-      return `Details of ${part.split('/')[1]}`;
-    }
+  
     // Si la parte contiene "technical", cámbiala a "Monitoring" y capitaliza
     if (part.toLowerCase().includes('technical')) {
       return 'Monitoring';
     }
-    // Capitaliza la primera letra de la parte
+  
+    // Si la parte comienza con "details/"
+    if (part.startsWith('details/')) {
+      const detailName = part.split('/')[1]; // Extrae el nombre después de "details/"
+  
+      // Verifica si la parte anterior es "technical"
+      if (index > 0 && parts[index - 1] === 'technical') {
+        // Aquí puedes realizar alguna transformación o lógica adicional
+        return `Monitoring of ${detailName.toLowerCase()}`; // Convierte a minúsculas, por ejemplo
+      }
+      // Si no cumple con las condiciones anteriores, devuelve "Details of [nombre]"
+      return `Details of ${detailName}`;
+    }
+  
+    // Capitaliza la primera letra de la parte si no cumple con ninguna condición anterior
     return part.charAt(0).toUpperCase() + part.slice(1);
   };
   
@@ -94,7 +99,15 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
         combinedPathnames.push(`details/${pathnames[i + 1]}`);
         i++; // Skip the next item as we've combined it
       }
-     
+      if (pathnames[i] === 'workload' && i + 1 < pathnames.length) {
+        combinedPathnames.push(`workload of ${pathnames[i + 1]}`);
+        i++; // Saltar la siguiente parte, ya que se ha combinado
+      }
+      // Verifica si la parte anterior es "monitoring"
+      if (pathnames[i] === 'objects' && i + 1 < pathnames.length) {
+        combinedPathnames.push(`objects of ${pathnames[i + 1]}`);
+        i++; // Saltar la siguiente parte, ya que se ha combinado
+      }
       else {
         combinedPathnames.push(pathnames[i]);
       }

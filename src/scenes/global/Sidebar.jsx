@@ -18,11 +18,8 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import DonutLargeIcon from '@mui/icons-material/DonutLarge';
 import PublicIcon from '@mui/icons-material/Public';
-<<<<<<< HEAD
-import ReportIcon from '@mui/icons-material/Report';
 import ArticleIcon from '@mui/icons-material/Article';
-=======
->>>>>>> 5cf7c49a0133c2736375d73ffb961e090d743372
+import ReportIcon from '@mui/icons-material/Report';
 
 const SectionTitle = ({ title, isCollapsed }) => {
   if (isCollapsed) return null;

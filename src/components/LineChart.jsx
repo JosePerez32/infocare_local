@@ -62,6 +62,7 @@ const LineChart = ({ data, isCustomLineColors = false, isDashboard = false, yAxi
       axisBottom={{
         orient: "bottom",
         tickSize: 0,
+        //tickValues={ time scale, every 15 minutes,},
         tickPadding: 5,
         tickRotation: 0,
         legend: isDashboard ? undefined : xAxisLegend ,

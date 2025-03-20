@@ -23,8 +23,7 @@ const Botones = ({databaseName}) => {
                 color: "white",
               },
             }}
-            onClick={() =>  navigate(`/environment/workload/${databaseName}`,{state: { organization: localStorage.getItem('organization') }, // Pasa organization si es necesario
-          })
+            onClick={() =>  navigate(`/environment/workload/${databaseName}`)
         }
           
             >
@@ -62,7 +61,7 @@ const Botones = ({databaseName}) => {
                 color: "white",
               },
             }}
-            onClick={() => navigate("/environment/objects")}
+            onClick={() => navigate(`/environment/objects/${databaseName}`)}
           >
             OBJECTS
           </Button>

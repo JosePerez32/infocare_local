@@ -148,8 +148,9 @@ import Botones from './wco.jsx';
                       borderRadius: "8px", // Bordes redondeados
                       marginTop: "10px", // Espacio entre el subtítulo y la imagen
                       }}
+                      
                   />
-                  <Botones databaseName={databaseName}/>
+                  <Botones databaseName={source.name}/>
                 </Box>
             );
           })} 

@@ -47,7 +47,17 @@ const Chanhist = ({onDataUpdate}) => { //Ths is just added by Jose
       })),
     },
   ];
-
+      // Función para generar etiquetas personalizadas para el eje x
+const generateXAxisLabels = () => {
+  const labels = [];
+  for (let i = 0; i <= 30; i += 5) {
+    const hour = i % 24; // Hora (0-23)
+    const day = Math.floor(Math.random() * 30) + 1; // Día aleatorio (1-30)
+    const month = Math.floor(Math.random() * 12) + 1; // Mes aleatorio (1-12)
+    labels.push(`${hour} hr\n${day} DD\n${month} MM`);
+  }
+  return labels;
+};
   useEffect(() => {
     const fetchAvailibilityData = async () => {
       try {
@@ -122,13 +132,13 @@ const Chanhist = ({onDataUpdate}) => { //Ths is just added by Jose
         </Alert>
       )}
        {/* Contenedor de gráficos */}
-       <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
+       <Box m="2px 2px" display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="10px">
          {["TABLE", "INDEX", "VIEW"].map((text, index) => (
-          <Box key={index} height="200px">
+          <Box m="50px 2px" key={index} height="200px">
             <Typography variant="h4" gutterBottom>
               {text}
             </Typography>
-            <LineChart data={workloadData} yAxisLegend="" xAxisLegend="Days" />
+            <LineChart data={workloadData}  xAxisLabels={["0 hr\n19 DD\n03 MM", "5 hr\n20 DD\n04 MM", "10 hr\n21 DD\n05 MM", "15 hr\n22 DD\n06 MM", "20 hr\n23 DD\n07 MM", "25 hr\n24 DD\n08 MM", "30 hr\n25 DD\n09 MM"]}yAxisLegend="" xAxisLegend="Days" />
             </Box>
           ))}
           

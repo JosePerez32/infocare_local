@@ -27,19 +27,12 @@ import Management from "./scenes/management";
 import Users from "./scenes/users";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Unauthorized from "./components/Unauthorized";
-<<<<<<< HEAD
 import Monitoring from "./scenes/monitoring";
-=======
-import Monitoring from "./scenes/technical";
->>>>>>> 5cf7c49a0133c2736375d73ffb961e090d743372
 import CreateUser from "./scenes/users/createUser";
 import Ticketing from "./scenes/ticketing/ticketing";
 import Logging from './scenes/logging/logging';
 import ManagementDetails from './scenes/management/management_details';
-<<<<<<< HEAD
-=======
-import MonitoringDetails from './scenes/technical/technical_details';
->>>>>>> 5cf7c49a0133c2736375d73ffb961e090d743372
+//import MonitoringDetails from './scenes/technical/technical_details';
 //import Technical from "./pages/Technical";
 import Recovery from './scenes/management/recovery';
 import RecoveryDrp from './scenes/management/recover_drp';
@@ -47,7 +40,7 @@ import RecoveryBackups from './scenes/management/recover_backups';
 import RecoveryLogging from './scenes/management/recover_logging';
 import Recover from './scenes/technical/technical_recover';
 import Efficiency from './scenes/technical/efficiency';
-import Organization from './scenes/technical/organization';
+import Organization from './scenes/monitoring/organization';
 import Security from './scenes/management/security';
 import SecurityEncryption from './scenes/management/security_encryption';
 import SecurityUsers from './scenes/management/security_users';
@@ -65,6 +58,7 @@ import Clients from "./scenes/clients/clients";
 import  UserIdleLogout  from './components/UserIdleLogout';
 import Enviroment from './scenes/enviroment';
 import Workload from "./scenes/enviroment/new_page";
+import WorkloadDB from "./scenes/enviroment/wco";
 import Change from './scenes/enviroment/change';
 import Details from './scenes/enviroment/change_details';
 import ChangeHistory from './scenes/enviroment/change_history';
@@ -534,18 +528,9 @@ function App() {
                   <ProtectedRoute allowedRoles={['reader', 'writer', 'admin']}>
                     <Routes>
                       <Route path="/" element={<Monitoring />} />
-<<<<<<< HEAD
                       <Route path="details/:databaseName" element={<DataMonitoring />} />
                       <Route path="details/:databaseName/performance" element={<Performance />} />
                       <Route path="details/:databaseName/recoverability" element={<Recoverability />} />
-
-
-
-=======
-                      <Route path="details/:databaseName" element={<MonitoringDetails />} />
->>>>>>> 5cf7c49a0133c2736375d73ffb961e090d743372
-                      <Route path="details/:databaseName/availability" element={<Availability />} />
-                      <Route path="details/:databaseName/efficiency" element={<Efficiency />} />
                       <Route path="details/:databaseName/organization" element={<Organization />} />
                       <Route path="details/:databaseName/technical_recover" element={<Recover />} />
                     </Routes>
@@ -562,12 +547,13 @@ function App() {
                     <Routes>
                       <Route path="/" element={<Enviroment />} />
                       {/* New dinamic route */}
+                     
                       <Route path="workload/:databaseName" element={<Workload />} />
-                      /environment/workload/${databaseName}
+
                       <Route path="change" element={<Change />} /> {/* Ruta relativa */}
                       <Route path="change/history" element={<ChangeHistory />} />
                       <Route path="change/details" element={<Details />} />
-                      <Route path="objects" element={<Objects />} />
+                      <Route path="objects/:databaseName" element={<Objects />} />
                       <Route path="objects/history" element={<ObjHistory />} />
                       <Route path="objects/details" element={<ObjDetails />} />
                     </Routes>

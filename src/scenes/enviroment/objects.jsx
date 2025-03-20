@@ -113,7 +113,7 @@ const Objects = ({onDataUpdate}) => { //Ths is just added by Jose
        <Grid container spacing={2}>
           <Grid item xs={6}>
             <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
-              Database: PRD_FRTS <br /><br />
+              Database: {databaseName} <br /><br />
             </Typography>
           </Grid>
           <Grid item xs={6}>

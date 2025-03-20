@@ -26,6 +26,7 @@ const Workload = ({ onDataUpdate }) => {
     color: "hsl(120, 70%, 50%)",
     data: Array.from({ length: 30 }, (_, i) => ({
       x: i % 5 === 0 ? i : null, // Solo asigna valor a x cada 5 iteraciones
+      axisBottom: i,
       y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
     })).filter((item) => item.x !== null), // Filtra los elementos donde x no sea null,
   }));
@@ -102,10 +103,12 @@ const Workload = ({ onDataUpdate }) => {
         {texts.map((text, index) => (
           <Box key={index} height="200px" position="relative">
             <Typography variant="h4" gutterBottom>
-              {text} {/* Mostrar el texto mapeado */}
+               {/* Mostrar el texto mapeado */}
             </Typography>
             <LineChart
               data={[workloadData[index]]}
+              enableLegends={false} // Deshabilita la leyenda
+  enableTooltip={false} // Deshabilita el tooltip
               yAxisLegend=""
               xAxisLegend="Hours"
               axisBottom={{
