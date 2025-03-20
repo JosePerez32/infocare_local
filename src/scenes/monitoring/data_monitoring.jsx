@@ -87,7 +87,7 @@ const DataMonitor = () => {
       onDrop={handleDrop(index)} // jp: Se ejecuta cuando se suelta el elemento
       onDragOver={handleDragOver} // jp: Permite que el elemento se pueda soltar
       onClick={() =>
-        navigate(`/monitoring/details/${databaseName}`, {
+        navigate(`/monitoring/details/${databaseName}${route}`, {
           state: { organization }
         })
       }
@@ -135,12 +135,12 @@ const DataMonitor = () => {
             case "performance":
               gaugeValue = responsiveData.cpu;
               gaugeTitle = "Performance";
-              gaugeRoute = "performance";
+              gaugeRoute = "/performance";
               break;
             case "recoverability":
               gaugeValue = responsiveData.memory;
               gaugeTitle = "Recoverality";
-              gaugeRoute = "recoverability";
+              gaugeRoute = "/recoverability";
               break;
             /*case "space":
               gaugeValue = responsiveData.space;
@@ -150,7 +150,7 @@ const DataMonitor = () => {
             case "organization":
               gaugeValue = responsiveData.speed;
               gaugeTitle = "Organization";
-              gaugeRoute = "organization";
+              gaugeRoute = "/organization";
               break;
             /*case "readiness":
               gaugeValue = responsiveData.readinessData;
