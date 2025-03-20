@@ -14,13 +14,15 @@ const Performance = () => {
   const { organization } = useLocation().state || {};
   const { source } = useParams(); // Retrieve source from the URL parameters
   const [responsiveData, setResponsiveData] = useState({
-    cpu: 0,
-    memory: 0,
-    space: 0,
-    speed: 0,
-    readiness: 0
+    cpu: 50,
+    memory: 30,
+    //space: 0,
+    speed: 40,
+    workload: 20,
+    readyness: 50,
+    connections: 40
   });
-  const [gaugeOrder, setGaugeOrder] = useState(["cpu", "memory", /*"space",*/ "speed"/*, "readiness"*/]); // jp: Estado para el orden de los gauges
+  const [gaugeOrder, setGaugeOrder] = useState(["cpu", "memory", /*"space",*/ "speed"/*, "readiness"*/,"workload","readyness","connections"]); // jp: Estado para el orden de los gauges
   const [alertVisible, setAlertVisible] = useState(false); // jp: Estado para mostrar alertas
 
   useEffect(() => {
@@ -142,21 +144,26 @@ const Performance = () => {
               gaugeTitle = "Memory";
               gaugeRoute = "memory";
               break;
-            /*case "space":
-              gaugeValue = responsiveData.space;
-              gaugeTitle = "Space Usage";
-              gaugeRoute = "space";
-              break;*/
             case "speed":
               gaugeValue = responsiveData.speed;
               gaugeTitle = "Speed";
               gaugeRoute = "speed";
               break;
-            /*case "readiness":
-              gaugeValue = responsiveData.readinessData;
-              gaugeTitle = "Readiness";
-              gaugeRoute = "readiness";
-              break;*/
+            case "workload":
+              gaugeValue = responsiveData.workload;
+              gaugeTitle = "Workload";
+              //gaugeRoute = "workload";
+              break;
+            case "readyness":
+              gaugeValue = responsiveData.readiness;
+              gaugeTitle = "Readyness";
+              //gaugeRoute = "readyness";
+              break;
+            case "connections":
+              gaugeValue = responsiveData.connections;
+              gaugeTitle = "Connections";
+              //gaugeRoute = "readyness";
+              break;
             default:
               gaugeValue = 0;
               gaugeTitle = "Unknown";

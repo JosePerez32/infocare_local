@@ -250,7 +250,7 @@ const Sidebar = () => {
             <Divider sx={{ my: 2 }} />
             <MenuItem
               title="Q-reports"
-              to="/environment"
+              to=""
               icon={<ReportIcon/>}
               selected={selected}
               setSelected={setSelected}

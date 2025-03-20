@@ -39,8 +39,8 @@ const DataMonitor = () => {
         );        
         const data = await response.json();
         setResponsiveData({
-          cpu: data.cpu,
-          memory: data.memory,
+          cpu: 50,
+          memory: 50,
           space: data.space,
           speed: data.speed,
           readiness: data.readinessData

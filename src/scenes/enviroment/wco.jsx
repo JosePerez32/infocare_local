@@ -43,7 +43,7 @@ const Botones = ({databaseName}) => {
                 color: "white",
               },
             }}
-            onClick={() => navigate("/environment/change")}
+            onClick={() => navigate(`/environment/change/${databaseName}`)}
           >
             CHANGE
           </Button>

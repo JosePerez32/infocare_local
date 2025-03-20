@@ -102,7 +102,7 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
       
       
     {/* Alert for the change in the order */}
-      <Header title={`Change` } subtitle=""    />
+      <Header title={`Change ${databaseName}` } subtitle=""    />
     {alertVisible && (
         <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
           Gauge chart order changed!

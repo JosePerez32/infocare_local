@@ -108,6 +108,11 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
         combinedPathnames.push(`objects of ${pathnames[i + 1]}`);
         i++; // Saltar la siguiente parte, ya que se ha combinado
       }
+      // Verifica si la parte anterior es "monitoring"
+      if (pathnames[i] === 'change' && i + 1 < pathnames.length) {
+        combinedPathnames.push(`Change of ${pathnames[i + 1]}`);
+        i++; // Saltar la siguiente parte, ya que se ha combinado
+      }
       else {
         combinedPathnames.push(pathnames[i]);
       }

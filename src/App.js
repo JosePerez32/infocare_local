@@ -550,7 +550,7 @@ function App() {
                      
                       <Route path="workload/:databaseName" element={<Workload />} />
 
-                      <Route path="change" element={<Change />} /> {/* Ruta relativa */}
+                      <Route path="change/:databaseName" element={<Change />} /> {/* Ruta relativa */}
                       <Route path="change/history" element={<ChangeHistory />} />
                       <Route path="change/details" element={<Details />} />
                       <Route path="objects/:databaseName" element={<Objects />} />
