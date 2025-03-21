@@ -26,27 +26,28 @@ const Chanhist = ({onDataUpdate}) => { //Ths is just added by Jose
       id: "Target only", // Identificador único para la primera línea
       color: "hsl(0, 0%, 0%)", // Negro
       data: Array.from({ length: 30 }, (_, i) => ({
-        x: i,
+        x: i % 5 === 0 ? i : null, // Solo asigna valor a x cada 5 iteraciones
         y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
-      })),
+      })).filter((item) => item.x !== null), // Filtra los elementos donde x no sea null,,
     },
     {
       id: "Difference", // Identificador único para la segunda línea
       color: "hsl(0, 100%, 50%)", // Rojo
       data: Array.from({ length: 30 }, (_, i) => ({
-        x: i,
+        x: i % 5 === 0 ? i : null, // Solo asigna valor a x cada 5 iteraciones
         y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
-      })),
+      })).filter((item) => item.x !== null), // Filtra los elementos donde x no sea null,,
     },
     {
       id: "Source only", // Identificador único para la tercera línea
       color: "hsl(60, 100%, 50%)", // Amarillo
       data: Array.from({ length: 30 }, (_, i) => ({
-        x: i,
+        x: i % 5 === 0 ? i : null, // Solo asigna valor a x cada 5 iteraciones
         y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
-      })),
+      })).filter((item) => item.x !== null), // Filtra los elementos donde x no sea null,,
     },
   ];
+  
       // Función para generar etiquetas personalizadas para el eje x
 const generateXAxisLabels = () => {
   const labels = [];
@@ -138,7 +139,7 @@ const generateXAxisLabels = () => {
             <Typography variant="h4" gutterBottom>
               {text}
             </Typography>
-            <LineChart data={workloadData}  xAxisLabels={["0 hr\n19 DD\n03 MM", "5 hr\n20 DD\n04 MM", "10 hr\n21 DD\n05 MM", "15 hr\n22 DD\n06 MM", "20 hr\n23 DD\n07 MM", "25 hr\n24 DD\n08 MM", "30 hr\n25 DD\n09 MM"]}yAxisLegend="" xAxisLegend="Days" />
+            <LineChart data={workloadData}  xAxisLabels={["0 hr\n19 DD\n03 MM", "5 hr\n20 DD\n04 MM", "10 hr\n21 DD\n05 MM", "15 hr\n22 DD\n06 MM", "20 hr\n23 DD\n07 MM", "25 hr\n24 DD\n08 MM", "30 hr\n25 DD\n09 MM"]}yAxisLegend="" xAxisLegend="" />
             </Box>
           ))}
           

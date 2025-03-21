@@ -4,7 +4,7 @@ import Header from "../../components/Header";
 import GaugeComponent from "react-gauge-component";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate, useLocation, Outlet } from "react-router-dom";
 
 const DataMonitor = () => {
   const { databaseName } = useParams();
@@ -13,6 +13,8 @@ const DataMonitor = () => {
   const navigate = useNavigate();
   const { organization } = useLocation().state || {};
   const { source } = useParams(); // Retrieve source from the URL parameters
+  const location = useLocation();
+  
   const [responsiveData, setResponsiveData] = useState({
     cpu: 0,
     memory: 0,
@@ -95,6 +97,10 @@ const DataMonitor = () => {
         cursor: "pointer",
         backgroundColor: colors.primary[400],
         padding: "20px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
         borderRadius: "8px"
       }}
     >
@@ -113,18 +119,19 @@ const DataMonitor = () => {
       />
     </Box>
   );
-
+  const isNestedRoute = location.pathname.includes(`/monitoring/details/Monitoring of ${databaseName}/part.charAt(0).toUpperCase() + part.slice(1);`);
   return (
     <Box m="20px">
-      <Header title={`Monitoring of ${databaseName.toUpperCase()}`} subtitle="" />
-
+      {!isNestedRoute && (
+        <Header title={`Monitoring of ${databaseName.toUpperCase()}`} subtitle="" />
+      )}
       {/* jp: Alert para cambios en el orden */}
       {alertVisible && (
         <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
           Gauge chart order changed!
         </Alert>
       )}
-
+      {!isNestedRoute && (
       <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
         {gaugeOrder.map((gaugeName, index) => {
           let gaugeValue;
@@ -173,7 +180,9 @@ const DataMonitor = () => {
             />
           );
         })}
-      </Box>
+        </Box>
+        )}{isNestedRoute && <Outlet />}
+      
     </Box>
   );
 };

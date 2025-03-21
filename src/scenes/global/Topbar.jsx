@@ -24,6 +24,7 @@ import Link from '@mui/material/Link';
 import CreateIcon from '@mui/icons-material/Create';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { source } from 'framer-motion/client';
+import user from '../users/createUser'
 
 const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
   const theme = useTheme();
@@ -276,7 +277,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
             {theme.palette.mode === "dark" ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
           </IconButtonWrapper>
           
-          <IconButtonWrapper title="Settings">
+          <IconButtonWrapper title="Settings" /*onClick={open.user}*/>
             <SettingsOutlinedIcon />
           </IconButtonWrapper>
           

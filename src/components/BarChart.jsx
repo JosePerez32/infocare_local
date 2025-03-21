@@ -31,7 +31,7 @@ const BarChart = ({ data, isCustomLineColors = false, isDashboard = false, yAxis
           },
           legend: {
             text: {
-              fill: colors.grey[100],
+              //fill: colors.grey[100],
             },
           },
           ticks: {
@@ -46,7 +46,7 @@ const BarChart = ({ data, isCustomLineColors = false, isDashboard = false, yAxis
         },
         legends: {
           text: {
-            fill: colors.grey[100],
+            //fill: colors.grey[100],
           },
         },
       }}
@@ -87,9 +87,9 @@ const BarChart = ({ data, isCustomLineColors = false, isDashboard = false, yAxis
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : xAxisLegend,
-        legendPosition: "middle",
-        legendOffset: 32,
+        //legend: isDashboard ? undefined : xAxisLegend,
+        //legendPosition: "middle",
+        //legendOffset: 32,
       }}
       axisLeft={{
         tickSize: 5,
@@ -115,10 +115,19 @@ const BarChart = ({ data, isCustomLineColors = false, isDashboard = false, yAxis
             borderRadius: "3px",
           }}
         >
-          <strong>{indexValue}</strong>: {value}
+          {indexValue === "Source" ? (
+            <strong>Source only</strong>
+          ) : indexValue === "Diff" ? (
+            <strong>Difference only</strong>
+          ) : indexValue === "Target" ? (
+            <strong>Target only</strong>
+          ) : (
+            <strong>{indexValue}</strong>
+          )}: {value}
         </div>
       )}
-      legends={[
+      //This was commented to delete the little quadro above the grafics
+      /*legends={[
         {
           dataFrom: "keys",
           anchor: "top",
@@ -141,7 +150,7 @@ const BarChart = ({ data, isCustomLineColors = false, isDashboard = false, yAxis
             },
           ],
         },
-      ]}
+      ]}*/
       role="application"
       barAriaLabel={(e) => `${e.id}: ${e.formattedValue} at time: ${e.indexValue}`}
     />

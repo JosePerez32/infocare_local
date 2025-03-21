@@ -25,12 +25,12 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
 
   const changeData = [
     {
-      id: "Porcent",
+      id: "",
       color: "hsl(240, 70%, 50%)",
       data: [
-        { x: "Production(Only)", y: Math.floor(Math.random() * 100) }, // Dato para "Production(Only)"
-        { x: "Difference", y: Math.floor(Math.random() * 100) }, // Dato para "Difference"
-        { x: "Acceptation(Only)", y: Math.floor(Math.random() * 100) }, // Dato para "Acceptation(Only)"
+        { x: "Source", y: Math.floor(Math.random() * 100) }, // Dato para "Production(Only)"
+        { x: "Diff", y: Math.floor(Math.random() * 100) }, // Dato para "Difference"
+        { x: "Target", y: Math.floor(Math.random() * 100) }, // Dato para "Acceptation(Only)"
       ],
     },
   ];
@@ -102,7 +102,7 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
       
       
     {/* Alert for the change in the order */}
-      <Header title={`Change ${databaseName}` } subtitle=""    />
+      <Header title={`Change of ${databaseName}` } subtitle=""    />
     {alertVisible && (
         <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
           Gauge chart order changed!
@@ -120,7 +120,7 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
               {text}
             </Typography>
             
-            <BarChart data={changeData} yAxisLegend="Sales" xAxisLegend="" />
+            <BarChart data={changeData} yAxisLegend="" xAxisLegend="" />
 
             </Box>
           ))}

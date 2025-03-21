@@ -125,6 +125,10 @@ const handleDragOver = (event) => {
                 backgroundColor: colors.primary[400],
                 padding: "20px",
                 borderRadius: "8px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center"
               }}
             >
               <Typography variant="h6" color={colors.grey[100]}>

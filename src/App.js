@@ -71,6 +71,7 @@ import MonitoringDetails from './scenes/technical/technical_details';
 import Recoverability from "./scenes/monitoring/recoverability";
 import ReportPage from "./scenes/ilmt";
 import QReport from "./scenes/ilmt";
+import Settings from "./scenes/users/createUser"
 
 //import NewPage from "./scenes/enviroment/new_page"; // Import the new component
 //
@@ -615,6 +616,7 @@ function App() {
               <Route path="/faq" element={<FAQ />} />
               <Route path="/ilmt" element={<ReportPage />} />
               <Route path="/q-reports" element={<QReport />} />
+              <Route path="/settings" element={<Settings />} />
 
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/unauthorized" element={<Unauthorized />} />

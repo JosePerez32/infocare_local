@@ -108,7 +108,7 @@ const Workload = ({ onDataUpdate }) => {
             <LineChart
               data={[workloadData[index]]}
               enableLegends={false} // Deshabilita la leyenda
-  enableTooltip={false} // Deshabilita el tooltip
+              enableTooltip={false} // Deshabilita el tooltip
               yAxisLegend=""
               xAxisLegend="Hours"
               axisBottom={{
@@ -122,10 +122,10 @@ const Workload = ({ onDataUpdate }) => {
                 right={0}
                 top={0}
                 bottom={0}
-                width="3px"
+                width="0px"
                 bgcolor={theme.palette.mode === "dark" ? "white" : "black"} // Cambia de color según el modo
                 zIndex={1} // Asegurar que la línea esté por encima del gráfico
-                height="100%" // Extender la línea hasta el final del contenedor
+                height="0%" // Extender la línea hasta el final del contenedor
               />
             )}
             {index < 9 && (
@@ -134,7 +134,7 @@ const Workload = ({ onDataUpdate }) => {
                 right={0}
                 top={0}
                 bottom={0}
-                width="3px"
+                width="0px" // jp: This is 0% In case that Hans in the future want the line back 
                 bgcolor={theme.palette.mode === "dark" ? "white" : "black"} // Cambia de color según el modo
                 zIndex={4} // Asegurar que la línea esté por encima del gráfico
                 height="100%" // Extender la línea hasta el final del contenedor

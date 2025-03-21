@@ -230,22 +230,7 @@ const Sidebar = () => {
               setSelected={setSelected}
               isCollapsed={isCollapsed}
             />
-              <MenuItem
-                title="Create User"
-                to="/createUser"
-                icon={<GroupAddIcon />}
-                selected={selected}
-                setSelected={setSelected}
-                isCollapsed={isCollapsed}
-              />
-              <MenuItem
-                title="Users List"
-                to="/users"
-                icon={<GroupIcon />}
-                selected={selected}
-                setSelected={setSelected}
-                isCollapsed={isCollapsed}
-              />
+              
             </MenuItem>
             <Divider sx={{ my: 2 }} />
             <MenuItem

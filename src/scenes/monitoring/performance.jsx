@@ -19,10 +19,10 @@ const Performance = () => {
     //space: 0,
     speed: 40,
     workload: 20,
-    readyness: 50,
+    readiness: 50,
     connections: 40
   });
-  const [gaugeOrder, setGaugeOrder] = useState(["cpu", "memory", /*"space",*/ "speed"/*, "readiness"*/,"workload","readyness","connections"]); // jp: Estado para el orden de los gauges
+  const [gaugeOrder, setGaugeOrder] = useState(["cpu", "memory", /*"space",*/ "speed"/*, "readiness"*/,"workload","readiness","connections"]); // jp: Estado para el orden de los gauges
   const [alertVisible, setAlertVisible] = useState(false); // jp: Estado para mostrar alertas
 
   useEffect(() => {
@@ -97,7 +97,11 @@ const Performance = () => {
         cursor: "pointer",
         backgroundColor: colors.primary[400],
         padding: "20px",
-        borderRadius: "8px"
+        display: "flex",
+        flexDirection: "column",
+        borderRadius: "8px",
+        alignItems: "center",
+        justifyContent: "center"
       }}
     >
       <Typography variant="h6" color={colors.grey[100]}>
@@ -118,7 +122,7 @@ const Performance = () => {
 
   return (
     <Box m="20px">
-      <Header title={`Monitoring for ${databaseName.toUpperCase()}`} subtitle="" />
+      <Header title={`Performance of ${databaseName.toUpperCase()}`} subtitle="" />
 
       {/* jp: Alert para cambios en el orden */}
       {alertVisible && (
@@ -154,15 +158,15 @@ const Performance = () => {
               gaugeTitle = "Workload";
               //gaugeRoute = "workload";
               break;
-            case "readyness":
+            case "readiness":
               gaugeValue = responsiveData.readiness;
-              gaugeTitle = "Readyness";
-              //gaugeRoute = "readyness";
+              gaugeTitle = "Readiness";
+              //gaugeRoute = "readiness";
               break;
             case "connections":
               gaugeValue = responsiveData.connections;
               gaugeTitle = "Connections";
-              //gaugeRoute = "readyness";
+              //gaugeRoute = "readiness";
               break;
             default:
               gaugeValue = 0;
