@@ -4,7 +4,7 @@ import Header from "../../components/Header";
 import GaugeComponent from "react-gauge-component";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 
 const Organization = () => {
   const { databaseName } = useParams(); // Get database name from the URL
@@ -18,7 +18,7 @@ const Organization = () => {
   const { organization } = useLocation().state || {};
   const [gaugeOrder, setGaugeOrder] = useState(["design", /*"comparison",*/ "statistics"/*, "scripts"*/]); // jp: State for the gauge order
   const [alertVisible, setAlertVisible] = useState(false); // jp: State to show an alert
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOrganizationData = async () => {
@@ -90,11 +90,14 @@ const handleDragOver = (event) => {
       {gaugeOrder.map((gaugeName, index) => {
           let gaugeValue;
           let gaugeTitle;
+          let gaugeRoute;
 
           switch (gaugeName) {
             case "design":
               gaugeValue = designData;
               gaugeTitle = "Design";
+              
+
               break;
             /*case "comparison":
               gaugeValue = comparisonData;
@@ -103,6 +106,7 @@ const handleDragOver = (event) => {
             case "statistics":
               gaugeValue = statisticsData;
               gaugeTitle = "Statistics";
+              gaugeRoute = "/statistics";
               break;
             /*case "scripts":
               gaugeValue = scriptsData;
@@ -120,6 +124,13 @@ const handleDragOver = (event) => {
               onDragStart={handleDragStart(index)} // jp: Runs when the drag starts
               onDrop={handleDrop(index)} // jp: Runs when the element is dropped
               onDragOver={handleDragOver} // jp: Makes the element droppable
+              onClick={() => {
+                if (gaugeRoute) {
+                  navigate(`details/${databaseName}/organization/${gaugeRoute}`, {
+                    state: { organization },
+                  });
+                }
+              }}
               style={{
                 cursor: "pointer",
                 backgroundColor: colors.primary[400],
@@ -135,6 +146,7 @@ const handleDragOver = (event) => {
                 {gaugeTitle}
               </Typography>
               <GaugeComponent
+              
                 value={gaugeValue}
                 type="radial"
                 labels={{

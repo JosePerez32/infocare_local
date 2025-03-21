@@ -72,6 +72,7 @@ import Recoverability from "./scenes/monitoring/recoverability";
 import ReportPage from "./scenes/ilmt";
 import QReport from "./scenes/ilmt";
 import Settings from "./scenes/users/createUser"
+import Statistics from "./scenes/monitoring/nietos/statistics";
 
 //import NewPage from "./scenes/enviroment/new_page"; // Import the new component
 //
@@ -535,6 +536,7 @@ function App() {
                       <Route path="details/:databaseName/performance" element={<Performance />} />
                       <Route path="details/:databaseName/recoverability" element={<Recoverability />} />
                       <Route path="details/:databaseName/organization" element={<Organization />} />
+                      <Route path="details/:databaseName/organization/statistics" element={<Statistics/>} />
                       <Route path="details/:databaseName/technical_recover" element={<Recover />} />
                     </Routes>
                   </ProtectedRoute>

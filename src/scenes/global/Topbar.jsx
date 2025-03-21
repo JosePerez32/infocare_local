@@ -37,7 +37,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
     '/': 'Home',
     '/dashboard': 'Dashboard',
     '/management': 'Management',
-    //'/monitoring': 'Monitoring',
+    '/organization': 'Organization',
     '/invoices': 'Invoices',
     '/form': 'Form',
     '/faq': 'FAQ',
