@@ -537,7 +537,7 @@ function App() {
                       <Route path="details/:databaseName/performance" element={<Performance />} />
                       <Route path="details/:databaseName/recoverability" element={<Recoverability />} />
                       <Route path="details/:databaseName/organization" element={<Organization />} />
-                      <Route path="monitoring/:databaseName/organization/statistics" element={<Statistics/>} />
+                      <Route path="details/:databaseName/organization/statistics" element={<Statistics/>} />
                       <Route path="monitoring/:databaseName/technical_recover" element={<Recover />} />
                     </Routes>
                   </ProtectedRoute>

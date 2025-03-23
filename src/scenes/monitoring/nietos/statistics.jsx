@@ -88,7 +88,7 @@ const Statistics = ({ onDataUpdate }) => {
   const handleDragOver = (event) => {
     event.preventDefault(); // Allow you to drop the element
   };
-  const isNestedRoute = location.pathname.includes(`/monitoring/details/Monitoring of ${databaseName}/organization/nietos`);
+  const isNestedRoute = location.pathname.includes(`/monitoring/details/Monitoring of ${databaseName}/organization/`);
 
   return (
     <Box m="20px">

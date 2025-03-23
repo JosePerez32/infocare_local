@@ -38,6 +38,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
     '/dashboard': 'Dashboard',
     '/management': 'Management',
     '/organization': 'Organization',
+    '/statistics' : 'Statistics',
     '/invoices': 'Invoices',
     '/form': 'Form',
     '/faq': 'FAQ',
@@ -51,59 +52,63 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
     '/security': 'Security',
     '/recovery': 'Recovery',
     '/environment': 'Environment', 
-    //'/monitoring' : 'Monitoring',   
+    '/monitoring' : 'Monitoring',   
     //'/monitoring of ' : 'Monitoring of',
   };
 
   const pathnames = location.pathname.split('/').filter((x) => x);
 
   const getBreadcrumbName = (pathname, part, index, parts) => {
-    /*if (breadcrumbNameMap[part]) {
+    // Variable para rastrear si 'details/' ya ha sido procesado
+    /*let x= 0;
+    let detailsProcessed = false;
+    if (part.startsWith('details/')  && detailsProcessed === false) {
+      const detailName = part.split('/')[1]; // Extrae el nombre después de "details/"
+      detailsProcessed = true; // Marca 'details/' como procesado
+      return `Monitoring of ${detailName} `+x;
+      x++;
+    }
+  
+    // Si 'details/' ya fue procesado o no comienza con 'details/', continúa con la lógica normal
+    if (breadcrumbNameMap[part]) {
       return breadcrumbNameMap[part];
     }
-    // Si la parte contiene "technical", cámbiala a "Monitoring" y capitaliza
-    if (part.toLowerCase().includes('technical')) {
-      return 'Monitoring';
-    }
-    // Si la parte comienza con "details/"
-    if (part.startsWith('details/')) {
-      const detailName = part.split('/')[1]; // Extrae el nombre después de "details/"
   
-      // Verifica si la parte anterior es "technical"
-      if (index > 0 && parts[index - 1] === 'technical') {
-        // Aquí puedes realizar alguna transformación o lógica adicional
-        return `Monitoring of ${detailName.toLowerCase()}`; // Convierte a minúsculas, por ejemplo
+    // Capitaliza la primera letra de la parte si no cumple con ninguna condición anterior
+    return part.charAt(0).toUpperCase() + part.slice(1);*/
+    //if (!part.includes('organizacion')) {
+      // Código que se ejecuta si 'organization' no está en part
+      if (part.startsWith('details/') ) {
+        const detailName = part.split('/')[1]; // Extrae el nombre después de "details/"
+        
+        return `Monitoring of ${detailName}`;
       }
-      // Si no cumple con las condiciones anteriores, devuelve "Details of [nombre]"
-      return `Monitoring of ${detailName}`;
       
-    }
-    /*if (index > 0 && parts[index - 1] === 'Monitoring of ') {
-      // Aquí puedes realizar alguna transformación o lógica adicional
-      return ``; // Convierte a minúsculas, por ejemplo
-    }*/
-    //else{
-    //  return part.charAt(0).toUpperCase() + part.slice(1);
-    //}
+  // Si la parte es "organization"
+  if (part === 'organization') {
+    return 'Organization';
+  }
+
+  // Si la parte es "statistics"
+  if (part === 'statistics') {
+    return 'Statistics';
+  }
       if (breadcrumbNameMap[part]) {
         return breadcrumbNameMap[part];
       }
-      // Si la parte comienza con "details/"
-      if (part.startsWith('details/')) {
-        const detailName = part.split('/')[1]; // Extrae el nombre después de "details/"
-        return `Monitoring of ${detailName}`;
-      }
-      // Capitaliza la primera letra de la parte si no cumple con ninguna condición anterior
+  
       return part.charAt(0).toUpperCase() + part.slice(1);
-    // Capitaliza la primera letra de la parte si no cumple con ninguna condición anterior
-    //return part.charAt(0).toUpperCase() + part.slice(1);
+    /*} else {
+      // Código que se ejecuta si 'organization' está en part
+      return 'Organization'; // O cualquier otro valor que desees devolver
+    }*/
   };
   
   const getLinkTo = (index, parts) => {
     const path = parts.slice(0, index + 1);
     if (path.some(part => part.startsWith('details/'))) {
       const detailsIndex = path.findIndex(part => part.startsWith('details/'));
-      path[detailsIndex] = path[detailsIndex].replace('details/', 'details/');
+      path[detailsIndex] = path[detailsIndex].replace('details/', );
     }
     return `/${path.join('/')}`;
   };
@@ -140,6 +145,10 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
         if (pathnames[i] === 'details' && i + 1 < pathnames.length) {
           // Combina "details" y la siguiente parte (por ejemplo, "acc_midd")
           combinedPathnames.push(`details/${pathnames[i + 1]}`);
+          if (pathnames[i] === pathnames[i+3]){
+            combinedPathnames.push(`details/${pathnames[i + 1]}`);
+            i=i+4;
+          }
           i++; // Saltar la siguiente parte, ya que se ha combinado
         } else {
           combinedPathnames.push(pathnames[i]);

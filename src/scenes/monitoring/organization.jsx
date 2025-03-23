@@ -126,11 +126,12 @@ const handleDragOver = (event) => {
               onDragOver={handleDragOver} // jp: Makes the element droppable
               onClick={() => {
                 if (gaugeRoute) {
-                  navigate(`details/${databaseName}/organization/${gaugeRoute}`, {
-                    state: { organization },
+                  navigate('statistics', {
+                    /*state: { organization },*/
                   });
                 }
               }}
+              
               style={{
                 cursor: "pointer",
                 backgroundColor: colors.primary[400],
