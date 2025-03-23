@@ -598,7 +598,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              
+              <Route
+                path="/support"
+                element={
+                  <ProtectedRoute allowedRoles={['writer', 'admin']}>
+                    <Users />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/createUser"
                 element={

@@ -217,20 +217,13 @@ const Sidebar = () => {
             <Divider sx={{ my: 2 }} />
             <MenuItem
               title="Support"
+              to="/support"
               icon={<PeopleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
               isCollapsed={isCollapsed}
             >
-              <MenuItem
-              title="Ticket"
-              to="/ticketing"
-              icon={<ArticleIcon/>}
-              selected={selected}
-              setSelected={setSelected}
-              isCollapsed={isCollapsed}
-            />
-              
+           
             </MenuItem>
             <Divider sx={{ my: 2 }} />
             <MenuItem
