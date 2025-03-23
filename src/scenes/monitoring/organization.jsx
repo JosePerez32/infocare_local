@@ -96,7 +96,7 @@ const handleDragOver = (event) => {
             case "design":
               gaugeValue = designData;
               gaugeTitle = "Design";
-              
+              gaugeRoute = "/design";
 
               break;
             /*case "comparison":
@@ -124,14 +124,11 @@ const handleDragOver = (event) => {
               onDragStart={handleDragStart(index)} // jp: Runs when the drag starts
               onDrop={handleDrop(index)} // jp: Runs when the element is dropped
               onDragOver={handleDragOver} // jp: Makes the element droppable
-              onClick={() => {
-                if (gaugeRoute) {
-                  navigate('statistics', {
-                    /*state: { organization },*/
-                  });
-                }
-              }}
-              
+              onClick={() => 
+                  navigate(`/monitoring/details/${databaseName}/organization${gaugeRoute}`, {
+                    state: { organization }, // Puedes pasar estado si es necesario
+                  })
+              }
               style={{
                 cursor: "pointer",
                 backgroundColor: colors.primary[400],

@@ -86,11 +86,11 @@ const Recoverability = () => {
       onDragStart={handleDragStart(index)} // jp: Se ejecuta cuando comienza el arrastre
       onDrop={handleDrop(index)} // jp: Se ejecuta cuando se suelta el elemento
       onDragOver={handleDragOver} // jp: Permite que el elemento se pueda soltar
-      /*onClick={() =>
-        navigate(`/monitoring/details/${databaseName}/${route}`, {
+      onClick={() =>
+        navigate(`/monitoring/details/${databaseName}/recoverability/${route}`, {
           state: { organization }
         })
-      }*/
+      }
       style={{
         cursor: "pointer",
         backgroundColor: colors.primary[400],

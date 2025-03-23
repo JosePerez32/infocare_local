@@ -88,11 +88,11 @@ const Performance = () => {
       onDragStart={handleDragStart(index)} // jp: Se ejecuta cuando comienza el arrastre
       onDrop={handleDrop(index)} // jp: Se ejecuta cuando se suelta el elemento
       onDragOver={handleDragOver} // jp: Permite que el elemento se pueda soltar
-      /*onClick={() =>
-        navigate(`/management/details/${databaseName}/responsiveness/${route}`, {
+      onClick={() =>
+        navigate(`/monitoring/details/${databaseName}/performance/${route}`, {
           state: { organization }
         })
-      }*/
+      }
       style={{
         cursor: "pointer",
         backgroundColor: colors.primary[400],
@@ -156,17 +156,17 @@ const Performance = () => {
             case "workload":
               gaugeValue = responsiveData.workload;
               gaugeTitle = "Workload";
-              //gaugeRoute = "workload";
+              gaugeRoute = "workload";
               break;
             case "readiness":
               gaugeValue = responsiveData.readiness;
               gaugeTitle = "Readiness";
-              //gaugeRoute = "readiness";
+              gaugeRoute = "readiness";
               break;
             case "connections":
               gaugeValue = responsiveData.connections;
               gaugeTitle = "Connections";
-              //gaugeRoute = "readiness";
+              gaugeRoute = "connections";
               break;
             default:
               gaugeValue = 0;

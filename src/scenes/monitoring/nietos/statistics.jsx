@@ -92,7 +92,7 @@ const Statistics = ({ onDataUpdate }) => {
 
   return (
     <Box m="20px">
-      <Header title={`Workload for ${databaseName}`} subtitle="" />
+      <Header title={`Statistics for ${databaseName}`} subtitle="" />
 
       {/* Alert for the change in the order */}
       {alertVisible && (
@@ -113,7 +113,7 @@ const Statistics = ({ onDataUpdate }) => {
               enableLegends={false} // Deshabilita la leyenda
               enableTooltip={false} // Deshabilita el tooltip
               yAxisLegend=""
-              xAxisLegend="Hours"
+              xAxisLegend=""
               axisBottom={{
                 tickValues: "" // Mostrar solo cada 5 cifras
               }}

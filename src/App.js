@@ -73,6 +73,17 @@ import ReportPage from "./scenes/ilmt";
 import QReport from "./scenes/ilmt";
 import Settings from "./scenes/users/createUser"
 import Statistics from "./scenes/monitoring/nietos/statistics";
+import Design from "./scenes/monitoring/nietos/design";
+import CPU from "./scenes/monitoring/nietos/cpu";
+import Memory from "./scenes/monitoring/nietos/memory";
+import Speed from "./scenes/monitoring/nietos/speed";
+import PerformanceWorkload from "./scenes/monitoring/nietos/workload";
+import Readiness from "./scenes/monitoring/nietos/readiness";
+import Connections from "./scenes/monitoring/nietos/connections";
+import RecoverabilityLogging from "./scenes/monitoring/nietos/logging";
+import Backups from "./scenes/monitoring/nietos/backups";
+import Storage from "./scenes/monitoring/nietos/storage";
+
 
 //import NewPage from "./scenes/enviroment/new_page"; // Import the new component
 //
@@ -538,6 +549,16 @@ function App() {
                       <Route path="details/:databaseName/recoverability" element={<Recoverability />} />
                       <Route path="details/:databaseName/organization" element={<Organization />} />
                       <Route path="details/:databaseName/organization/statistics" element={<Statistics/>} />
+                      <Route path="details/:databaseName/organization/design" element={<Design/>} />
+                      <Route path="details/:databaseName/performance/cpu" element={<CPU/>} />
+                      <Route path="details/:databaseName/performance/memory" element={<Memory/>} />
+                      <Route path="details/:databaseName/performance/speed" element={<Speed/>} />
+                      <Route path="details/:databaseName/performance/workload" element={<PerformanceWorkload/>} />
+                      <Route path="details/:databaseName/performance/readiness" element={<Readiness/>} />
+                      <Route path="details/:databaseName/performance/connections" element={<Connections/>} />
+                      <Route path="details/:databaseName/recoverability/recoveravility_logging" element={<Logging/>} />
+                      <Route path="details/:databaseName/recoverability/backups" element={<Backups/>} />
+                      <Route path="details/:databaseName/recoverability/storage" element={<Storage/>} />
                       <Route path="monitoring/:databaseName/technical_recover" element={<Recover />} />
                     </Routes>
                   </ProtectedRoute>

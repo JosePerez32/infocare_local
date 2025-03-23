@@ -1,12 +1,12 @@
 import { Box, Typography, Alert } from "@mui/material";
 import { useEffect, useState } from "react";
-import Header from "../../components/Header";
+import Header from "../../../components/Header";
 import { useTheme } from "@mui/material";
-import { tokens } from "../../theme";
+import { tokens } from "../../../theme";
 import { useParams, useLocation } from "react-router-dom";
-import LineChart from '../../components/LineChart';
+import LineChart from '../../../components/LineChart';
 
-const Workload = ({ onDataUpdate }) => {
+const CPU = ({ onDataUpdate }) => {
   const { databaseName } = useParams(); // Get database name from the URL
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -15,10 +15,10 @@ const Workload = ({ onDataUpdate }) => {
   const [spaceData, setSpaceData] = useState(98);
   const { source } = useParams(); // Retrieve source from the URL parameters
   const { organization } = useLocation().state || {};
-  const [gaugeOrder, setGaugeOrder] = useState(["workload", "change", "objects"]); // State for the gauges order
+  const [gaugeOrder, setGaugeOrder] = useState(["CPU USAGE"]); // State for the gauges order
   const [alertVisible, setAlertVisible] = useState(false); // State to show the alert
 
-  const texts = ["SELECT", "INSERT", "UPDATE", "DELETE", "LOCKS", "DEADLOCK", "WAIT TIME"];
+  const texts = ["CPU USAGE"];
 
   // Crear workloadData con el mismo id que el texto mapeado
   const workloadData = texts.map((text) => ({
@@ -89,7 +89,7 @@ const Workload = ({ onDataUpdate }) => {
 
   return (
     <Box m="20px">
-      <Header title={`Workload for ${databaseName}`} subtitle="" />
+      <Header title={`CPU for ${databaseName}`} subtitle="" />
 
       {/* Alert for the change in the order */}
       {alertVisible && (
@@ -110,7 +110,7 @@ const Workload = ({ onDataUpdate }) => {
               enableLegends={false} // Deshabilita la leyenda
               enableTooltip={false} // Deshabilita el tooltip
               yAxisLegend=""
-              xAxisLegend="Hours"
+              xAxisLegend=""
               axisBottom={{
                 tickValues: "" // Mostrar solo cada 5 cifras
               }}
@@ -147,4 +147,4 @@ const Workload = ({ onDataUpdate }) => {
   );
 };
 
-export default Workload;
+export default CPU;
