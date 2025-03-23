@@ -10,7 +10,8 @@ import {
   Tooltip,
   Chip,
   Breadcrumbs,
-  ListItemButton
+  ListItemButton,
+  Button
 } from "@mui/material";
 import { ColorModeContext } from "../../theme";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
@@ -19,7 +20,7 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useLocation, Link as RouterLink } from 'react-router-dom';
+import { useLocation, Link as RouterLink, useNavigate } from 'react-router-dom';
 import Link from '@mui/material/Link';
 import CreateIcon from '@mui/icons-material/Create';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -32,7 +33,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
   const location = useLocation();
   const userRole = userInfo?.role;
   const organization = userInfo?.organisation;
-
+  const navigate = useNavigate();
   const breadcrumbNameMap = {
     '/': 'Home',
     '/dashboard': 'Dashboard',
@@ -343,6 +344,22 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
           <IconButtonWrapper title="Logout" onClick={handleLogout}>
             <LogoutIcon />
           </IconButtonWrapper>
+          {/* Botón "Back" */}
+          <Button
+            variant="outlined"
+            onClick={() => navigate(-1)} // Navegar hacia atrás
+            sx={{
+              ml: 2, // Margen a la derecha para separar del resto del contenido
+              color: theme.palette.text.primary,
+              borderColor: theme.palette.divider,
+              '&:hover': {
+                borderColor: '#71D8BD',
+                color: '#71D8BD',
+              },
+            }}
+          >
+            Back
+          </Button>
         </Box>
       </Toolbar>
     </AppBar>
