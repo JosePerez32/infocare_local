@@ -112,7 +112,9 @@ const Monitoring = () => {
                 onDragStart={handleDragStart(index)}
                 onDrop={handleDrop(index)}
                 onDragOver={handleDragOver}
-                onClick={() => handleSourceClick(source)}
+                
+
+                onClick={() => navigate(`/monitoring/details/${source.name}`, )}
                 style={{
                   backgroundColor: colors.primary[400],
                   borderRadius: "8px",

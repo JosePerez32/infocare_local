@@ -50,13 +50,15 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
     '/readiness': 'Readiness',
     '/security': 'Security',
     '/recovery': 'Recovery',
-    '/environment': 'Environment',    
+    '/environment': 'Environment', 
+    //'/monitoring' : 'Monitoring',   
+    //'/monitoring of ' : 'Monitoring of',
   };
 
   const pathnames = location.pathname.split('/').filter((x) => x);
 
   const getBreadcrumbName = (pathname, part, index, parts) => {
-    if (breadcrumbNameMap[part]) {
+    /*if (breadcrumbNameMap[part]) {
       return breadcrumbNameMap[part];
     }
     // Si la parte contiene "technical", cámbiala a "Monitoring" y capitaliza
@@ -76,14 +78,23 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
       return `Monitoring of ${detailName}`;
       
     }
-    if (index > 0 && parts[index - 1] === 'Monitoring of ') {
+    /*if (index > 0 && parts[index - 1] === 'Monitoring of ') {
       // Aquí puedes realizar alguna transformación o lógica adicional
       return ``; // Convierte a minúsculas, por ejemplo
-    }
-    else{
+    }*/
+    //else{
+    //  return part.charAt(0).toUpperCase() + part.slice(1);
+    //}
+      if (breadcrumbNameMap[part]) {
+        return breadcrumbNameMap[part];
+      }
+      // Si la parte comienza con "details/"
+      if (part.startsWith('details/')) {
+        const detailName = part.split('/')[1]; // Extrae el nombre después de "details/"
+        return `Monitoring of ${detailName}`;
+      }
+      // Capitaliza la primera letra de la parte si no cumple con ninguna condición anterior
       return part.charAt(0).toUpperCase() + part.slice(1);
-    }
-  
     // Capitaliza la primera letra de la parte si no cumple con ninguna condición anterior
     //return part.charAt(0).toUpperCase() + part.slice(1);
   };
@@ -98,7 +109,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
   };
 
   const getCombinedBreadcrumbs = () => {
-    let combinedPathnames = [];
+    /*let combinedPathnames = [];
     for (let i = 0; i < pathnames.length; i++) {
       if (pathnames[i] === 'details' && i + 1 < pathnames.length) {
         combinedPathnames.push(`details/${pathnames[i + 1]}`);
@@ -123,7 +134,18 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
       }
       
     }
-    return combinedPathnames;
+    return combinedPathnames;*/
+      let combinedPathnames = [];
+      for (let i = 0; i < pathnames.length; i++) {
+        if (pathnames[i] === 'details' && i + 1 < pathnames.length) {
+          // Combina "details" y la siguiente parte (por ejemplo, "acc_midd")
+          combinedPathnames.push(`details/${pathnames[i + 1]}`);
+          i++; // Saltar la siguiente parte, ya que se ha combinado
+        } else {
+          combinedPathnames.push(pathnames[i]);
+        }
+      }
+      return combinedPathnames;
   };
 
   const combinedPathnames = getCombinedBreadcrumbs();

@@ -119,7 +119,7 @@ const DataMonitor = () => {
       />
     </Box>
   );
-  const isNestedRoute = location.pathname.includes(`/monitoring/details/Monitoring of ${databaseName}/part.charAt(0).toUpperCase() + part.slice(1);`);
+  const isNestedRoute = location.pathname.includes(`/monitoring/details/${databaseName}/${databaseName}`);
   return (
     <Box m="20px">
       {!isNestedRoute && (
