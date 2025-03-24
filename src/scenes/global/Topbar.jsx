@@ -60,87 +60,52 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
   const pathnames = location.pathname.split('/').filter((x) => x);
 
   const getBreadcrumbName = (pathname, part, index, parts) => {
-    // Variable para rastrear si 'details/' ya ha sido procesado
-    /*let x= 0;
-    let detailsProcessed = false;
-    if (part.startsWith('details/')  && detailsProcessed === false) {
-      const detailName = part.split('/')[1]; // Extrae el nombre después de "details/"
-      detailsProcessed = true; // Marca 'details/' como procesado
-      return `Monitoring of ${detailName} `+x;
-      x++;
-    }
-  
-    // Si 'details/' ya fue procesado o no comienza con 'details/', continúa con la lógica normal
-    if (breadcrumbNameMap[part]) {
-      return breadcrumbNameMap[part];
-    }
-  
-    // Capitaliza la primera letra de la parte si no cumple con ninguna condición anterior
-    return part.charAt(0).toUpperCase() + part.slice(1);*/
-    //if (!part.includes('organizacion')) {
-      // Código que se ejecuta si 'organization' no está en part
       if (part.startsWith('details/') ) {
         const detailName = part.split('/')[1]; // Extrae el nombre después de "details/"
         
         return `Monitoring of ${detailName}`;
       }
-      
-  // Si la parte es "organization"
-  if (part === 'organization') {
-    return 'Organization';
-  }
-
-  // Si la parte es "statistics"
-  if (part === 'statistics') {
-    return 'Statistics';
-  }
+      // Si la parte es "organization"
+      if (part === 'organization') {
+        return 'Organization';
+      }
+      // Si la parte es "statistics"
+      if (part === 'statistics') {
+        return 'Statistics';
+      }
       if (breadcrumbNameMap[part]) {
         return breadcrumbNameMap[part];
       }
-  
-      return part.charAt(0).toUpperCase() + part.slice(1);
-    /*} else {
-      // Código que se ejecuta si 'organization' está en part
-      return 'Organization'; // O cualquier otro valor que desees devolver
-    }*/
-  };
-  
+      if (pathnames.length && part !== 'change'){
+       // part.filter(part => part !== '');
+        return part.charAt(0).toUpperCase() + part.slice(1);
+      }
+      if (!part.includes('')){
+        return pathnames.length > 0 ? `/${pathnames.join('/')}` : '/'; 
+      }
+      if(part==='Change'){
+        return '';
+      }
+      
+
+    };
+
   const getLinkTo = (index, parts) => {
-    const path = parts.slice(0, index + 1);
+    const path = parts.slice(0, index + 1).filter(part => part !== '');
+
     if (path.some(part => part.startsWith('details/'))) {
       const detailsIndex = path.findIndex(part => part.startsWith('details/'));
-      path[detailsIndex] = path[detailsIndex].replace('details/', );
+      path[detailsIndex] = path[detailsIndex].replace('details/');
+    }
+    if (path.some(part => part.startsWith('Environment'))) {
+      const detailsIndex = path.findIndex(part => part.startsWith('environment'));
+      path[detailsIndex] = path[detailsIndex].replace('');
     }
     return `/${path.join('/')}`;
   };
 
   const getCombinedBreadcrumbs = () => {
-    /*let combinedPathnames = [];
-    for (let i = 0; i < pathnames.length; i++) {
-      if (pathnames[i] === 'details' && i + 1 < pathnames.length) {
-        combinedPathnames.push(`details/${pathnames[i + 1]}`);
-        i++; // Skip the next item as we've combined it
-      }
-      if (pathnames[i] === 'workload' && i + 1 < pathnames.length) {
-        combinedPathnames.push(`workload of ${pathnames[i + 1]}`);
-        i++; // Saltar la siguiente parte, ya que se ha combinado
-      }
-      // Verifica si la parte anterior es "monitoring"
-      if (pathnames[i] === 'objects' && i + 1 < pathnames.length) {
-        combinedPathnames.push(`objects of ${pathnames[i + 1]}`);
-        i++; // Saltar la siguiente parte, ya que se ha combinado
-      }
-      // Verifica si la parte anterior es "monitoring"
-      if (pathnames[i] === 'change' && i + 1 < pathnames.length) {
-        combinedPathnames.push(`Change of ${pathnames[i + 1]}`);
-        i++; // Saltar la siguiente parte, ya que se ha combinado
-      }
-      else {
-        combinedPathnames.push(pathnames[i]);
-      }
-      
-    }
-    return combinedPathnames;*/
+
       let combinedPathnames = [];
       for (let i = 0; i < pathnames.length; i++) {
         if (pathnames[i] === 'details' && i + 1 < pathnames.length) {
@@ -154,6 +119,10 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
         } else {
           combinedPathnames.push(pathnames[i]);
         }
+        if (pathnames[i] === 'change' && i + 1 < pathnames.length) {
+          // Combina "details" y la siguiente parte (por ejemplo, "acc_midd")
+          combinedPathnames.push(`Change of ${pathnames[i + 1]}`);
+          }
       }
       return combinedPathnames;
   };
