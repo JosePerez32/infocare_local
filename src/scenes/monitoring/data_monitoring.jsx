@@ -5,6 +5,7 @@ import GaugeComponent from "react-gauge-component";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { useParams, useNavigate, useLocation, Outlet } from "react-router-dom";
+import Recoverability from "./recoverability";
 
 const DataMonitor = () => {
   const { databaseName } = useParams();
@@ -16,11 +17,9 @@ const DataMonitor = () => {
   const location = useLocation();
   
   const [responsiveData, setResponsiveData] = useState({
-    cpu: 0,
-    memory: 0,
-    space: 0,
-    speed: 0,
-    readiness: 0
+    performance: 50,
+    recoverability: 25,
+    organization: 25
   });
   const [gaugeOrder, setGaugeOrder] = useState(["performance", "recoverability", /*"space",*/ "organization"/*, "readiness"*/]); // jp: Estado para el orden de los gauges
   const [alertVisible, setAlertVisible] = useState(false); // jp: Estado para mostrar alertas
@@ -140,12 +139,12 @@ const DataMonitor = () => {
 
           switch (gaugeName) {
             case "performance":
-              gaugeValue = responsiveData.cpu;
+              gaugeValue = responsiveData.performance;
               gaugeTitle = "Performance";
               gaugeRoute = "/performance";
               break;
             case "recoverability":
-              gaugeValue = responsiveData.memory;
+              gaugeValue = responsiveData.recoverability;
               gaugeTitle = "Recoverality";
               gaugeRoute = "/recoverability";
               break;
@@ -155,7 +154,7 @@ const DataMonitor = () => {
               gaugeRoute = "space";
               break;*/
             case "organization":
-              gaugeValue = responsiveData.speed;
+              gaugeValue = responsiveData.organization;
               gaugeTitle = "Organization";
               gaugeRoute = "/organization";
               break;

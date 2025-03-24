@@ -27,7 +27,7 @@ const Memory = ({ onDataUpdate }) => {
     data: Array.from({ length: 30 }, (_, i) => ({
       x: i % 5 === 0 ? i : null, // Solo asigna valor a x cada 5 iteraciones
       axisBottom: i,
-      y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
+      y: Math.floor(Math.random() * 50), // Número aleatorio entre 0 y 99
     })).filter((item) => item.x !== null), // Filtra los elementos donde x no sea null,
   }));
 

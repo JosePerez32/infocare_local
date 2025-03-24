@@ -94,7 +94,7 @@ const handleDragOver = (event) => {
 
           switch (gaugeName) {
             case "design":
-              gaugeValue = designData;
+              gaugeValue = 50;
               gaugeTitle = "Design";
               gaugeRoute = "/design";
 
@@ -104,7 +104,7 @@ const handleDragOver = (event) => {
               gaugeTitle = "Comparison";
               break;*/
             case "statistics":
-              gaugeValue = statisticsData;
+              gaugeValue = 50;
               gaugeTitle = "Statistics";
               gaugeRoute = "/statistics";
               break;

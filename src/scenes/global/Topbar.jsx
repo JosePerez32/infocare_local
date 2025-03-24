@@ -310,7 +310,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
             {theme.palette.mode === "dark" ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
           </IconButtonWrapper>
           
-          <IconButtonWrapper title="Settings" /*onClick={open.user}*/>
+          <IconButtonWrapper title="Settings" onClick={() => navigate('settings')}>
             <SettingsOutlinedIcon />
           </IconButtonWrapper>
           

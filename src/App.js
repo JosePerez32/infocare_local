@@ -71,7 +71,7 @@ import MonitoringDetails from './scenes/technical/technical_details';
 import Recoverability from "./scenes/monitoring/recoverability";
 import ReportPage from "./scenes/ilmt";
 import QReport from "./scenes/ilmt";
-import Settings from "./scenes/users/createUser"
+import Settings from "./scenes/settings"
 import Statistics from "./scenes/monitoring/nietos/statistics";
 import Design from "./scenes/monitoring/nietos/design";
 import CPU from "./scenes/monitoring/nietos/cpu";

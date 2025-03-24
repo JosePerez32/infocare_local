@@ -5,6 +5,7 @@ import GaugeComponent from "react-gauge-component";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import RecoveryBackups from "../management/recover_backups";
 
 const Recoverability = () => {
   const { databaseName } = useParams();
@@ -14,9 +15,9 @@ const Recoverability = () => {
   const { organization } = useLocation().state || {};
   const { source } = useParams(); // Retrieve source from the URL parameters
   const [responsiveData, setResponsiveData] = useState({
-    cpu: 0,
-    memory: 0,
-    space: 0,
+    RecoveryBackups: 50,
+    storage: 30,
+    logging: 20,
     speed: 0,
     readiness: 0
   });
@@ -137,12 +138,12 @@ const Recoverability = () => {
 
           switch (gaugeName) {
             case "storage":
-              gaugeValue = responsiveData.cpu;
+              gaugeValue = responsiveData.storage;
               gaugeTitle = "Storage";
               gaugeRoute = "storage";
               break;
             case "backups":
-              gaugeValue = responsiveData.memory;
+              gaugeValue = responsiveData.RecoveryBackups;
               gaugeTitle = "Backups";
               gaugeRoute = "backups";
               break;
@@ -152,7 +153,7 @@ const Recoverability = () => {
               gaugeRoute = "space";
               break;*/
             case "logging":
-              gaugeValue = responsiveData.speed;
+              gaugeValue = responsiveData.logging;
               gaugeTitle = "Logging";
               gaugeRoute = "logging";
               break;

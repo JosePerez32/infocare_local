@@ -14,13 +14,13 @@ const Performance = () => {
   const { organization } = useLocation().state || {};
   const { source } = useParams(); // Retrieve source from the URL parameters
   const [responsiveData, setResponsiveData] = useState({
-    cpu: 50,
-    memory: 30,
+    cpu: 20,
+    memory: 20,
     //space: 0,
-    speed: 40,
-    workload: 20,
-    readiness: 50,
-    connections: 40
+    speed: 20,
+    workload: 10,
+    readiness: 20,
+    connections: 10
   });
   const [gaugeOrder, setGaugeOrder] = useState(["cpu", "memory", /*"space",*/ "speed"/*, "readiness"*/,"workload","readiness","connections"]); // jp: Estado para el orden de los gauges
   const [alertVisible, setAlertVisible] = useState(false); // jp: Estado para mostrar alertas
