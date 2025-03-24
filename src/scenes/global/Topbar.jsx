@@ -60,6 +60,17 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
   const pathnames = location.pathname.split('/').filter((x) => x);
 
   const getBreadcrumbName = (pathname, part, index, parts) => {
+    /*
+      // Decodifica los caracteres especiales como %20
+      const decodedPart = decodeURIComponent(part);
+      if (decodedPart.startsWith('change/')) {
+        return `Change of ${decodedPart.split('/')[1]}`;
+      }
+      if (decodedPart.startsWith('change/')) {
+        return `Change of ${decodedPart.split('/')[1]}`;
+      }
+      return decodedPart;
+    */
       if (part.startsWith('details/') ) {
         const detailName = part.split('/')[1]; // Extrae el nombre después de "details/"
         
@@ -76,31 +87,43 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
       if (breadcrumbNameMap[part]) {
         return breadcrumbNameMap[part];
       }
-      if (pathnames.length && part !== 'change'){
+      if (pathname.length && part !== 'change'){
        // part.filter(part => part !== '');
         return part.charAt(0).toUpperCase() + part.slice(1);
       }
       if (!part.includes('')){
-        return pathnames.length > 0 ? `/${pathnames.join('/')}` : '/'; 
+        return pathname.length > 0 ? `/${pathname.join('/')}` : '/'; 
       }
-      if(part==='Change'){
+      // Manejo especial para "change" + siguiente parte
+      if (part === 'change' && index+1 < parts.length) {
+        if (parts[index + 1] === 'history'){
+          return '';
+        }
+        else{
+          return `Change of ${pathnames[index+1]}`;
+        }
+      }
+
+      // Si es el valor después de "change", lo omitimos porque ya lo mostramos en el anterior
+      
+      
+      if (index > 0 && parts[index - 1] === 'change') {
         return '';
       }
-      
-
     };
 
   const getLinkTo = (index, parts) => {
-    const path = parts.slice(0, index + 1).filter(part => part !== '');
-
-    if (path.some(part => part.startsWith('details/'))) {
-      const detailsIndex = path.findIndex(part => part.startsWith('details/'));
-      path[detailsIndex] = path[detailsIndex].replace('details/');
+    const path = [];
+  
+    for (let i = 0; i <= index; i++) {
+      // Saltamos el valor después de "change" porque ya está incluido en el breadcrumb anterior
+      if (i > 0 && parts[i - 1] === 'change') continue;
+      
+      if (parts[i] && parts[i].trim() !== '') {
+        path.push(parts[i]);
+      }
     }
-    if (path.some(part => part.startsWith('Environment'))) {
-      const detailsIndex = path.findIndex(part => part.startsWith('environment'));
-      path[detailsIndex] = path[detailsIndex].replace('');
-    }
+    
     return `/${path.join('/')}`;
   };
 
@@ -108,21 +131,33 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
 
       let combinedPathnames = [];
       for (let i = 0; i < pathnames.length; i++) {
+        
+        // Primero filtramos elementos vacíos o que solo contengan espacios
+        if (!pathnames[i] || pathnames[i].trim() === '') continue;
+        
         if (pathnames[i] === 'details' && i + 1 < pathnames.length) {
-          // Combina "details" y la siguiente parte (por ejemplo, "acc_midd")
-          combinedPathnames.push(`details/${pathnames[i + 1]}`);
-          if (pathnames[i] === pathnames[i+3]){
+          if (pathnames[i + 1] && pathnames[i + 1].trim() !== '') {
+            // Combina "details" y la siguiente parte (por ejemplo, "acc_midd")
             combinedPathnames.push(`details/${pathnames[i + 1]}`);
-            i=i+4;
+            if (pathnames[i] === pathnames[i+3]){
+              if (pathnames[i + 1] && pathnames[i + 1].trim() !== '') {
+                combinedPathnames.push(`details/${pathnames[i + 1]}`);
+              }
+              i=i+4;
+            }
           }
-          i++; // Saltar la siguiente parte, ya que se ha combinado
-        } else {
+        i++; // Saltar la siguiente parte, ya que se ha combinado
+        } else if (pathnames[i] === 'change' && i + 1 < pathnames.length ){
+          //combinedPathnames.push(pathnames[i]);
+          // Mantenemos "change" y el valor separados para la URL
+          combinedPathnames.push('change');
           combinedPathnames.push(pathnames[i]);
+          i++;
         }
-        if (pathnames[i] === 'change' && i + 1 < pathnames.length) {
-          // Combina "details" y la siguiente parte (por ejemplo, "acc_midd")
-          combinedPathnames.push(`Change of ${pathnames[i + 1]}`);
-          }
+        else {
+              combinedPathnames.push(pathnames[i]);
+        }
+          //pathnames[i].filter(i => i !== '');
       }
       return combinedPathnames;
   };
