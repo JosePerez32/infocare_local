@@ -103,10 +103,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
           return `Change of ${pathnames[index+1]}`;
         }
       }
-
       // Si es el valor después de "change", lo omitimos porque ya lo mostramos en el anterior
-      
-      
       if (index > 0 && parts[index - 1] === 'change') {
         return '';
       }
