@@ -31,7 +31,7 @@ const SettingsButtons = () => {
             color: "white",
           },
         }}
-        //onClick={() => navigate("/environment/change/history/change_history")} // Navegar a la página de TABLES
+        onClick={() => navigate("createUser")} // Navegar a la página de TABLES
       >
         <PersonIcon sx={{ fontSize: "4rem" }}></PersonIcon> 
       </Button>

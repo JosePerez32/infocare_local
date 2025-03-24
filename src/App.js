@@ -20,6 +20,7 @@ import logoImage from './images/Watermark_Project_rechts_24pxPNG.png';
 
 // Import all existing components
 import { ColorModeContext, useMode } from "./theme";
+
 import Topbar from "./scenes/global/Topbar";
 import Sidebar from "./scenes/global/Sidebar";
 import Dashboard from "./scenes/dashboard";
@@ -83,7 +84,7 @@ import Connections from "./scenes/monitoring/nietos/connections";
 import RecoverabilityLogging from "./scenes/monitoring/nietos/logging";
 import Backups from "./scenes/monitoring/nietos/backups";
 import Storage from "./scenes/monitoring/nietos/storage";
-
+import Support from "./scenes/support"
 
 //import NewPage from "./scenes/enviroment/new_page"; // Import the new component
 //
@@ -601,8 +602,9 @@ function App() {
               <Route
                 path="/support"
                 element={
+                  
                   <ProtectedRoute allowedRoles={['writer', 'admin']}>
-                    <Users />
+                    <Support />
                   </ProtectedRoute>
                 }
               />
@@ -648,7 +650,7 @@ function App() {
               <Route path="/ilmt" element={<ReportPage />} />
               <Route path="/q-reports" element={<QReport />} />
               <Route path="/settings" element={<Settings />} />
-
+              <Route path="/settings/createUser" element={<CreateUser />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
             </Routes>
