@@ -233,7 +233,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
     if (organization) {
       return (
         <Chip
-          label={organization}
+          label={'could_be_you'}
           sx={{
             ml: 2,
             bgcolor: 'rgba(113, 216, 189, 0.1)',
