@@ -11,6 +11,7 @@ import ObjectButtons from "./buttons_objects";
 import ObjectTopButtons from "./buttons_history_details_objects";
 import  LineChart from '../line';
 import { Bar } from "react-chartjs-2";
+//import CellsImg from "../../../public/assets/cells.png";
 //import Enviroment from ".";
 
 const Objects = ({onDataUpdate}) => { //Ths is just added by Jose
@@ -114,6 +115,7 @@ const Objects = ({onDataUpdate}) => { //Ths is just added by Jose
           <Grid item xs={6}>
             <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
               Database: {databaseName} <br /><br />
+              
             </Typography>
           </Grid>
           <Grid item xs={6}>
@@ -124,7 +126,8 @@ const Objects = ({onDataUpdate}) => { //Ths is just added by Jose
         </Grid>  
        {/* Contenedor de gráficos */}
        <Box m="10px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
-       <ObjectTopButtons databaseName={databaseName}/>
+        
+       <ObjectTopButtons databaseName={databaseName} />
        </Box>
        
        <ObjectButtons></ObjectButtons>
