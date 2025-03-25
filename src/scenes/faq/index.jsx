@@ -15,7 +15,7 @@ const FAQ = () => {
   const colors = tokens(theme.palette.mode);
   const [searchResults, setSearchResults] = useState(faqData);
   const handleSearch = (searchValue) => {
-    console.log("Buscando:", searchValue);
+    console.log("Searching:", searchValue);
     // Aquí puedes agregar la lógica para realizar la búsqueda
     // Por ejemplo, hacer una llamada a una API o filtrar datos locales
     const filteredResults = faqData.filter((item) =>

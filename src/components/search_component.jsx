@@ -28,7 +28,7 @@ const SearchBar = ({ onSearch }) => {
       <TextField
         variant="outlined"
         size="small"
-        placeholder="Buscar..."
+        placeholder="Search..."
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
         onKeyPress={handleKeyPress}
@@ -39,7 +39,7 @@ const SearchBar = ({ onSearch }) => {
         onClick={handleSearch}
         startIcon={<SearchIcon />}
       >
-        Buscar
+        Search
       </Button>
     </Box>
   );
