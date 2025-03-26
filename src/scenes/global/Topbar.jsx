@@ -60,97 +60,99 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
 
   const pathnames = location.pathname.split('/').filter((x) => x);
 
-  const getBreadcrumbName = (pathname, part, index, parts) => {
-    /*
-      // Decodifica los caracteres especiales como %20
-      const decodedPart = decodeURIComponent(part);
-      if (decodedPart.startsWith('change/')) {
-        return `Change of ${decodedPart.split('/')[1]}`;
-      }
-      if (decodedPart.startsWith('change/')) {
-        return `Change of ${decodedPart.split('/')[1]}`;
-      }
-      return decodedPart;
-    */
-          if (part.startsWith('details/') ) {
-            const detailName = part.split('/')[1]; // Extrae el nombre después de "details/"
-              return `Monitoring of ${detailName}`;
-          }
-          else if(part.startsWith('deta/') ) {
-            const detailName = part.split('/')[1]; // Extrae el nombre después de "deta/"
+  const prefixMap = {
+    'details/': (part) => `Monitoring of ${part.split('/')[1]}`,
+    'deta/': (part) => `Workload of ${part.split('/')[1]}`,
+    'objects/': (part) => `Objects of ${part.split('/')[1]}`
+  };
+  
+  const specialCasesMap = {
+    'change': (index, parts, pathnames) => 
+      index + 1 < parts.length ? `Change of ${pathnames[index+1]}` : '',
+    'objects': (index, parts, pathnames) =>
+      index + 1 < parts.length ? `Objects of ${pathnames[index+1]}` : ''
+  };
+          const shouldBeTextOnly = (part) => {
+            // Lista de partes que no deben ser clickeables
+            const nonClickableParts = [
               
-              return `Workload of ${detailName}`;
-          }
-          else if (part.startsWith('alpha/')){
-            const detailName = part.split('/')[1]; // Extrae el nombre después de "deta/"
-            return `Objects of ${detailName}`;
-          }
-          // Si la parte es "organization"
-          /*if (part === 'organization') {
-            return 'Organization';
-          }
-          // Si la parte es "statistics"
-          if (part === 'statistics') {
-            return 'Statistics';
-          }*/
-          else if (breadcrumbNameMap[part]) {
-            return breadcrumbNameMap[part];
-          }
-          // Manejo especial para "change" + siguiente parte
-          else if (part === 'change' && index+1 < parts.length) {
-            /*if (parts[index + 1] === 'change'){
-              return ;
-            }
-            else{*/
-              return `Change of ${pathnames[index+1]}`;
-            //}
-          }
-          else if (part === 'alpha' && index+1 < parts.length) {
-            /*if (parts[index + 1] === 'change'){
-              return ;
-            }
-            else{*/
-              return `Objects of ${pathnames[index+2]}`;
-            //}
-          }
-          else if (part === 'change')
-          {
-            return;
-          }
-          /*else if (part === 'change' && index > 0 && parts[index - 2] ==='change'){
-            return ;
-          }*/
-          else if (!part.includes('')){
-            return pathname.length > 0 ? `/${pathname.join('/')}` : '/'; 
-          }
-          // Si es el valor después de "change", lo omitimos porque ya lo mostramos en el anterior
-          else if (index > 0 && parts[index - 1] === 'change') {
-            return;
-          }
-          else if (pathname.includes(`${pathnames[index+1]}`) && part === 'history')
-            {
-              return part.charAt(0).toUpperCase() + part.slice(1);
-            }
-          else {
-            // part.filter(part => part !== '');
-              return part.charAt(0).toUpperCase() + part.slice(1);
-            }
-    };
+              'history',
+              'workload',
+              // Agrega aquí cualquier otro caso que no deba ser link
+            ];
+            
+            return nonClickableParts.some(ncp => part.includes(ncp));
+          };
 
-      const getLinkTo = (index, parts) => {
-        const path = [];
-      
-        for (let i = 0; i <= index; i++) {
-          // Saltamos el valor después de "change" porque ya está incluido en el breadcrumb anterior
-          //if (i > 0 && parts[i - 1] === 'change') continue;
+          const getBreadcrumbName = (pathname, part, index, parts) => {
+            // Caso para "details/[nombre]"
+            if (part.startsWith('details/')) {
+              const objName = part.split('/')[1];
+              return `Monitoring of ${objName}`;
+            }
+            
+            // Caso para "objects/[nombre]"
+            if (part === 'objects' && index + 1 < parts.length) {
+              return `Objects of ${parts[index + 1]}`;
+            }
+            // 1. Verificar prefijos especiales
+            for (const [prefix, formatter] of Object.entries(prefixMap)) {
+              if (part.startsWith(prefix)) {
+                return formatter(part);
+              }
+            }
           
-          if (parts[i] && parts[i].trim() !== '') {
-            path.push(parts[i]);
-          }
-        }
-        
-        return `/${path.join('/')}`;
-      };
+            // 2. Verificar casos especiales
+            if (specialCasesMap[part]) {
+              return specialCasesMap[part](index, parts, pathnames);
+            }
+          
+            // 3. Ocultar valores después de 'change'
+            if (index > 0 && parts[index - 1] === 'change') {
+              return null; // Cambiado a null para que no se renderice
+            }
+            if (index > 0 && parts[index - 1] === 'objects') {
+              return null; // Cambiado a null para que no se renderice
+            }
+          
+            // 4. Buscar en el mapa de nombres
+            if (breadcrumbNameMap[part]) {
+              return breadcrumbNameMap[part];
+            }
+          
+            // 5. Caso por defecto
+            return part.charAt(0).toUpperCase() + part.slice(1);
+          };
+      
+          const getLinkTo = (index, parts) => {
+            const path = [];
+            
+            // Caso especial para rutas "objects/[nombre]/details"
+            /*if (parts[index]?.startsWith('details/')) {
+              // Para "details/prd_lst", regresar a "objects/prd_lst"
+              const objName = parts[index].split('/')[1];
+              return `/environment/objects/${objName}`;
+            }*/
+            
+            // Caso especial para "Objects of [nombre]"
+            if (parts[index] === 'objects' && index + 1 < parts.length) {
+              return `/environment/objects/${parts[index + 1]}`;
+            }
+            if (parts[index] === 'change' && index + 1 < parts.length) {
+              return `/environment/change/${parts[index + 1]}`;
+            }
+          
+            // Construcción normal de la ruta
+            for (let i = 0; i <= index; i++) {
+              if (parts[i] && parts[i].trim() !== '') {
+                // Saltamos el valor después de "details" ya que ya lo procesamos
+                if (i > 0 && parts[i - 1] === 'details') continue;
+                path.push(parts[i]);
+              }
+            }
+            
+            return `/${path.join('/')}`;
+          };
 
       const getCombinedBreadcrumbs = () => {
         let combinedPathnames = [];
@@ -296,46 +298,63 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
     >
       <Toolbar sx={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-          <Breadcrumbs 
-            aria-label="breadcrumb" 
-            sx={{ 
-              flexGrow: 1,
-              '& .MuiLink-root': {
-                color: theme.palette.text.primary,
-                '&:hover': {
-                  color: '#71D8BD',
-                }
-              },
-              '& .MuiTypography-root': {
+        <Breadcrumbs 
+          aria-label="breadcrumb" 
+          sx={{ 
+            flexGrow: 1,
+            '& .MuiLink-root': {
+              color: theme.palette.text.primary,
+              '&:hover': {
                 color: '#71D8BD',
-              }
-            }}
-          >
-            <Link component={RouterLink} underline="hover" color="inherit" to="/">
-              {breadcrumbNameMap['/']}
-            </Link>
-            {combinedPathnames.map((value, index) => {
-              const last = index === combinedPathnames.length - 1;
-              const to = getLinkTo(index, combinedPathnames);
-
-              return last ? (
-                <Typography color="text.primary" key={to}>
-                  {getBreadcrumbName(location.pathname, value, index, combinedPathnames)}
+                textDecoration: 'underline'
+              },
+              textDecoration: 'none'
+            },
+            '& .MuiTypography-root': {
+              color: '#71D8BD',
+              fontWeight: 'medium'
+            }
+          }}
+        >
+          <Link component={RouterLink} underline="hover" color="inherit" to="/">
+            {breadcrumbNameMap['/']}
+          </Link>
+          {combinedPathnames.map((value, index) => {
+            const last = index === combinedPathnames.length - 1;
+            const to = getLinkTo(index, combinedPathnames);
+            const displayName = getBreadcrumbName(location.pathname, value, index, combinedPathnames);
+            
+            if (!displayName) return null;
+            
+            if (last || shouldBeTextOnly(value)) {
+              return (
+                <Typography color="text.primary" key={to || index}>
+                  {displayName}
                 </Typography>
-              ) : (
-                <Link
+              );
+            }
+            
+            return (
+              <Link
                 component={RouterLink}
                 underline="hover"
                 color="inherit"
                 to={to}
-                state={{ organization }} // Add this line
+                state={{ organization }}
                 key={to}
+                sx={{
+                  color: theme.palette.text.primary,
+                  '&:hover': {
+                    color: '#71D8BD',
+                    textDecoration: 'underline'
+                  }
+                }}
               >
-                {getBreadcrumbName(location.pathname, value, index, combinedPathnames)}
+                {displayName}
               </Link>
-              );
-            })}
-          </Breadcrumbs>
+            );
+          })}
+        </Breadcrumbs>
         </Box>
         
         <Box sx={{ display: 'flex', alignItems: 'center' }}>

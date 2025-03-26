@@ -61,7 +61,7 @@ const Botones = ({databaseName}) => {
                 color: "white",
               },
             }}
-            onClick={() => navigate(`alpha/objects/${databaseName}`)}
+            onClick={() => navigate(`objects/${databaseName}`)}
           >
             OBJECTS
           </Button>

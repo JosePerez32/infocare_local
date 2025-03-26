@@ -581,9 +581,9 @@ function App() {
                       <Route path="change/:databaseName" element={<Change />} /> {/* Ruta relativa */}
                       <Route path="change/:databaseName/history" element={<ChangeHistory />} />
                       <Route path="change/:databaseName/details" element={<ChangeDetails />} />
-                      <Route path="alpha/objects/:databaseName" element={<Objects />} />
-                      <Route path="alpha/objects/:databaseName/history" element={<ObjHistory />} />
-                      <Route path="alpha/objects/:databaseName/details" element={<ObjDetails />} />
+                      <Route path="objects/:databaseName" element={<Objects />} />
+                      <Route path="objects/:databaseName/history" element={<ObjHistory />} />
+                      <Route path="objects/:databaseName/details" element={<ObjDetails />} />
                     </Routes>
                   </ProtectedRoute>
                 }
