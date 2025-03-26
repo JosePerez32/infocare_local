@@ -26,7 +26,7 @@ const ObjectTopButtons = ({databaseName}) => {
                 
               },
             }}
-            onClick={() => navigate(`/environment/objects/${databaseName}/history`)} // Surf to a new_page.jsx
+            onClick={() => navigate(`/environment/alpha/objects/${databaseName}/history`)} // Surf to a new_page.jsx
           >
             History
           </Button>
@@ -47,7 +47,7 @@ const ObjectTopButtons = ({databaseName}) => {
                 
               },
             }}
-            onClick={() => navigate(`/environment/objects/${databaseName}/details`)} // Surf to a new_page.jsx
+            onClick={() => navigate(`/environment/alpha/objects/${databaseName}/details`)} // Surf to a new_page.jsx
           >
             Details 
           </Button>

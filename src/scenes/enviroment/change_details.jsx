@@ -121,17 +121,17 @@ const Details = ({onDataUpdate}) => { //Ths is just added by Jose
       
       
       <Grid container spacing={2}>
-  <Grid item xs={6}>
-    <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
-    Source: {databaseName} <br /><br />Target  :
-    </Typography>
-  </Grid>
-  <Grid item xs={6}>
-    <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
-      TIME<br /><br />TIME {/* Aquí puedes agregar el valor de Target si es dinámico */}
-    </Typography>
-  </Grid>
-</Grid>  
+          <Grid item xs={6}>
+            <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
+            Source: {databaseName} <br /><br />Target  :
+            </Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
+              TIME<br /><br />TIME {/* Aquí puedes agregar el valor de Target si es dinámico */}
+            </Typography>
+          </Grid>
+        </Grid>  
          {["TABLE", "INDEX", "VIEW"].map((text, index) => (
                 <Box key={index} sx={{ textAlign: 'center' }}> {/* Contenedor para el título y la tabla */}
                 <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'Withe' }}>

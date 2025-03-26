@@ -23,7 +23,7 @@ const Botones = ({databaseName}) => {
                 color: "white",
               },
             }}
-            onClick={() =>  navigate(`/environment/workload/${databaseName}`)
+            onClick={() =>  navigate(`deta/${databaseName}/workload`)
         }
           
             >
@@ -43,7 +43,7 @@ const Botones = ({databaseName}) => {
                 color: "white",
               },
             }}
-            onClick={() => navigate(`/environment/change/${databaseName}`)}
+            onClick={() => navigate(`change/${databaseName}`)}
           >
             CHANGE
           </Button>
@@ -61,7 +61,7 @@ const Botones = ({databaseName}) => {
                 color: "white",
               },
             }}
-            onClick={() => navigate(`/environment/objects/${databaseName}`)}
+            onClick={() => navigate(`alpha/objects/${databaseName}`)}
           >
             OBJECTS
           </Button>

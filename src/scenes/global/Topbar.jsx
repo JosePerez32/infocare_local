@@ -53,7 +53,8 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
     '/security': 'Security',
     '/recovery': 'Recovery',
     '/environment': 'Environment', 
-    '/monitoring' : 'Monitoring',   
+    '/monitoring' : 'Monitoring',  
+    'deta/objects' : 'Objects of',  
     //'/monitoring of ' : 'Monitoring of',
   };
 
@@ -71,93 +72,125 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
       }
       return decodedPart;
     */
-      if (part.startsWith('details/') ) {
-        const detailName = part.split('/')[1]; // Extrae el nombre después de "details/"
-        
-        return `Monitoring of ${detailName}`;
-      }
-      // Si la parte es "organization"
-      if (part === 'organization') {
-        return 'Organization';
-      }
-      // Si la parte es "statistics"
-      if (part === 'statistics') {
-        return 'Statistics';
-      }
-      if (breadcrumbNameMap[part]) {
-        return breadcrumbNameMap[part];
-      }
-      if (pathname.length && part !== 'change'){
-       // part.filter(part => part !== '');
-        return part.charAt(0).toUpperCase() + part.slice(1);
-      }
-      if (!part.includes('')){
-        return pathname.length > 0 ? `/${pathname.join('/')}` : '/'; 
-      }
-      // Manejo especial para "change" + siguiente parte
-      if (part === 'change' && index+1 < parts.length) {
-        if (parts[index + 1] === 'history'){
-          return '';
-        }
-        else{
-          return `Change of ${pathnames[index+1]}`;
-        }
-      }
-      // Si es el valor después de "change", lo omitimos porque ya lo mostramos en el anterior
-      if (index > 0 && parts[index - 1] === 'change') {
-        return '';
-      }
+          if (part.startsWith('details/') ) {
+            const detailName = part.split('/')[1]; // Extrae el nombre después de "details/"
+              return `Monitoring of ${detailName}`;
+          }
+          else if(part.startsWith('deta/') ) {
+            const detailName = part.split('/')[1]; // Extrae el nombre después de "deta/"
+              
+              return `Workload of ${detailName}`;
+          }
+          else if (part.startsWith('alpha/')){
+            const detailName = part.split('/')[1]; // Extrae el nombre después de "deta/"
+            return `Objects of ${detailName}`;
+          }
+          // Si la parte es "organization"
+          /*if (part === 'organization') {
+            return 'Organization';
+          }
+          // Si la parte es "statistics"
+          if (part === 'statistics') {
+            return 'Statistics';
+          }*/
+          else if (breadcrumbNameMap[part]) {
+            return breadcrumbNameMap[part];
+          }
+          // Manejo especial para "change" + siguiente parte
+          else if (part === 'change' && index+1 < parts.length) {
+            /*if (parts[index + 1] === 'change'){
+              return ;
+            }
+            else{*/
+              return `Change of ${pathnames[index+1]}`;
+            //}
+          }
+          else if (part === 'alpha' && index+1 < parts.length) {
+            /*if (parts[index + 1] === 'change'){
+              return ;
+            }
+            else{*/
+              return `Objects of ${pathnames[index+2]}`;
+            //}
+          }
+          else if (part === 'change')
+          {
+            return;
+          }
+          /*else if (part === 'change' && index > 0 && parts[index - 2] ==='change'){
+            return ;
+          }*/
+          else if (!part.includes('')){
+            return pathname.length > 0 ? `/${pathname.join('/')}` : '/'; 
+          }
+          // Si es el valor después de "change", lo omitimos porque ya lo mostramos en el anterior
+          else if (index > 0 && parts[index - 1] === 'change') {
+            return;
+          }
+          else if (pathname.includes(`${pathnames[index+1]}`) && part === 'history')
+            {
+              return part.charAt(0).toUpperCase() + part.slice(1);
+            }
+          else {
+            // part.filter(part => part !== '');
+              return part.charAt(0).toUpperCase() + part.slice(1);
+            }
     };
 
-  const getLinkTo = (index, parts) => {
-    const path = [];
-  
-    for (let i = 0; i <= index; i++) {
-      // Saltamos el valor después de "change" porque ya está incluido en el breadcrumb anterior
-      if (i > 0 && parts[i - 1] === 'change') continue;
+      const getLinkTo = (index, parts) => {
+        const path = [];
       
-      if (parts[i] && parts[i].trim() !== '') {
-        path.push(parts[i]);
-      }
-    }
-    
-    return `/${path.join('/')}`;
-  };
-
-  const getCombinedBreadcrumbs = () => {
-
-      let combinedPathnames = [];
-      for (let i = 0; i < pathnames.length; i++) {
-        
-        // Primero filtramos elementos vacíos o que solo contengan espacios
-        if (!pathnames[i] || pathnames[i].trim() === '') continue;
-        
-        if (pathnames[i] === 'details' && i + 1 < pathnames.length) {
-          if (pathnames[i + 1] && pathnames[i + 1].trim() !== '') {
-            // Combina "details" y la siguiente parte (por ejemplo, "acc_midd")
-            combinedPathnames.push(`details/${pathnames[i + 1]}`);
-            if (pathnames[i] === pathnames[i+3]){
-              if (pathnames[i + 1] && pathnames[i + 1].trim() !== '') {
-                combinedPathnames.push(`details/${pathnames[i + 1]}`);
-              }
-              i=i+4;
-            }
+        for (let i = 0; i <= index; i++) {
+          // Saltamos el valor después de "change" porque ya está incluido en el breadcrumb anterior
+          //if (i > 0 && parts[i - 1] === 'change') continue;
+          
+          if (parts[i] && parts[i].trim() !== '') {
+            path.push(parts[i]);
           }
-        i++; // Saltar la siguiente parte, ya que se ha combinado
-        } else if (pathnames[i] === 'change' && i + 1 < pathnames.length ){
-          //combinedPathnames.push(pathnames[i]);
-          // Mantenemos "change" y el valor separados para la URL
-          combinedPathnames.push('change');
-          combinedPathnames.push(pathnames[i]);
-          i++;
         }
-        else {
-              combinedPathnames.push(pathnames[i]);
+        
+        return `/${path.join('/')}`;
+      };
+
+      const getCombinedBreadcrumbs = () => {
+        let combinedPathnames = [];
+        for (let i = 0; i < pathnames.length; i++) {
+          
+          // Primero filtramos elementos vacíos o que solo contengan espacios
+          if (!pathnames[i] || pathnames[i].trim() === '') continue;
+          
+          else if(pathnames[i] === 'details' && i + 1 < pathnames.length) {
+            if (pathnames[i + 1] && pathnames[i + 1].trim() !== '') {
+              // Combina "details" y la siguiente parte (por ejemplo, "acc_midd")
+              combinedPathnames.push(`details/${pathnames[i + 1]}`);
+              if (pathnames[i] === pathnames[i+3]){
+                if (pathnames[i + 1] && pathnames[i + 1].trim() !== '') {
+                  combinedPathnames.push(`details/${pathnames[i + 1]}`);
+                }
+                i=i+4;
+              }
+            }
+          i++; // Saltar la siguiente parte, ya que se ha combinado
+          } else if (pathnames[i] === 'deta' && i + 1 < pathnames.length ){
+            //combinedPathnames.push(pathnames[i]);
+            // Mantenemos "change" y el valor separados para la URL
+            combinedPathnames.push(`deta/${pathnames[i + 1]}`);
+            
+            //combinedPathnames.push(pathnames[i]);
+            i=i+10;
+          }else if(pathnames[i] === 'change' && pathnames[i-2] === 'change'){
+            combinedPathnames.push(`${pathnames[i]}`);
+            
+            i=pathnames.length;
+
+          }
+          else {
+                combinedPathnames.push(pathnames[i]);
+          }
+            //pathnames[i].filter(i => i !== '');
         }
-          //pathnames[i].filter(i => i !== '');
-      }
-      return combinedPathnames;
-  };
+        return combinedPathnames;
+      };
 
   const combinedPathnames = getCombinedBreadcrumbs();
 

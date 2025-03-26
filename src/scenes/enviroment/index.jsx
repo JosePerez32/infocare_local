@@ -91,7 +91,7 @@ import Botones from './wco.jsx';
     event.preventDefault(); // Allow the drop
   };
 
-  const isNestedRoute = location.pathname.includes('/monitoring/details');
+  const isNestedRoute = location.pathname.includes('/environment/details');
 
   return (
     <Box m="20px">

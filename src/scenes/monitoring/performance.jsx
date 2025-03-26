@@ -119,11 +119,16 @@ const Performance = () => {
       />
     </Box>
   );
-
+      // En el cuerpo del componente (fuera del JSX)
+      useEffect(() => {
+        if(databaseName === "prd_frst") {
+          setResponsiveData(prev => ({...prev, speed: 10, workload: 20, readiness: 10, connections: 20}));
+        }
+      }, [databaseName]); // Se ejecuta cuando databaseName cambia
   return (
     <Box m="20px">
       <Header title={`Performance of ${databaseName.toUpperCase()}`} subtitle="" />
-
+     
       {/* jp: Alert para cambios en el orden */}
       {alertVisible && (
         <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>

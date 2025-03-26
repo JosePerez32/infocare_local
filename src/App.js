@@ -557,7 +557,7 @@ function App() {
                       <Route path="details/:databaseName/performance/workload" element={<PerformanceWorkload/>} />
                       <Route path="details/:databaseName/performance/readiness" element={<Readiness/>} />
                       <Route path="details/:databaseName/performance/connections" element={<Connections/>} />
-                      <Route path="details/:databaseName/recoverability/recoveravility_logging" element={<Logging/>} />
+                      <Route path="details/:databaseName/recoverability/logging" element={<RecoverabilityLogging/>} />
                       <Route path="details/:databaseName/recoverability/backups" element={<Backups/>} />
                       <Route path="details/:databaseName/recoverability/storage" element={<Storage/>} />
                       <Route path="monitoring/:databaseName/technical_recover" element={<Recover />} />
@@ -576,14 +576,14 @@ function App() {
                       <Route path="/" element={<Enviroment />} />
                       {/* New dinamic route */}
                      
-                      <Route path="workload/:databaseName" element={<Workload />} />
-
+                      <Route path="deta/:databaseName" element={<WorkloadDB />} />
+                      <Route path="deta/:databaseName/workload" element={<Workload />} />
                       <Route path="change/:databaseName" element={<Change />} /> {/* Ruta relativa */}
                       <Route path="change/:databaseName/history" element={<ChangeHistory />} />
                       <Route path="change/:databaseName/details" element={<ChangeDetails />} />
-                      <Route path="objects/:databaseName" element={<Objects />} />
-                      <Route path="objects/:databaseName/history" element={<ObjHistory />} />
-                      <Route path="objects/:databaseName/details" element={<ObjDetails />} />
+                      <Route path="alpha/objects/:databaseName" element={<Objects />} />
+                      <Route path="alpha/objects/:databaseName/history" element={<ObjHistory />} />
+                      <Route path="alpha/objects/:databaseName/details" element={<ObjDetails />} />
                     </Routes>
                   </ProtectedRoute>
                 }
