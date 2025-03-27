@@ -11,6 +11,7 @@ import { tokens } from "../../theme";
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
+import Organization from "../monitoring/organization";
 
 const Dashboard = ({ accessToken }) => {
   const theme = useTheme();
@@ -21,7 +22,7 @@ const Dashboard = ({ accessToken }) => {
       const t = localStorage.getItem('accessToken');
       if (t) {
         try {
-          const response = await fetch(process.env.REACT_APP_API_URL + '/userinfo', {
+          const response = await fetch(process.env.REACT_APP_API_URL + '/info/user', {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${accessToken}`,
@@ -31,7 +32,7 @@ const Dashboard = ({ accessToken }) => {
           if (data.organisation) {
             localStorage.setItem('organization', data.organisation);
           }
-          if (data.role) {
+          if (data.role) { 
             localStorage.setItem('userRole', data.role);
           }
         } catch (error) {
@@ -166,26 +167,40 @@ const Dashboard = ({ accessToken }) => {
       </Box>
 
       {/* Feature Cards with Original Content */}
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={4}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={2.3}>
           <FeatureCard
             Icon={HandshakeIcon}
-            title="Sustainable Partnership"
-            description="We prioritize creating enduring bonds with both our clients and employees. Our vision is rooted in executing transformative projects that not only challenge the norm but also provide sustained value to our clients. We believe in growth, and our approach ensures that both our clients and employees grow alongside us."
+            title="Monitoring"
+            description="The monitoring section provides an overview of the current situation of all environments that are under license with Infocare. This will not replace detailed monitoring solutions from other vendors but will provide an easily understandable qualified status of the environment. It is possible to drill down and go back and fort in time."
           />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={2.3}>
           <FeatureCard
             Icon={AutoAwesomeIcon}
-            title="Mastery in Innovation"
-            description="Our edge lies in our expertise in cutting-edge technologies. We don't just follow technological trends; we master them, ensuring our clients and employees benefit from the very forefront of technological advancements. Through continuous education, collaboration, and undivided focus, we ensure that we remain a beacon of innovation in our field."
+            title="Environment"
+            description="The envornment section provides a high level overview of what exists in your environment including summarized execution statistics and daily differences between environments."
           />
         </Grid>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={2.3}>
           <FeatureCard
             Icon={MoreTimeIcon}
-            title="Beyond the Clock Commitment"
-            description="We go beyond the constraints of traditional working hours. We don't endorse a mere 9 to 5 mindset; we champion ownership, flexibility, and unwavering dedication. Our team is always ready, ensuring that we meet client needs while also fostering an environment where our employees can flourish without feeling confined."
+            title="Reports"
+            description="Here you can find monthly status reports of the different environments and our quarter reports. In case you are also an ILMT cients, you can find monthly ILMT reports of your IBM software licenses in your company."
+          />
+        </Grid>
+        <Grid item xs={12} md={2.3}>
+          <FeatureCard
+            Icon={AutoAwesomeIcon}
+            title="ILMT"
+            description="Integration and validation of IBM ILMT data, ensuring accurate license compliance information. (Only available for ILMT-clients)"
+          />
+        </Grid>
+        <Grid item xs={12} md={2.3}>
+          <FeatureCard
+            Icon={AutoAwesomeIcon}
+            title="FAQ"
+            description="Answers to frequently asked questions about usage, data interpretation, and general Infocare functionality."
           />
         </Grid>
       </Grid>

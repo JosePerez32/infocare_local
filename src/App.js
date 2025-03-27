@@ -302,12 +302,13 @@ function App() {
       fetchUserInfo(storedToken);
     }
   }, []);
-
+  const organisation = localStorage.getItem('organization');
   const fetchUserInfo = async (token) => {
     try {
-      const response = await fetch(process.env.REACT_APP_API_URL + '/userinfo', {
+      const response = await fetch(process.env.REACT_APP_API_URL + '/info/user', {
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Organisation' : organisation
         },
       });
       const data = await response.json();
@@ -350,7 +351,7 @@ function App() {
 
   const logoutAction = () => {
     localStorage.removeItem('accessToken');
-    localStorage.removeItem('organization');
+    localStorage.removeItem('source');
     localStorage.removeItem('userRole');
     setIsAuthenticated(false);
     setUserName('');

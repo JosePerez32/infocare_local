@@ -32,7 +32,7 @@ const Workload = ({ onDataUpdate }) => {
   }));
 
   useEffect(() => {
-    const fetchAvailibilityData = async () => {
+    /*const fetchAvailibilityData = async () => {
       try {
         const token = localStorage.getItem('accessToken'); // Retrieve token from localStorage
 
@@ -60,10 +60,42 @@ const Workload = ({ onDataUpdate }) => {
       } catch (error) {
         console.error("Error fetching availability data:", error);
       }
-    };
+    };*/
 
-    fetchAvailibilityData();
-  }, [databaseName, organization, source, onDataUpdate]);
+    //fetchAvailibilityData();
+  const fetchWorkloadData = async (source) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const organisation = localStorage.getItem('organization');
+      
+      // Obtener fecha de inicio (últimos 7 días por ejemplo)
+      const startTime = new Date();
+      startTime.setDate(startTime.getDate() - 7); // Restar 7 días
+      const startTimeISO = startTime.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+  
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/environment/workload`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+          'organisation': organisation,
+          'source': source,
+          'start_time': startTimeISO // Formato 2024-03-02
+        }
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching workload data:", error);
+      throw error;
+    }
+  };
+}, [databaseName, organization, source, onDataUpdate]);
+
 
   // Functions for the drag and drop
   const handleDragStart = (index) => (event) => {

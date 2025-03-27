@@ -13,23 +13,31 @@ const Monitoring = () => {
   const [alertVisible, setAlertVisible] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const organization = localStorage.getItem('organization');
+  const organization = localStorage.getItem('organisation');
 
   // Fetch data and retrieve order from localStorage
   useEffect(() => {
     const fetchSourceData = async () => {
       try {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/dashboards/${organization}/technical/sources`, {
+        const organisation = localStorage.getItem('organization');
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/monitoring/overview`, {
+      
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
-            'accept': 'application/json',
+            'Accept': 'application/json',
+            'organisation': organisation,
           },
         });
 
         const data = await response.json();
+        
 
+                  // Verifica si la respuesta fue exitosa
+                  if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                  }
         // Populate gauge data with the fetched sources
         const filledGaugeData = data.sources.map(source => ({
           name: source.name,

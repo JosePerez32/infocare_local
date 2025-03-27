@@ -23,11 +23,15 @@ import Botones from './wco.jsx';
     const fetchSourceData = async () => {
       try {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/dashboards/${organization}/technical/sources`, {
+        const organisation = localStorage.getItem('organization');
+
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/monitoring/overview`, {
+      
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
-            'accept': 'application/json',
+            'Accept': 'application/json',
+            'organisation': organisation,
           },
         });
 
