@@ -1,194 +1,156 @@
-import { Box, Typography, Alert } from "@mui/material"; // jp: Agregar Alert
-import { useEffect, useState } from "react";
-import Header from "../../components/Header";
-import GaugeComponent from "react-gauge-component";
-import { useTheme } from "@mui/material";
+import { Box, useTheme, Typography, CircularProgress, Alert } from "@mui/material";
 import { tokens } from "../../theme";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import Header from "../../components/Header";
+import GaugeComponent from 'react-gauge-component';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const Performance = () => {
-  const { databaseName } = useParams();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { sourceName } = useParams(); // Obtiene el nombre del source de la URL
   const navigate = useNavigate();
-  const { organization } = useLocation().state || {};
-  const { source } = useParams(); // Retrieve source from the URL parameters
-  const [responsiveData, setResponsiveData] = useState({
-    cpu: 20,
-    memory: 20,
-    //space: 0,
-    speed: 20,
-    workload: 10,
-    readiness: 20,
-    connections: 10
-  });
-  const [gaugeOrder, setGaugeOrder] = useState(["cpu", "memory", /*"space",*/ "speed"/*, "readiness"*/,"workload","readiness","connections"]); // jp: Estado para el orden de los gauges
-  const [alertVisible, setAlertVisible] = useState(false); // jp: Estado para mostrar alertas
+  const [metrics, setMetrics] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Fetch performance data when component mounts or source changes
   useEffect(() => {
-    const fetchResponsivenessData = async () => {
+    const fetchPerformanceData = async () => {
       try {
-        const token = localStorage.getItem('accessToken'); // Retrieve token from localStorage
+        setLoading(true);
+        const token = localStorage.getItem('accessToken');
+        const organisation = localStorage.getItem('organization');
+        
+        if (!organisation) {
+          throw new Error('Organization not found in localStorage');
+        }
 
         const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/dashboards/${organization}/management/sources/${source}/responsivness`, 
+          `${process.env.REACT_APP_API_URL}/monitoring/source/performance`,
           {
+            method: 'GET',
             headers: {
-              'Authorization': `Bearer ${token}`, // Add token to Authorization header
-              'Content-Type': 'application/json',
-            },
+              'Authorization': `Bearer ${token}`,
+              'organisation': organisation,
+              'source': sourceName
+            }
           }
-        );        
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
-        setResponsiveData({
-          cpu: data.cpu,
-          memory: data.memory,
-          space: data.space,
-          speed: data.speed,
-          readiness: data.readinessData
-        });
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching responsiveness data:", error);
+        setMetrics(data);
+      } catch (err) {
+        console.error("Error fetching performance data:", err);
+        setError(err.message || 'Failed to load performance data');
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchResponsivenessData();
-    const interval = setInterval(fetchResponsivenessData, 5000);
+    fetchPerformanceData();
+  }, [sourceName]);
 
-    return () => clearInterval(interval);
-  }, [databaseName, organization, source]);
+  // Define the metrics to display and their configuration
+  const metricConfigs = [
+    { key: 'cpu', label: 'CPU Usage', unit: '%', min: 0, max: 100 },
+    { key: 'memory', label: 'Memory Usage', unit: '%', min: 0, max: 100 },
+    { key: 'speed', label: 'Speed', unit: 'Mbps', min: 0, max: 1000 },
+    { key: 'workload', label: 'Workload', unit: '%', min: 0, max: 100 },
+    { key: 'readiness', label: 'Readiness', unit: '%', min: 0, max: 100 },
+    { key: 'connections', label: 'Connections', unit: '', min: 0, max: 1000 }
+  ];
 
-  // jp: Funciones para drag and drop
-  const handleDragStart = (index) => (event) => {
-    event.dataTransfer.setData("text/plain", index); // Guarda el índice del elemento arrastrado
-  };
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="80vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
 
-  const handleDrop = (index) => (event) => {
-    event.preventDefault();
-    const fromIndex = event.dataTransfer.getData("text/plain"); // Obtiene el índice del elemento arrastrado
-    const newOrder = [...gaugeOrder]; // Copia el orden actual
-    const [movedItem] = newOrder.splice(fromIndex, 1); // Remueve el elemento de su posición original
-    newOrder.splice(index, 0, movedItem); // Inserta el elemento en la nueva posición
-    setGaugeOrder(newOrder); // Actualiza el estado con el nuevo orden
+  if (error) {
+    return (
+      <Box m="20px">
+        <Header title="Performance Metrics" subtitle={`Source: ${sourceName}`} />
+        <Alert severity="error" sx={{ mt: 2 }}>
+          {error} - <Typography component="span" sx={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => navigate(-1)}>Go back</Typography>
+        </Alert>
+      </Box>
+    );
+  }
 
-    // Muestra una alerta temporal
-    setAlertVisible(true);
-    setTimeout(() => setAlertVisible(false), 3000);
-  };
-
-  const handleDragOver = (event) => {
-    event.preventDefault(); // Permite que el elemento se pueda soltar
-  };
-
-  const ResponsivenessBox = ({ title, value, route, index }) => (
-    <Box
-      key={index}
-      draggable // jp: Hace que el elemento sea arrastrable
-      onDragStart={handleDragStart(index)} // jp: Se ejecuta cuando comienza el arrastre
-      onDrop={handleDrop(index)} // jp: Se ejecuta cuando se suelta el elemento
-      onDragOver={handleDragOver} // jp: Permite que el elemento se pueda soltar
-      onClick={() =>
-        navigate(`/monitoring/details/${databaseName}/performance/${route}`, {
-          state: { organization }
-        })
-      }
-      style={{
-        cursor: "pointer",
-        backgroundColor: colors.primary[400],
-        padding: "20px",
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: "8px",
-        alignItems: "center",
-        justifyContent: "center"
-      }}
-    >
-      <Typography variant="h6" color={colors.grey[100]}>
-        {title}
-      </Typography>
-      <GaugeComponent
-        value={value}
-        type="radial"
-        arc={{
-          colorArray: ['#EA4228', '#5BE12C'],
-          subArcs: [{ limit: 33 }, { limit: 66 }, {}],
-          padding: 0.02,
-          width: 0.3
-        }}
-      />
-    </Box>
-  );
-      // En el cuerpo del componente (fuera del JSX)
-      useEffect(() => {
-        if(databaseName === "prd_frst") {
-          setResponsiveData(prev => ({...prev, speed: 10, workload: 20, readiness: 10, connections: 20}));
-        }
-      }, [databaseName]); // Se ejecuta cuando databaseName cambia
   return (
     <Box m="20px">
-      <Header title={`Performance of ${databaseName.toUpperCase()}`} subtitle="" />
-     
-      {/* jp: Alert para cambios en el orden */}
-      {alertVisible && (
-        <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
-          Gauge chart order changed!
-        </Alert>
-      )}
-
-      <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
-        {gaugeOrder.map((gaugeName, index) => {
-          let gaugeValue;
-          let gaugeTitle;
-          let gaugeRoute;
-
-          switch (gaugeName) {
-            case "cpu":
-              gaugeValue = responsiveData.cpu;
-              gaugeTitle = "CPU";
-              gaugeRoute = "cpu";
-              break;
-            case "memory":
-              gaugeValue = responsiveData.memory;
-              gaugeTitle = "Memory";
-              gaugeRoute = "memory";
-              break;
-            case "speed":
-              gaugeValue = responsiveData.speed;
-              gaugeTitle = "Speed";
-              gaugeRoute = "speed";
-              break;
-            case "workload":
-              gaugeValue = responsiveData.workload;
-              gaugeTitle = "Workload";
-              gaugeRoute = "workload";
-              break;
-            case "readiness":
-              gaugeValue = responsiveData.readiness;
-              gaugeTitle = "Readiness";
-              gaugeRoute = "readiness";
-              break;
-            case "connections":
-              gaugeValue = responsiveData.connections;
-              gaugeTitle = "Connections";
-              gaugeRoute = "connections";
-              break;
-            default:
-              gaugeValue = 0;
-              gaugeTitle = "Unknown";
-              gaugeRoute = "";
-          }
-
-          return (
-            <ResponsivenessBox
-              key={index}
-              title={gaugeTitle}
-              value={gaugeValue}
-              route={gaugeRoute}
-              index={index}
+      <Header 
+        title="Performance Metrics" 
+        subtitle={`Source: ${sourceName}`} 
+      />
+      
+      <Box display="grid" gridTemplateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap="20px" mt="20px">
+        {metricConfigs.map((config) => (
+          <Box
+            key={config.key}
+            sx={{
+              backgroundColor: colors.primary[400],
+              borderRadius: "8px",
+              padding: "20px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+            <Typography variant="h6" color={colors.grey[100]} mb={2}>
+              {config.label}
+            </Typography>
+            <GaugeComponent
+              value={metrics?.[config.key] || 0}
+              minValue={config.min}
+              maxValue={config.max}
+              type="radial"
+              labels={{
+                valueLabel: { 
+                  formatTextValue: value => `${value}${config.unit}`,
+                  style: { fill: colors.grey[100] }
+                },
+                tickLabels: {
+                  type: "inner",
+                  ticks: [
+                    { value: config.min },
+                    { value: config.max * 0.25 },
+                    { value: config.max * 0.5 },
+                    { value: config.max * 0.75 },
+                    { value: config.max }
+                  ],
+                  style: { fill: colors.grey[100] }
+                }
+              }}
+              arc={{
+                colorArray: ['#EA4228', '#F5CD19', '#5BE12C'],
+                subArcs: [
+                  { limit: config.max * 0.33 }, 
+                  { limit: config.max * 0.66 }, 
+                  {}
+                ],
+                padding: 0.02,
+                width: 0.3
+              }}
+              pointer={{
+                elastic: true,
+                animationDelay: 0,
+                color: colors.grey[100]
+              }}
             />
-          );
-        })}
+            <Typography variant="body2" color={colors.grey[100]} mt={1}>
+              Current: {metrics?.[config.key] || 0}{config.unit}
+            </Typography>
+          </Box>
+        ))}
       </Box>
     </Box>
   );

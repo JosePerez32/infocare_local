@@ -273,7 +273,7 @@ function App() {
   const [errorMessage, setErrorMessage] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userName, setUserName] = useState('');
-  const [userInfo, setUserInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState('');
   const [isAppIDInitialized, setIsAppIDInitialized] = useState(false);
   const [accessToken, setAccessToken] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -302,13 +302,16 @@ function App() {
       fetchUserInfo(storedToken);
     }
   }, []);
-  const organisation = localStorage.getItem('organization');
+  const organisation = localStorage.getItem('Organisation');
+  const role = localStorage.getItem('role');
+
   const fetchUserInfo = async (token) => {
     try {
       const response = await fetch(process.env.REACT_APP_API_URL + '/info/user', {
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Organisation' : organisation
+          'Organisation' : organisation,
+          //'Role': role
         },
       });
       const data = await response.json();
@@ -318,7 +321,7 @@ function App() {
         localStorage.setItem('organization', data.organisation);
       }
       if (data.role) {
-        localStorage.setItem('userRole', data.role);
+        localStorage.setItem('role', data.role);
       }
     } catch (error) {
       console.error("Error fetching user info:", error);
@@ -352,7 +355,7 @@ function App() {
   const logoutAction = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('source');
-    localStorage.removeItem('userRole');
+    localStorage.removeItem('role');
     setIsAuthenticated(false);
     setUserName('');
     setAccessToken(null);
@@ -394,7 +397,7 @@ function App() {
               <Box display="flex" alignItems="center">
                 <Logo src={logoImage} alt="Infocare Logo" />
                 <Typography variant="h6" component="div" sx={{ color: 'white' }}>
-                  Infocare 
+                  Infocare
                 </Typography>
               </Box>
             </Toolbar>
@@ -441,7 +444,7 @@ function App() {
                         <Shield size={24} color="white" />
                       </IconWrapper>
                       <Typography variant="body2" align="center" sx={{ mt: 1 }}>
-                        Secure
+                        Secure 
                       </Typography>
                     </Grid>
                     <Grid item xs={4}>
@@ -449,7 +452,7 @@ function App() {
                         <Cloud size={24} color="white" />
                       </IconWrapper>
                       <Typography variant="body2" align="center" sx={{ mt: 1 }}>
-                        Cloud-Ready
+                        Cloud-Ready 
                       </Typography>
                     </Grid>
                   </Grid>
@@ -501,9 +504,9 @@ function App() {
           <Sidebar isSidebar={isSidebar} />
           <main className="content">
             <Topbar 
+              userInfo={organisation}
+              userName={role}
               setIsSidebar={setIsSidebar} 
-              userName={userName} 
-              userInfo={userInfo}
               onLogout={logoutAction} 
             />
             <UserIdleLogout timeout={1000000} onLogout={logoutAction} />

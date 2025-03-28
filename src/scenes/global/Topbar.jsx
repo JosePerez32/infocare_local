@@ -32,7 +32,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
   const colorMode = useContext(ColorModeContext);
   const location = useLocation();
   const userRole = userInfo?.role;
-  const organization = userInfo?.organisation;
+  const organisation = userInfo?.organisation;
   const navigate = useNavigate();
   const breadcrumbNameMap = {
     '/': 'Home',
@@ -267,7 +267,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
   };
 
   const getOrganizationChip = () => {
-    if (organization) {
+    if (organisation) {
       return (
         <Chip
           label={'could_be_you'}
@@ -299,61 +299,61 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
       <Toolbar sx={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
         <Breadcrumbs 
-          aria-label="breadcrumb" 
-          sx={{ 
-            flexGrow: 1,
-            '& .MuiLink-root': {
-              color: theme.palette.text.primary,
-              '&:hover': {
-                color: '#71D8BD',
-                textDecoration: 'underline'
+            aria-label="breadcrumb" 
+            sx={{ 
+              flexGrow: 1,
+              '& .MuiLink-root': {
+                color: theme.palette.text.primary,
+                '&:hover': {
+                  color: '#71D8BD',
+                  textDecoration: 'underline'
+                },
+                textDecoration: 'none'
               },
-              textDecoration: 'none'
-            },
-            '& .MuiTypography-root': {
-              color: '#71D8BD',
-              fontWeight: 'medium'
-            }
-          }}
-        >
-          <Link component={RouterLink} underline="hover" color="inherit" to="/">
-            {breadcrumbNameMap['/']}
-          </Link>
-          {combinedPathnames.map((value, index) => {
-            const last = index === combinedPathnames.length - 1;
-            const to = getLinkTo(index, combinedPathnames);
-            const displayName = getBreadcrumbName(location.pathname, value, index, combinedPathnames);
-            
-            if (!displayName) return null;
-            
-            if (last || shouldBeTextOnly(value)) {
+              '& .MuiTypography-root': {
+                color: '#71D8BD',
+                fontWeight: 'medium'
+              }
+            }}
+          >
+            <Link component={RouterLink} underline="hover" color="inherit" to="/">
+              {breadcrumbNameMap['/']}
+            </Link>
+            {combinedPathnames.map((value, index) => {
+              const last = index === combinedPathnames.length - 1;
+              const to = getLinkTo(index, combinedPathnames);
+              const displayName = getBreadcrumbName(location.pathname, value, index, combinedPathnames);
+              
+              if (!displayName) return null;
+              
+              if (last || shouldBeTextOnly(value)) {
+                return (
+                  <Typography color="text.primary" key={to || index}>
+                    {displayName}
+                  </Typography>
+                );
+              }
+              
               return (
-                <Typography color="text.primary" key={to || index}>
+                <Link
+                  component={RouterLink}
+                  underline="hover"
+                  color="inherit"
+                  to={to}
+                  state={{ organisation }}
+                  key={to}
+                  sx={{
+                    color: theme.palette.text.primary,
+                    '&:hover': {
+                      color: '#71D8BD',
+                      textDecoration: 'underline'
+                    }
+                  }}
+                >
                   {displayName}
-                </Typography>
+                </Link>
               );
-            }
-            
-            return (
-              <Link
-                component={RouterLink}
-                underline="hover"
-                color="inherit"
-                to={to}
-                state={{ organization }}
-                key={to}
-                sx={{
-                  color: theme.palette.text.primary,
-                  '&:hover': {
-                    color: '#71D8BD',
-                    textDecoration: 'underline'
-                  }
-                }}
-              >
-                {displayName}
-              </Link>
-            );
-          })}
+            })}
         </Breadcrumbs>
         </Box>
         
@@ -366,8 +366,8 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
             <SettingsOutlinedIcon />
           </IconButtonWrapper>
           
-          {userInfo && getOrganizationChip()}
-          {userRole && getRoleChip()}
+          {userName && getOrganizationChip()}
+          {userInfo && getRoleChip()}
 
           {userName && (
             <Chip
@@ -381,7 +381,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
                   {userName.charAt(0).toUpperCase()}
                 </Avatar>
               }
-              label={userName}
+              label={userName+'ddd'}
               sx={{
                 ml: 2,
                 bgcolor: 'rgba(113, 216, 189, 0.1)',

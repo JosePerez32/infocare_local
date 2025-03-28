@@ -14,7 +14,6 @@ const Monitoring = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const organization = localStorage.getItem('organisation');
-
   // Fetch data and retrieve order from localStorage
   useEffect(() => {
     const fetchSourceData = async () => {
@@ -28,13 +27,11 @@ const Monitoring = () => {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/json',
             'organisation': organisation,
+
           },
         });
-
         const data = await response.json();
-        
-
-                  // Verifica si la respuesta fue exitosa
+        // Verifica si la respuesta fue exitosa
                   if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                   }
