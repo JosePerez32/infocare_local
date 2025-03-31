@@ -1,28 +1,39 @@
-import { Box, useTheme, Typography, CircularProgress } from "@mui/material";
+import { Box, useTheme, Typography, CircularProgress, Alert } from "@mui/material";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import GaugeComponent from 'react-gauge-component';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const Performance = ( source ) => {
+const Performance = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  //const { sourceName } = useParams(source); // Obtenemos el nombre del source de la URL
+  const { databaseName } = useParams();
   const navigate = useNavigate();
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [gaugeOrder, setGaugeOrder] = useState([]);
+  const [alertVisible, setAlertVisible] = useState(false);
 
-  // Fetch performance data when component mounts or source changes
-  useEffect((  ) => {
+  // Metric configuration - ahora con identificadores únicos
+  const metricConfigs = [
+    { id: 'availability', label: 'Disponibility', min: 0, max: 100 },
+    { id: 'recoverability', label: 'Recoverability', min: 0, max: 100 },
+    { id: 'efficiency', label: 'Performance', min: 0, max: 100 },
+    { id: 'organization', label: 'Organization', min: 0, max: 100 },
+    { id: 'security', label: 'Security', min: 0, max: 100 }
+  ];
+
+  // Fetch performance data
+  useEffect(() => {
     const fetchPerformanceData = async () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('accessToken');
         const organisation = localStorage.getItem('organization');
         
-        if (!organisation || !source) {
+        if (!organisation || !databaseName) {
           throw new Error('Missing required parameters');
         }
 
@@ -33,7 +44,7 @@ const Performance = ( source ) => {
             headers: {
               'Authorization': `Bearer ${token}`,
               'organisation': organisation,
-              'source': source
+              'source': databaseName
             }
           }
         );
@@ -44,27 +55,52 @@ const Performance = ( source ) => {
 
         const data = await response.json();
         setMetrics(data);
+
+        // Load saved order from localStorage
+        const savedOrderKey = `order_performance_${databaseName}`;
+        const savedOrder = localStorage.getItem(savedOrderKey);
+        if (savedOrder) {
+          setGaugeOrder(JSON.parse(savedOrder));
+        } else {
+          // Default order based on metricConfigs
+          setGaugeOrder(metricConfigs.map(config => config.id));
+        }
       } catch (err) {
         console.error("Error fetching performance data:", err);
         setError(err.message);
-        // Optional: redirect back if error
-        // navigate('/monitoring');
       } finally {
         setLoading(false);
       }
     };
 
     fetchPerformanceData();
-  }, [source, navigate]);
+  }, [databaseName]);
 
-  // Metric configuration
-  const metricConfigs = [
-    { key: 'availability', label: 'Availability', min: 0, max: 100 },
-    { key: 'recoverability', label: 'Recoverability', min: 0, max: 100 },
-    { key: 'efficiency', label: 'Efficiency', min: 0, max: 100 },
-    { key: 'organization', label: 'Organization', min: 0, max: 100 },
-    { key: 'security', label: 'Security', min: 0, max: 100 }
-  ];
+  // Drag and drop handlers
+  const handleDragStart = (index) => (event) => {
+    event.dataTransfer.setData("text/plain", index);
+  };
+
+  const handleDrop = (index) => (event) => {
+    event.preventDefault();
+    const fromIndex = event.dataTransfer.getData("text/plain");
+    const newOrder = [...gaugeOrder];
+    const [movedItem] = newOrder.splice(fromIndex, 1);
+    newOrder.splice(index, 0, movedItem);
+    setGaugeOrder(newOrder);
+
+    // Save the new order in localStorage
+    const savedOrderKey = `order_performance_${databaseName}`;
+    localStorage.setItem(savedOrderKey, JSON.stringify(newOrder));
+
+    // Show alert
+    setAlertVisible(true);
+    setTimeout(() => setAlertVisible(false), 3000);
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
 
   if (loading) {
     return (
@@ -77,7 +113,7 @@ const Performance = ( source ) => {
   if (error) {
     return (
       <Box m="20px">
-        <Header title="Error" subtitle={`No se pudieron cargar las métricas para ${source}`} />
+        <Header title="Error" subtitle={`No se pudieron cargar las métricas para ${databaseName}`} />
         <Typography color="error">{error}</Typography>
       </Box>
     );
@@ -86,57 +122,77 @@ const Performance = ( source ) => {
   return (
     <Box m="20px">
       <Header 
-        title={`Rendiment metrics`} 
-        subtitle={`Source: ${source}`}
+        title={`Metrics of rendement`} 
+        subtitle={`Source: ${databaseName}`}
       />
       
+      {alertVisible && (
+        <Alert severity="success" sx={{ mb: 2 }}>
+          El orden de los indicadores ha sido guardado
+        </Alert>
+      )}
+
       <Box display="grid" gridTemplateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap="20px">
-        {metricConfigs.map((config) => (
-          <Box
-            key={config.key}
-            sx={{
-              backgroundColor: colors.primary[400],
-              borderRadius: "8px",
-              padding: "20px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center"
-            }}
-          >
-            <Typography variant="h6" color={colors.grey[100]} mb={2}>
-              {config.label}
-            </Typography>
-            <GaugeComponent
-              value={metrics ? metrics[config.key] : 0}
-              minValue={config.min}
-              maxValue={config.max}
-              type="radial"
-              labels={{
-                tickLabels: {
-                  type: "inner",
-                  ticks: [
-                    { value: config.min },
-                    { value: config.min + (config.max - config.min) * 0.25 },
-                    { value: config.min + (config.max - config.min) * 0.5 },
-                    { value: config.min + (config.max - config.min) * 0.75 },
-                    { value: config.max }
-                  ]
+        {gaugeOrder.map((metricId, index) => {
+          const config = metricConfigs.find(m => m.id === metricId);
+          if (!config || !metrics) return null;
+
+          return (
+            <Box
+              key={config.id}
+              draggable
+              onDragStart={handleDragStart(index)}
+              onDrop={handleDrop(index)}
+              onDragOver={handleDragOver}
+              onClick={() => navigate(`/monitoring/details/${databaseName}/${config.label}` )}
+              sx={{
+                backgroundColor: colors.primary[400],
+                borderRadius: "8px",
+                padding: "20px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: 'grab',
+                '&:active': {
+                  cursor: 'grabbing'
                 }
               }}
-              arc={{
-                colorArray: ['#EA4228', '#5BE12C'],
-                subArcs: [{ limit: 33 }, { limit: 66 }, {}],
-                padding: 0.02,
-                width: 0.3
-              }}
-              pointer={{
-                elastic: true,
-                animationDelay: 0
-              }}
-            />
-          </Box>
-        ))}
+            >
+              <Typography variant="h6" color={colors.grey[100]} mb={2}>
+                {config.label}
+              </Typography>
+              <GaugeComponent
+                value={metrics[config.id]}
+                minValue={config.min}
+                maxValue={config.max}
+                type="radial"
+                labels={{
+                  tickLabels: {
+                    type: "inner",
+                    ticks: [
+                      { value: config.min },
+                      { value: config.min + (config.max - config.min) * 0.25 },
+                      { value: config.min + (config.max - config.min) * 0.5 },
+                      { value: config.min + (config.max - config.min) * 0.75 },
+                      { value: config.max }
+                    ]
+                  }
+                }}
+                arc={{
+                  colorArray: ['#EA4228', '#5BE12C'],
+                  subArcs: [{ limit: 33 }, { limit: 66 }, {}],
+                  padding: 0.02,
+                  width: 0.3
+                }}
+                pointer={{
+                  elastic: true,
+                  animationDelay: 0
+                }}
+              />
+            </Box>
+          );
+        })}
       </Box>
     </Box>
   );

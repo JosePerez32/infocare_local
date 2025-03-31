@@ -381,7 +381,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
                   {userName.charAt(0).toUpperCase()}
                 </Avatar>
               }
-              label={userName+'ddd'}
+              label={userName}
               sx={{
                 ml: 2,
                 bgcolor: 'rgba(113, 216, 189, 0.1)',
