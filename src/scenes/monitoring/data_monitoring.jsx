@@ -153,7 +153,7 @@ const Performance = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                cursor: 'grab',
+                cursor: 'pointer',
                 '&:active': {
                   cursor: 'grabbing'
                 }
@@ -187,7 +187,7 @@ const Performance = () => {
                 }}
                 pointer={{
                   elastic: true,
-                  animationDelay: 0
+                  animationDelay: 10
                 }}
               />
             </Box>

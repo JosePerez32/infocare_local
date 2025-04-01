@@ -25,7 +25,7 @@ const Performance = () => {
         if (!organisation) {
           throw new Error('Organization not found in localStorage');
         }
-
+  
         const response = await fetch(
           `${process.env.REACT_APP_API_URL}/monitoring/source/performance`,
           {
@@ -37,12 +37,13 @@ const Performance = () => {
             }
           }
         );
-
+  
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
+  
         const data = await response.json();
+        console.log("Datos recibidos de la API:", data); // <-- Este es el console.log importante
         setMetrics(data);
       } catch (err) {
         console.error("Error fetching performance data:", err);
@@ -50,22 +51,41 @@ const Performance = () => {
       } finally {
         setLoading(false);
       }
-      console.log("Raw sources data:", databaseName); // Verifica la estructura exacta
-
     };
-
+  
     fetchPerformanceData();
   }, [databaseName]);
 
   // Define the metrics to display and their configuration
   const metricConfigs = [
-    { key: 'cpu', label: 'CPU Usage', unit: '%', min: 0, max: 100 },
-    { key: 'memory', label: 'Memory Usage', unit: '%', min: 0, max: 100 },
+    { key: 'cpu', label: 'CPU', unit: '%', min: 0, max: 100 },
+    { key: 'memory', label: 'Memory', unit: '%', min: 0, max: 100 },
     { key: 'speed', label: 'Speed', unit: 'Mbps', min: 0, max: 1000 },
     { key: 'workload', label: 'Workload', unit: '%', min: 0, max: 100 },
     { key: 'readiness', label: 'Readiness', unit: '%', min: 0, max: 100 },
     { key: 'connections', label: 'Connections', unit: '', min: 0, max: 1000 }
   ];
+  const [gaugeOrder, setGaugeOrder] = useState(metricConfigs.map(config => config.key));
+
+  const handleDragStart = (index) => (event) => {
+    event.dataTransfer.setData("text/plain", index);
+  };
+  
+  const handleDrop = (index) => (event) => {
+    event.preventDefault();
+    const fromIndex = Number(event.dataTransfer.getData("text/plain")); // Asegura que sea número
+    const newOrder = [...gaugeOrder];
+    const [movedItem] = newOrder.splice(fromIndex, 1);
+    newOrder.splice(index, 0, movedItem);
+    setGaugeOrder(newOrder);
+  
+    // Opcional: Guardar en localStorage (como en tu otro componente)
+    localStorage.setItem(`gauge_order_${databaseName}`, JSON.stringify(newOrder));
+  };
+  
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
 
   if (loading) {
     return (
@@ -85,7 +105,7 @@ const Performance = () => {
       </Box>
     );
   }
-
+  
   return (
     <Box m="20px">
       <Header 
@@ -94,9 +114,17 @@ const Performance = () => {
       />
       
       <Box display="grid" gridTemplateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap="20px" mt="20px">
-        {metricConfigs.map((config) => (
+        
+        {gaugeOrder.map((metricKey, index) => {
+        const config = metricConfigs.find(c => c.key === metricKey);
+          return (
           <Box
             key={config.key}
+            draggable
+            onDragStart={handleDragStart(index)}
+            onDrop={handleDrop(index)}
+            onDragOver={handleDragOver}
+            onClick={() => navigate(`/monitoring/details/${databaseName}/performance/${config.key}`, )}
             sx={{
               backgroundColor: colors.primary[400],
               borderRadius: "8px",
@@ -104,7 +132,8 @@ const Performance = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              justifyContent: "center"
+              justifyContent: "center",
+              cursor: 'move' 
             }}
           >
             <Typography variant="h6" color={colors.grey[100]} mb={2}>
@@ -118,7 +147,10 @@ const Performance = () => {
               labels={{
                 valueLabel: { 
                   formatTextValue: value => `${value}${config.unit}`,
-                  style: { fill: colors.grey[100] }
+                  style: { fill: colors.grey[100], cursor: "pointer",
+                    "&:hover": {
+                    cursor: "grab" // Opcional: cursor de agarre al hover
+                  } }
                 },
                 tickLabels: {
                   type: "inner",
@@ -129,9 +161,12 @@ const Performance = () => {
                     { value: config.max * 0.75 },
                     { value: config.max }
                   ],
-                  style: { fill: colors.grey[100] }
+                  style: { fill: colors.grey[100],
+                    cursor: "pointer","&:hover": {
+                    cursor: "grab" // Opcional: cursor de agarre al hover
+                  }
                 }
-              }}
+              }}}
               arc={{
                 colorArray: ['#EA4228', '#F5CD19', '#5BE12C'],
                 subArcs: [
@@ -144,7 +179,7 @@ const Performance = () => {
               }}
               pointer={{
                 elastic: true,
-                animationDelay: 0,
+                animationDelay: 200,
                 color: colors.grey[100]
               }}
             />
@@ -152,10 +187,12 @@ const Performance = () => {
               Current: {metrics?.[config.key] || 0}{config.unit}
             </Typography>
           </Box>
-        ))}
+          );})}
+        
       </Box>
     </Box>
   );
+  
 };
 
 export default Performance;
