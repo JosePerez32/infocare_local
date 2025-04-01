@@ -144,7 +144,32 @@ const SupportPage = () => {
               }
             />
           </Grid>
-
+          {/* Ticket Card */}
+          <Grid item xs={12} md={4}>
+            <FeatureCard
+              Icon={SupportAgentIcon}
+              title="Ticket System"
+              content={
+                <Typography variant="body1" color={colors.grey[300]} sx={{ mb: 2 }}>
+                  Open a formal support ticket
+                </Typography>
+              }
+              button={
+                <Button
+                  variant="contained"
+                  startIcon={<SupportAgentIcon />}
+                  sx={{
+                    mt: 1,
+                    bgcolor: "#71D8BD",
+                    "&:hover": { bgcolor: "#5abfaa" },
+                  }}
+                  onClick={() => navigate("../ticketing")}
+                >
+                  Open Ticket
+                </Button>
+              }
+            />
+          </Grid>
           {/* Phone Card */}
           <Grid item xs={12} md={4}>
             <FeatureCard
@@ -174,32 +199,7 @@ const SupportPage = () => {
             />
           </Grid>
 
-          {/* Ticket Card */}
-          <Grid item xs={12} md={4}>
-            <FeatureCard
-              Icon={SupportAgentIcon}
-              title="Ticket System"
-              content={
-                <Typography variant="body1" color={colors.grey[300]} sx={{ mb: 2 }}>
-                  Open a formal support ticket
-                </Typography>
-              }
-              button={
-                <Button
-                  variant="contained"
-                  startIcon={<SupportAgentIcon />}
-                  sx={{
-                    mt: 1,
-                    bgcolor: "#71D8BD",
-                    "&:hover": { bgcolor: "#5abfaa" },
-                  }}
-                  onClick={() => navigate("../ticketing")}
-                >
-                  Open Ticket
-                </Button>
-              }
-            />
-          </Grid>
+          
         </Grid>
       </Box>
     </Box>

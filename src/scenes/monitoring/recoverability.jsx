@@ -12,15 +12,9 @@ const Recoverability = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
-  const { organization } = useLocation().state || {};
+  const { organisation } = useLocation().state || {};
   const { source } = useParams(); // Retrieve source from the URL parameters
-  const [responsiveData, setResponsiveData] = useState({
-    RecoveryBackups: 50,
-    storage: 30,
-    logging: 20,
-    speed: 0,
-    readiness: 0
-  });
+  const [recoverData, setRecoverData] = useState([]);
   const [gaugeOrder, setGaugeOrder] = useState(["storage", "backups", /*"space",*/ "logging"/*, "readiness"*/]); // jp: Estado para el orden de los gauges
   const [alertVisible, setAlertVisible] = useState(false); // jp: Estado para mostrar alertas
 
@@ -30,22 +24,20 @@ const Recoverability = () => {
         const token = localStorage.getItem('accessToken'); // Retrieve token from localStorage
 
         const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/dashboards/${organization}/management/sources/${source}/responsivness`, 
+          `${process.env.REACT_APP_API_URL}/monitoring/${source}/recoverability`, 
           {
             headers: {
               'Authorization': `Bearer ${token}`, // Add token to Authorization header
               'Content-Type': 'application/json',
+              'organisation': organisation,
+              'source': source
             },
           }
         );        
         const data = await response.json();
-        setResponsiveData({
-          cpu: data.cpu,
-          memory: data.memory,
-          space: data.space,
-          speed: data.speed,
-          readiness: data.readinessData
-        });
+        setRecoverData(data);
+
+
         console.log(data);
       } catch (error) {
         console.error("Error fetching responsiveness data:", error);
@@ -56,7 +48,7 @@ const Recoverability = () => {
     const interval = setInterval(fetchResponsivenessData, 5000);
 
     return () => clearInterval(interval);
-  }, [databaseName, organization, source]);
+  }, [databaseName, organisation, source]);
 
   // jp: Funciones para drag and drop
   const handleDragStart = (index) => (event) => {
@@ -89,7 +81,7 @@ const Recoverability = () => {
       onDragOver={handleDragOver} // jp: Permite que el elemento se pueda soltar
       onClick={() =>
         navigate(`/monitoring/details/${databaseName}/recoverability/${route}`, {
-          state: { organization }
+          state: { organisation }
         })
       }
       style={{
@@ -121,7 +113,7 @@ const Recoverability = () => {
     // En el cuerpo del componente (fuera del JSX)
     useEffect(() => {
       if(databaseName === "prd_frst") {
-        setResponsiveData(prev => ({...prev, speed: 10, workload: 20, readiness: 10, connections: 20}));
+        setRecoverData(prev => ({...prev, speed: 10, workload: 20, readiness: 10, connections: 20}));
       }
     }, [databaseName]); // Se ejecuta cuando databaseName cambia
   return (
@@ -143,12 +135,12 @@ const Recoverability = () => {
 
           switch (gaugeName) {
             case "storage":
-              gaugeValue = responsiveData.storage;
+              gaugeValue = recoverData.storage;
               gaugeTitle = "Storage";
               gaugeRoute = "storage";
               break;
             case "backups":
-              gaugeValue = responsiveData.RecoveryBackups;
+              gaugeValue = recoverData.RecoveryBackups;
               gaugeTitle = "Backups";
               gaugeRoute = "backups";
               break;
@@ -158,7 +150,7 @@ const Recoverability = () => {
               gaugeRoute = "space";
               break;*/
             case "logging":
-              gaugeValue = responsiveData.logging;
+              gaugeValue = recoverData.logging;
               gaugeTitle = "Logging";
               gaugeRoute = "logging";
               break;

@@ -27,7 +27,7 @@ const Performance = () => {
         }
 
         const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/monitoring/${databaseName}/performance`,
+          `${process.env.REACT_APP_API_URL}/monitoring/source/performance`,
           {
             method: 'GET',
             headers: {
@@ -50,6 +50,8 @@ const Performance = () => {
       } finally {
         setLoading(false);
       }
+      console.log("Raw sources data:", databaseName); // Verifica la estructura exacta
+
     };
 
     fetchPerformanceData();

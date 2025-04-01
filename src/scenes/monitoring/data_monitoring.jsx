@@ -122,13 +122,13 @@ const Performance = () => {
   return (
     <Box m="20px">
       <Header 
-        title={`Metrics of rendement`} 
+        title={`Monitoring of rendement`} 
         subtitle={`Source: ${databaseName}`}
       />
       
       {alertVisible && (
         <Alert severity="success" sx={{ mb: 2 }}>
-          El orden de los indicadores ha sido guardado
+          The order of the gauges has been saved.
         </Alert>
       )}
 

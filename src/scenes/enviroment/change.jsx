@@ -9,20 +9,95 @@ import  BarChart from '../../components/BarChart';
 import ChangeButtons from "./his-det-back";
 import  LineChart from '../line';
 import { Bar } from "react-chartjs-2";
+import { Menu, MenuItem, Button } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 //import Enviroment from ".";
 
 const Change = ({onDataUpdate}) => { //Ths is just added by Jose
   const { databaseName } = useParams(); // Get database name from the URL
   const theme = useTheme();
+
   const colors = tokens(theme.palette.mode);
   const [responseData, setResponseData] = useState(52);
   const [memoryData, setMemoryData] = useState(33);
   const [spaceData, setSpaceData] = useState(98);
-  const { source } = useParams(); // Retrieve source from the URL parameters
-  const { organization } = useLocation().state || {};
+  //const { organisation } = useLocation().state || {};
   const [gaugeOrder, setGaugeOrder] = useState(["workload", "change", "objects"]); // State for the gauges order
   const [alertVisible, setAlertVisible] = useState(false); // State to show the alert
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [compareData, setCompareData] = useState(null);
+  //const organisation = localStorage.getItem('organisation');
+  //const { source } = useParams(); // Asegúrate de que esto viene de la URL
+  const { organization } = useLocation().state || {}; // Esto podría ser undefined
+  const location = useLocation();
+  const open = Boolean(anchorEl);
+  const [sourceNames, setSourceNames] = useState([]); // Nuevo estado para los nombres
+  //jp: API integration
+  const { organisation = "cloud_be_you", source = databaseName } = location.state || {}; 
+  // Debuggeo (verifica en consola)
+  console.log("Datos obtenidos:", { databaseName, organisation, source });
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    fetchCompareData();
+  };
+  
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  
+  const fetchCompareData = async () => {
+    const token = localStorage.getItem('accessToken');
+    const org = localStorage.getItem('organization') || "cloud_be_you"; // Fallback
+    if (!organization || !source) {
+      console.error("Faltan parámetros:", { organization, source });
+      return;
+    }
+    try {
+      console.log('Fetching compare data with:', {
+        organisation,
+        source
+      });
+      const compareResponse = await fetch(
+        `${process.env.REACT_APP_API_URL}/environment/compare`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'organisation': org,
+            'source': databaseName
+          }
+        }
+      );
+      const compareData = await compareResponse.json();
+      // Llamada 2: /info/sources (en paralelo o secuencial)
+      const sourcesResponse = await fetch(
+        `${process.env.REACT_APP_API_URL}/info/${databaseName}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'organisation': org
+          }
+        }
+      );
+      const { sources } = await sourcesResponse.json(); // Destructuración directa
+     
+      const sourcesData = await sourcesResponse.json();
+      const names = sourcesData.sources.map(source => source.name); // Extrae solo los nombres
+      // Verifica que sources existe y tiene datos
+      if (sources && sources.length > 0) {
+        setSourceNames(sources.map(item => item.name)); // Mapeo correcto
+      } else {
+        setSourceNames([]); // Lista vacía si no hay datos
+      }
+    } catch (error) {
+      console.error("Error fetching compare data:", error);
+      setSourceNames([]); // Lista vacía en caso de error
+    }
+    //jp: To fill the menu
+    
 
+  };
+  //Tot hier
   const changeData = [
     {
       id: "",
@@ -35,46 +110,7 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
     },
   ];
 
-  useEffect(() => {
-    const fetchAvailibilityData = async () => {
-      try {
-        const token = localStorage.getItem('accessToken'); // Retrieve token from localStorage
-
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/dashboards/${organization}/technical/sources/${source}/availability`, 
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`, // Add token to Authorization header
-              'Content-Type': 'application/json',
-            },
-          }
-        );        
-        const data = await response.json();
-        setResponseData(data.response);
-        setMemoryData(data.memory);
-        setSpaceData(data.space);
-        // Push back the results to the tachnical_details.jsx page
-        if (onDataUpdate) {
-          onDataUpdate({
-            response: data.response,
-            memory: data.memory,
-            space: data.space,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching availability data:", error);
-      }
-      };
-      //Finish of the pushing
-
-     //   console.log(data); // Check the fetched data
-     // } catch (error) {
-     //   console.error("Error fetching recovery data:", error);
-     // }
-   // };
-
-    fetchAvailibilityData();
-  }, [databaseName, organization,source, onDataUpdate]); //onDataUpdate is just added Jose 
+  
   // Funtions for the drag and drop
   const handleDragStart = (index) => (event) => {
     event.dataTransfer.setData("text/plain", index); // Save the index for the drag element 
@@ -96,6 +132,12 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
   const handleDragOver = (event) => {
     event.preventDefault(); // Allow you to drop the element
   };
+  console.log("Valores actuales:", {
+    databaseName, // ¿Es prd_lst?
+    organisation, // ¿Tiene valor?
+    source,       // ¿Tiene valor?
+    apiUrl: process.env.REACT_APP_API_URL
+  });
   return (
     
     <Box m="20px">
@@ -111,9 +153,38 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
        {/* Contenedor de gráficos */}
        <Box m="10px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
        <ChangeButtons databaseName={databaseName}/>
+                 {/* jp: Deployder button */}
+                 <Button
+                    variant="contained"
+                    endIcon={<ExpandMoreIcon />}
+                    onClick={handleClick}
+                    sx={{ width: '150px' }}
+                  >
+                    Compare
+                  </Button>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                  >
+                     {sourceNames.length > 0 ? (
+                      sourceNames.map((name, index) => (
+                        <MenuItem key={index} onClick={handleClose}>
+                          {name}
+                        </MenuItem>
+                      ))
+                    ) : (
+                      <MenuItem onClick={handleClose}>No sources available</MenuItem>
+                    )}
+                  </Menu>
+                  {/* jp: End of the section */}
+
        </Box>
        <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="5px">
-        
+        <Box  height="200px">
+        </Box>
+      </Box>
+       <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="5px">
        {["TABLE", "INDEX", "VIEW"].map((text, index) => (
           <Box key={index} height="200px">
             <Typography variant="h4" gutterBottom>

@@ -307,10 +307,10 @@ function App() {
 
   const fetchUserInfo = async (token) => {
     try {
-      const response = await fetch(process.env.REACT_APP_API_URL + '/info/user', {
+      const response = await fetch(process.env.REACT_APP_API_URL+'/info/user', {
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Organisation' : organisation,
+          'organisation' : organisation,
           //'Role': role
         },
       });
@@ -320,9 +320,9 @@ function App() {
       if (data.organisation) {
         localStorage.setItem('organization', data.organisation);
       }
-      if (data.role) {
+      /*if (data.role) {
         localStorage.setItem('role', data.role);
-      }
+      }*/
     } catch (error) {
       console.error("Error fetching user info:", error);
     }

@@ -22,19 +22,14 @@ const Monitoring = () => {
         const token = localStorage.getItem('accessToken');
         const organisation = localStorage.getItem('organization');
         const response = await fetch(`${process.env.REACT_APP_API_URL}/monitoring/overview`, {
-      
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/json',
             'organisation': organisation,
-
           },
         });
-
         const data = await response.json();
-        
-
                   // Verifica si la respuesta fue exitosa
                   if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -121,8 +116,6 @@ const Monitoring = () => {
                 onDragStart={handleDragStart(index)}
                 onDrop={handleDrop(index)}
                 onDragOver={handleDragOver}
-                
-
                 onClick={() => navigate(`/monitoring/details/${source.name}`, )}
                 style={{
                   backgroundColor: colors.primary[400],

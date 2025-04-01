@@ -55,6 +55,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
     '/environment': 'Environment', 
     '/monitoring' : 'Monitoring',  
     'deta/objects' : 'Objects of',  
+    '/performance' : 'Performance'
     //'/monitoring of ' : 'Monitoring of',
   };
 
