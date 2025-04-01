@@ -34,6 +34,10 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
   const [sourceNames, setSourceNames] = useState([]); // Nuevo estado para los nombres
   //jp: API integration
   const { organisation = "cloud_be_you", source = databaseName } = location.state || {}; 
+  //jp: API integration for the graphics/barcharts
+  const [tableData, setTableData] = useState(null);
+  const [indexData, setIndexData] = useState(null);
+  const [viewsData, setViewsData] = useState(null);
   // Debuggeo (verifica en consola)
   console.log("Datos obtenidos:", { databaseName, organisation, source });
   const handleClick = (event) => {
@@ -47,9 +51,9 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
   
   const fetchCompareData = async () => {
     const token = localStorage.getItem('accessToken');
-    const org = localStorage.getItem('organization') || "cloud_be_you"; // Fallback
-    if (!organization || !source) {
-      console.error("Faltan parámetros:", { organization, source });
+    const org = localStorage.getItem('organisation') || "cloud_be_you"; // Fallback
+    if (!organisation || !source) {
+      console.error("Faltan parámetros:", { organisation, source });
       return;
     }
     try {
@@ -69,9 +73,14 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
         }
       );
       const compareData = await compareResponse.json();
+          // Actualiza cada estado por separado
+          setTableData(compareData.tables);
+          setIndexData(compareData.indexes);
+          setViewsData(compareData.views);
+            
       // Llamada 2: /info/sources (en paralelo o secuencial)
       const sourcesResponse = await fetch(
-        `${process.env.REACT_APP_API_URL}/info/${databaseName}`,
+        `${process.env.REACT_APP_API_URL}/info/sources`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -81,8 +90,8 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
       );
       const { sources } = await sourcesResponse.json(); // Destructuración directa
      
-      const sourcesData = await sourcesResponse.json();
-      const names = sourcesData.sources.map(source => source.name); // Extrae solo los nombres
+      //const sourcesData = await sourcesResponse.json();
+      //const names = sourcesData.sources.map(source => source.name); // Extrae solo los nombres
       // Verifica que sources existe y tiene datos
       if (sources && sources.length > 0) {
         setSourceNames(sources.map(item => item.name)); // Mapeo correcto
@@ -98,7 +107,7 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
 
   };
   //Tot hier
-  const changeData = [
+  /*const changeData = [
     {
       id: "",
       color: "hsl(240, 70%, 50%)",
@@ -108,7 +117,38 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
         { x: "Target", y: Math.floor(Math.random() * 100) }, // Dato para "Acceptation(Only)"
       ],
     },
-  ];
+  ];*/
+  //Transform the data for the barcharts
+  const prepareChartData = (type) => {
+    let data;
+    switch(type){
+      case 'tables':
+        data = tableData;
+        break;
+      case 'indexes':
+        data = indexData;
+        break;
+      case 'views':
+        data = viewsData;
+        break;
+      default:
+        return null;
+    }
+    if (!data) return null;
+  
+    return [
+      {
+        id: type,
+        color: `hsl(${Math.random() * 360}, 70%, 50%)`,
+        data: [ 
+          { x: "Source Only", y: data.source_only },
+          { x: "Target Only", y: data.target_only },
+          { x: "Different", y: data.different }
+        ]
+      }
+    ];
+  };
+
 
   
   // Funtions for the drag and drop
@@ -185,16 +225,26 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
         </Box>
       </Box>
        <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="5px">
-       {["TABLE", "INDEX", "VIEW"].map((text, index) => (
-          <Box key={index} height="200px">
+       {[
+          { type: 'tables', label: 'TABLES' },
+          { type: 'indexes', label: 'INDEXES' },
+          { type: 'views', label: 'VIEWS' }
+        ].map(({type, label}) => {
+          const chartData = prepareChartData(type);
+          return(
+          <Box key={type} height="200px">
             <Typography variant="h4" gutterBottom>
-              {text}
+              {label}
             </Typography>
-            
-            <BarChart data={changeData} yAxisLegend="" xAxisLegend="" />
+            {chartData ? (
+              <BarChart data={chartData} yAxisLegend="Count" xAxisLegend="Comparison" />
+            ):(<Typography>Loading data...</Typography>)
+            }
 
-            </Box>
-          ))}
+          </Box>
+          );
+        })}
+          
         </Box>
 
     </Box>
