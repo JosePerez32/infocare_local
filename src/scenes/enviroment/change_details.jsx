@@ -1,154 +1,155 @@
-import { Box, Typography, Alert, Grid } from "@mui/material";
+import { Box, Typography, Grid, Button, Menu, MenuItem, Alert } from "@mui/material";
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
-import GaugeComponent from "react-gauge-component";
-import { useTheme } from "@mui/material";
-import { tokens } from "../../theme";
+import Tables from '../../components/Tables';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useParams, useLocation } from "react-router-dom";
-import LineChart from '../../components/LineChart';
-import Tables from '../../components/Tables'
-//import Enviroment from ".";
 
-const Details = ({onDataUpdate}) => { //Ths is just added by Jose
-  const { databaseName } = useParams(); // Get database name from the URL
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
-  const [responseData, setResponseData] = useState(52);
-  const [memoryData, setMemoryData] = useState(33);
-  const [spaceData, setSpaceData] = useState(98);
-  const { source } = useParams(); // Retrieve source from the URL parameters
-  const { organization } = useLocation().state || {};
-  const [gaugeOrder, setGaugeOrder] = useState(["table", "index", "view"]); // State for the gauges order
-  const [alertVisible, setAlertVisible] = useState(false); // State to show the alert
- // console.log("Source:", source);
- const [origen, setSource] = useState(null); // Estado para almacenar el valor de source
-  const texts = ["TABLE", "INDEX", "VIEW"];
-  const workloadData = [
-    {
-      id: "table", // Identificador único para la primera línea
-      color: "hsl(0, 0%, 0%)", // Negro
-      data: Array.from({ length: 30 }, (_, i) => ({
-        x: i,
-        y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
-      })),
-    },
-    {
-      id: "index", // Identificador único para la segunda línea
-      color: "hsl(0, 100%, 50%)", // Rojo
-      data: Array.from({ length: 30 }, (_, i) => ({
-        x: i,
-        y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
-      })),
-    },
-    {
-      id: "view", // Identificador único para la tercera línea
-      color: "hsl(60, 100%, 50%)", // Amarillo
-      data: Array.from({ length: 30 }, (_, i) => ({
-        x: i,
-        y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
-      })),
-    },
-  ];
-
+const Details = () => {
+  const { databaseName, source } = useParams();
+  const [sourceNames, setSourceNames] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const organization = localStorage.getItem('organization');
+  const [selectedDate1, setSelectedDate1] = useState('');
+  const [selectedDate2, setSelectedDate2] = useState('');
+  const [anchorElDate1, setAnchorElDate1] = useState(null);
+  const [anchorElDate2, setAnchorElDate2] = useState(null);
+  const dates1 = Array.from({length: 30}, (_, i) => new Date(Date.now() - (i * 86400000)).toLocaleDateString());
+  const dates2 = Array.from({length: 30}, (_, i) => new Date(Date.now() - (i * 86400000)).toLocaleDateString());
+  // Llamada API para el menú desplegable
   useEffect(() => {
-    const fetchAvailibilityData = async () => {
+    const fetchSourceData = async () => {
       try {
-        const token = localStorage.getItem('accessToken'); // Retrieve token from localStorage
-
+        const token = localStorage.getItem('accessToken');
         const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/dashboards/${organization}/technical/sources/${source}/availability`, 
+          `${process.env.REACT_APP_API_URL}/monitoring/overview`, 
           {
             headers: {
-              'Authorization': `Bearer ${token}`, // Add token to Authorization header
-              'Content-Type': 'application/json',
-            },
+              'Authorization': `Bearer ${token}`,
+              'organisation': organization
+            }
           }
-        );        
+        );
         const data = await response.json();
-        setResponseData(data.response);
-        setMemoryData(data.memory);
-        setSpaceData(data.space);
-        setSource(data.source);
-        // Push back the results to the tachnical_details.jsx page
-        if (onDataUpdate) {
-          onDataUpdate({
-            response: data.response,
-            memory: data.memory,
-            space: data.space,
-            origen: data.source,
-          });
+        if (data.sources) {
+          setSourceNames(data.sources.map(source => source.name));
         }
       } catch (error) {
-        console.error("Error fetching availability data:", error);
+        console.error("Error:", error);
       }
-      };
-      //Finish of the pushing
+    };
+    fetchSourceData();
+  }, [organization]);
 
-     //   console.log(data); // Check the fetched data
-     // } catch (error) {
-     //   console.error("Error fetching recovery data:", error);
-     // }
-   // };
-
-    fetchAvailibilityData();
-  }, [databaseName, organization,source, onDataUpdate]); //onDataUpdate is just added Jose 
-  // Funtions for the drag and drop
-  const handleDragStart = (index) => (event) => {
-    event.dataTransfer.setData("text/plain", index); // Save the index for the drag element 
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const handleDrop = (index) => (event) => {
-    event.preventDefault();
-    const fromIndex = event.dataTransfer.getData("text/plain"); // Obtiene el índice del elemento arrastrado
-    const newOrder = [...gaugeOrder]; // Copy the currently copy
-    const [movedItem] = newOrder.splice(fromIndex, 1); // Remove the element of the original position
-    newOrder.splice(index, 0, movedItem); // Insert the element in the new position
-    setGaugeOrder(newOrder); // Uodate the state with the new order
-
-    // SHows a temporally alert
-    setAlertVisible(true);
-    setTimeout(() => setAlertVisible(false), 3000);
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
-  const handleDragOver = (event) => {
-    event.preventDefault(); // Allow you to drop the element
-  };
   return (
-
     <Box m="20px">
+      <Header title="Details of change" subtitle=""/>
       
-      <Header title={`Details of change` } subtitle=""    />
-      
-      
-      <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
-            Source: {databaseName} <br /><br />Target  :
-            </Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
-              TIME<br /><br />TIME {/* Aquí puedes agregar el valor de Target si es dinámico */}
-            </Typography>
-          </Grid>
-        </Grid>  
-         {["TABLE", "INDEX", "VIEW"].map((text, index) => (
-                <Box key={index} sx={{ textAlign: 'center' }}> {/* Contenedor para el título y la tabla */}
-                <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'Withe' }}>
-                    {text} {/* Título de la tabla */}
-                </Typography>
-                <Tables key={index} height="200px"></Tables> {/* Tabla */}
-            </Box>
-                    
-          ))}
-          
+      <Grid container spacing={2} alignItems="center">
+        <Grid item xs={6}>
+          <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
+            Source: {databaseName}
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
+            DATE: 
+            <Button 
+              onClick={(e) => setAnchorElDate1(e.currentTarget)}
+              sx={{ 
+                color: 'white', 
+                fontSize: '1.5rem',
+                fontWeight: 'bold',
+                textTransform: 'none',
+                p: 0 // Elimina padding interno para mejor alineación
+              }}
+            >
+              {selectedDate1 || "DATE:"}
+            </Button>
+            <Menu anchorEl={anchorElDate1} open={Boolean(anchorElDate1)} onClose={() => setAnchorElDate1(null)}>
+              {dates1.map((date1, i) => (
+                <MenuItem key={i} onClick={() => { 
+                  setSelectedDate1(date1); 
+                  setAnchorElDate1(null); 
+                }}>
+                  {date1}
+                </MenuItem>
+              ))}
+            </Menu>
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
+            Target: 
+            <Button
+              variant="contained"
+              endIcon={<ExpandMoreIcon />}
+              onClick={handleClick}
+              sx={{ ml: 2, verticalAlign: 'middle' }}
+            >
+              Select
+            </Button>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+            >
+              {sourceNames.map((name, index) => (
+                <MenuItem key={index} onClick={handleClose}>
+                  {name}
+                </MenuItem>
+              ))}
+            </Menu>
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
+            DATE:   
+            <Button 
+              onClick={(e) => setAnchorElDate2(e.currentTarget)}
+              sx={{ 
+                color: 'white', 
+                fontSize: '1.5rem',
+                fontWeight: 'bold',
+                textTransform: 'none',
+                p: 0 // Elimina padding interno para mejor alineación
+              }}
+            >
+              {selectedDate2 || "DATE:"}
+            </Button>
+            <Menu anchorEl={anchorElDate2} open={Boolean(anchorElDate2)} onClose={() => setAnchorElDate2(null)}>
+              {dates2.map((date2, i) => (
+                <MenuItem key={i} onClick={() => { 
+                  setSelectedDate2(date2); 
+                  setAnchorElDate2(null); 
+                }}>
+                  {date2}
+                </MenuItem>
+              ))}
+            </Menu>
+          </Typography>
+        </Grid>
+      </Grid>
+
+      {["TABLE", "INDEX", "VIEW"].map((text, index) => (
+        <Box key={index} sx={{ textAlign: 'center' }}>
+          <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
+            {text}
+          </Typography>
+          <Tables height="200px" data={databaseName.slice(0, 5)} />
         </Box>
-        
-    
+      ))}
+    </Box>
   );
- 
-  
-  
 };
 
 export default Details;

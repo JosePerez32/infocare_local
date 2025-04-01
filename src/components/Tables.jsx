@@ -39,15 +39,15 @@ const Table = () => {
   ];
 
   // Configuración de la paginación inicial
-  const paginationModel = { page: 0, pageSize: 6 };
+  const paginationModel = { page: 0, pageSize: 2 };
 
   return (
-    <Paper sx={{ height: '500px', width: '100%', marginBottom: '30px' }}>
+    <Paper sx={{ height: '200px', width: '100%', marginBottom: '30px' }}>
       <DataGrid
         rows={rows}
         columns={columns}
         initialState={{ pagination: { paginationModel } }}
-        pageSizeOptions={[5, 10]}
+        pageSizeOptions={[3, 5]}
         checkboxSelection
         sx={{
             border: 2, // Grosor del borde
