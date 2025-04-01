@@ -39,6 +39,9 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
   const [indexData, setIndexData] = useState(null);
   const [viewsData, setViewsData] = useState(null);
   // Debuggeo (verifica en consola)
+  useEffect(() => {
+    fetchCompareData();
+  }, []); // <- Array vacío para que solo se ejecute una vez
   console.log("Datos obtenidos:", { databaseName, organisation, source });
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -57,6 +60,21 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
       return;
     }
     try {
+      
+      // Llamada 2: /info/sources (en paralelo o secuencial)
+      const sourcesResponse = await fetch(
+        `${process.env.REACT_APP_API_URL}/info/sources`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'organisation': org
+          }
+        }
+      );
+      const { sources } = await sourcesResponse.json(); // Destructuración directa
+     
+
+
       console.log('Fetching compare data with:', {
         organisation,
         source
@@ -78,18 +96,6 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
           setIndexData(compareData.indexes);
           setViewsData(compareData.views);
             
-      // Llamada 2: /info/sources (en paralelo o secuencial)
-      const sourcesResponse = await fetch(
-        `${process.env.REACT_APP_API_URL}/info/sources`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'organisation': org
-          }
-        }
-      );
-      const { sources } = await sourcesResponse.json(); // Destructuración directa
-     
       //const sourcesData = await sourcesResponse.json();
       //const names = sourcesData.sources.map(source => source.name); // Extrae solo los nombres
       // Verifica que sources existe y tiene datos
@@ -120,10 +126,12 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
   ];*/
   //Transform the data for the barcharts
   const prepareChartData = (type) => {
+    
     let data;
     switch(type){
       case 'tables':
         data = tableData;
+        console.log(`Datos para ${type}:`, data);
         break;
       case 'indexes':
         data = indexData;
@@ -190,8 +198,8 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
           Gauge chart order changed!
         </Alert>
       )}
-       {/* Contenedor de gráficos */}
-       <Box m="10px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
+      {/* Contenedor de gráficos */}
+      <Box m="10px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
        <ChangeButtons databaseName={databaseName}/>
                  {/* jp: Deployder button */}
                  <Button
@@ -219,10 +227,10 @@ const Change = ({onDataUpdate}) => { //Ths is just added by Jose
                   </Menu>
                   {/* jp: End of the section */}
 
-       </Box>
-       <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="5px">
-        <Box  height="200px">
-        </Box>
+      </Box>
+      <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="5px">
+          <Box  height="200px">
+          </Box>
       </Box>
        <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="5px">
        {[
