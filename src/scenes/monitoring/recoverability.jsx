@@ -15,7 +15,7 @@ const Recoverability = () => {
   const { organisation } = useLocation().state || {};
   const { source } = useParams(); // Retrieve source from the URL parameters
   const [recoverData, setRecoverData] = useState([]);
-  const [gaugeOrder, setGaugeOrder] = useState(["storage", "backups", /*"space",*/ "logging"/*, "readiness"*/]); // jp: Estado para el orden de los gauges
+  const [gaugeOrder, setGaugeOrder] = useState(["drp", "logging", /*"space",*/ "backups"/*, "readiness"*/]); // jp: Estado para el orden de los gauges
   const [alertVisible, setAlertVisible] = useState(false); // jp: Estado para mostrar alertas
 
   useEffect(() => {
@@ -24,7 +24,7 @@ const Recoverability = () => {
         const token = localStorage.getItem('accessToken'); // Retrieve token from localStorage
 
         const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/monitoring/${source}/recoverability`, 
+          `${process.env.REACT_APP_API_URL}/monitoring/source/recoverability`, 
           {
             headers: {
               'Authorization': `Bearer ${token}`, // Add token to Authorization header
@@ -38,14 +38,22 @@ const Recoverability = () => {
         setRecoverData(data);
 
 
-        console.log(data);
+        Object.entries(recoverData).map(([key, value]) => {
+          console.log(`Nombre: ${key}, Valor: ${value}`);
+          // Puedes retornar componentes JSX aquí si lo necesitas
+          return (
+            <div key={key}>
+              <p>{key}: {value}</p>
+            </div>
+          );
+        });
       } catch (error) {
         console.error("Error fetching responsiveness data:", error);
       }
     };
 
     fetchResponsivenessData();
-    const interval = setInterval(fetchResponsivenessData, 5000);
+    const interval = setInterval(fetchResponsivenessData, 50000);
 
     return () => clearInterval(interval);
   }, [databaseName, organisation, source]);
@@ -110,6 +118,7 @@ const Recoverability = () => {
       />
     </Box>
   );
+
     // En el cuerpo del componente (fuera del JSX)
     useEffect(() => {
       if(databaseName === "prd_frst") {
@@ -134,13 +143,13 @@ const Recoverability = () => {
           let gaugeRoute;
 
           switch (gaugeName) {
-            case "storage":
-              gaugeValue = recoverData.storage;
-              gaugeTitle = "Storage";
+            case "drp":
+              gaugeValue = gaugeName.value;
+              gaugeTitle = "DRP";
               gaugeRoute = "storage";
               break;
             case "backups":
-              gaugeValue = recoverData.RecoveryBackups;
+              gaugeValue = recoverData.value;
               gaugeTitle = "Backups";
               gaugeRoute = "backups";
               break;
@@ -150,7 +159,7 @@ const Recoverability = () => {
               gaugeRoute = "space";
               break;*/
             case "logging":
-              gaugeValue = recoverData.logging;
+              gaugeValue = recoverData.value;
               gaugeTitle = "Logging";
               gaugeRoute = "logging";
               break;

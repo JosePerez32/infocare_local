@@ -144,7 +144,7 @@ const Performance = () => {
               onDragStart={handleDragStart(index)}
               onDrop={handleDrop(index)}
               onDragOver={handleDragOver}
-              onClick={() => navigate(`/monitoring/details/${databaseName}/${config.label}` )}
+              onClick={() => navigate(`/monitoring/details/${databaseName}/${config?.label?.toLowerCase() || ''}`)}
               sx={{
                 backgroundColor: colors.primary[400],
                 borderRadius: "8px",
