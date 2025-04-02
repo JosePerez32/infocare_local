@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { 
   Box, 
   useTheme, 
@@ -16,6 +17,8 @@ import Organization from "../monitoring/organization";
 const Dashboard = ({ accessToken }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  // Dentro de tu componente:
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -44,8 +47,9 @@ const Dashboard = ({ accessToken }) => {
     fetchUserInfo();
   }, [accessToken]);
 
-  const FeatureCard = ({ Icon, title, description }) => (
+  const FeatureCard = ({ Icon, title, description, onClick  }) => (
     <Card 
+      onClick={onClick}
       sx={{ 
         height: '100%',
         bgcolor: colors.primary[400],
@@ -168,36 +172,42 @@ const Dashboard = ({ accessToken }) => {
 
       {/* Feature Cards with Original Content */}
       <Grid container spacing={3}>
-        <Grid item xs={12} md={2.3}>
+        <Grid item xs={12} md={2.4}>
           <FeatureCard
+            onClick={() => navigate('/monitoring')}
             Icon={HandshakeIcon}
             title="Monitoring"
-            description="The monitoring section provides an overview of the current situation of all environments that are under license with Infocare. This will not replace detailed monitoring solutions from other vendors but will provide an easily understandable qualified status of the environment. It is possible to drill down and go back and fort in time."
+            
+            description="The monitoring provides a clear, qualified overview of all licensed environments, with time navigation and drill-down options. It complements, rather than replaces, detailed third-party monitoring tools."
           />
         </Grid>
-        <Grid item xs={12} md={2.3}>
+        <Grid item xs={12} md={2.4}>
           <FeatureCard
+            onClick={() => navigate('/environment')}
             Icon={AutoAwesomeIcon}
             title="Environment"
             description="The envornment section provides a high level overview of what exists in your environment including summarized execution statistics and daily differences between environments."
           />
         </Grid>
-        <Grid item xs={12} md={2.3}>
+        <Grid item xs={12} md={2.4}>
           <FeatureCard
             Icon={MoreTimeIcon}
+            onClick={() => navigate('/ilmt')}
             title="Reports"
             description="Here you can find monthly status reports of the different environments and our quarter reports. In case you are also an ILMT cients, you can find monthly ILMT reports of your IBM software licenses in your company."
           />
         </Grid>
-        <Grid item xs={12} md={2.3}>
+        <Grid item xs={12} md={2.4}>
           <FeatureCard
+          onClick={() => navigate('/ilmt')}
             Icon={AutoAwesomeIcon}
             title="ILMT"
             description="Integration and validation of IBM ILMT data, ensuring accurate license compliance information. (Only available for ILMT-clients)"
           />
         </Grid>
-        <Grid item xs={12} md={2.3}>
+        <Grid item xs={12} md={2.4}>
           <FeatureCard
+            onClick={() => navigate('/faq')}
             Icon={AutoAwesomeIcon}
             title="FAQ"
             description="Answers to frequently asked questions about usage, data interpretation, and general Infocare functionality."
