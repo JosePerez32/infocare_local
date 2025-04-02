@@ -1,177 +1,180 @@
-import { Box, Typography, Alert } from "@mui/material";
+import { Box, Typography, Alert, Button, Menu, MenuItem } from "@mui/material";
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import LineChart from '../../components/LineChart';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const Workload = ({ onDataUpdate }) => {
-  const { databaseName } = useParams(); // Get database name from the URL
+const Workload = () => {
+  const { databaseName } = useParams();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [responseData, setResponseData] = useState(52);
-  const [memoryData, setMemoryData] = useState(33);
-  const [spaceData, setSpaceData] = useState(98);
-  const { source } = useParams(); // Retrieve source from the URL parameters
-  const { organization } = useLocation().state || {};
-  const [gaugeOrder, setGaugeOrder] = useState(["workload", "change", "objects"]); // State for the gauges order
-  const [alertVisible, setAlertVisible] = useState(false); // State to show the alert
+  const [workloadData, setWorkloadData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  // Prueba estos 3 formatos alternativos:
+  const formatosParaProbar = [
+    new Date().toISOString(),                     // "2025-03-27T16:47:35.790Z"
+    new Date().toISOString().split('.')[0] + "Z", // "2025-03-27T16:47:35Z" (sin ms)
+    new Date().toLocaleDateString('en-CA')        // "2025-03-27" (solo fecha)
+  ];
+  // Generar opciones de fecha (últimos 30 días en formato ISO)
+  const dateOptions = Array.from({ length: 30 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    return date.toISOString(); // Formato completo ISO
+  });
+  const organization = localStorage.getItem('organisation');
+  // Manejadores para el menú de fechas
+  const handleDateClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-  const texts = ["SELECT", "INSERT", "UPDATE", "DELETE", "LOCKS", "DEADLOCK", "WAIT TIME"];
+  const handleDateClose = (date) => {
+    setSelectedDate(date);
+    setAnchorEl(null);
+  };
 
-  // Crear workloadData con el mismo id que el texto mapeado
-  const workloadData = texts.map((text) => ({
-    id: text, // Usar el texto como id
-    color: "hsl(120, 70%, 50%)",
-    data: Array.from({ length: 30 }, (_, i) => ({
-      x: i % 5 === 0 ? i : null, // Solo asigna valor a x cada 5 iteraciones
-      axisBottom: i,
-      y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
-    })).filter((item) => item.x !== null), // Filtra los elementos donde x no sea null,
-  }));
-
-  useEffect(() => {
-    /*const fetchAvailibilityData = async () => {
-      try {
-        const token = localStorage.getItem('accessToken'); // Retrieve token from localStorage
-
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/dashboards/${organization}/technical/sources/${source}/availability`,
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`, // Add token to Authorization header
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-        const data = await response.json();
-        setResponseData(data.response);
-        setMemoryData(data.memory);
-        setSpaceData(data.space);
-        // Push back the results to the technical_details.jsx page
-        if (onDataUpdate) {
-          onDataUpdate({
-            response: data.response,
-            memory: data.memory,
-            space: data.space,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching availability data:", error);
-      }
-    };*/
-
-    //fetchAvailibilityData();
-  const fetchWorkloadData = async (source) => {
-    try {
-      const token = localStorage.getItem('accessToken');
-      const organisation = localStorage.getItem('organization');
-      
-      // Obtener fecha de inicio (últimos 7 días por ejemplo)
-      const startTime = new Date();
-      startTime.setDate(startTime.getDate() - 7); // Restar 7 días
-      const startTimeISO = startTime.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+  const fetchWorkloadData = async () => {
+    if (!selectedDate) return;
   
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/environment/workload`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json',
-          'organisation': organisation,
-          'source': source,
-          'start_time': startTimeISO // Formato 2024-03-02
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const token = localStorage.getItem('accessToken');
+
+      
+      // Formatear fecha sin milisegundos
+      const formatAPIDate = (date) => {
+        return new Date(date).toISOString().split('.')[0] + "Z";
+      };
+  
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/environment/workload`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'organisation': organization,
+            'source': databaseName, // <-- Ahora en headers
+            'start_time': formatAPIDate(selectedDate) // <-- También en headers
+          }
         }
-      });
+      );
   
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
   
-      return await response.json();
+      const data = await response.json();
+      transformDataForCharts(data);
+      
     } catch (error) {
-      console.error("Error fetching workload data:", error);
-      throw error;
+      console.error("Fetch error:", {
+        message: error.message,
+        config: {
+          url: `${process.env.REACT_APP_API_URL}/environment/workload`,
+          headers: {
+            source: databaseName,
+            start_time: selectedDate
+          }
+        }
+      });
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
-}, [databaseName, organization, source, onDataUpdate]);
 
+  // Transformar los datos de la API para los gráficos
+  const transformDataForCharts = (apiData) => {
+    const metrics = [
+      { key: 'select_stmts', label: 'SELECT Statements' },
+      { key: 'insert_stmts', label: 'INSERT Statements' },
+      { key: 'update_stmts', label: 'UPDATE Statements' },
+      { key: 'delete_stmts', label: 'DELETE Statements' },
+      { key: 'locks', label: 'Locks' },
+      { key: 'deadlocks', label: 'Deadlocks' },
+      { key: 'wait_times', label: 'Wait Times' }
+    ];
 
-  // Functions for the drag and drop
-  const handleDragStart = (index) => (event) => {
-    event.dataTransfer.setData("text/plain", index); // Save the index for the drag element
+    const transformedData = metrics.map(metric => ({
+      id: metric.label,
+      color: `hsl(${Math.random() * 360}, 70%, 50%)`,
+      data: apiData.timestamps.map((timestamp, index) => ({
+        x: new Date(timestamp).toLocaleTimeString(),
+        y: apiData[metric.key][index] || 0
+      }))
+    }));
+
+    setWorkloadData(transformedData);
   };
 
-  const handleDrop = (index) => (event) => {
-    event.preventDefault();
-    const fromIndex = event.dataTransfer.getData("text/plain"); // Obtiene el índice del elemento arrastrado
-    const newOrder = [...gaugeOrder]; // Copy the currently copy
-    const [movedItem] = newOrder.splice(fromIndex, 1); // Remove the element of the original position
-    newOrder.splice(index, 0, movedItem); // Insert the element in the new position
-    setGaugeOrder(newOrder); // Update the state with the new order
-
-    // Shows a temporary alert
-    setAlertVisible(true);
-    setTimeout(() => setAlertVisible(false), 3000);
-  };
-
-  const handleDragOver = (event) => {
-    event.preventDefault(); // Allow you to drop the element
-  };
+  // Efecto para cargar datos cuando se selecciona fecha
+  useEffect(() => {
+    if (selectedDate) {
+      fetchWorkloadData();
+    }
+  }, [selectedDate]);
 
   return (
     <Box m="20px">
       <Header title={`Workload for ${databaseName}`} subtitle="" />
 
-      {/* Alert for the change in the order */}
-      {alertVisible && (
-        <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
-          Gauge chart order changed!
-        </Alert>
-      )}
+      {/* Selector de fecha */}
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+        <Button
+          variant="contained"
+          endIcon={<ExpandMoreIcon />}
+          onClick={handleDateClick}
+          sx={{ width: '200px' }}
+        >
+          {selectedDate ? new Date(selectedDate).toLocaleDateString() : 'Select Date'}
+        </Button>
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={() => setAnchorEl(null)}
+        >
+          {dateOptions.map((date, index) => (
+            <MenuItem 
+              key={index} 
+              onClick={() => handleDateClose(date)}
+            >
+              {new Date(date).toLocaleDateString()} - {new Date(date).toLocaleTimeString()}
+            </MenuItem>
+          ))}
+        </Menu>
+      </Box>
 
-      {/* Contenedor de gráficos */}
+      {/* Mensajes de estado */}
+      {loading && <Alert severity="info" sx={{ mb: 2 }}>Loading data...</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+      {/* Gráficos */}
       <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
-        {texts.map((text, index) => (
+        {workloadData.map((chartData, index) => (
           <Box key={index} height="200px" position="relative">
-            <Typography variant="h4" gutterBottom>
-               {/* Mostrar el texto mapeado */}
+            <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
+              {chartData.id}
             </Typography>
             <LineChart
-              data={[workloadData[index]]}
-              enableLegends={false} // Deshabilita la leyenda
-              enableTooltip={false} // Deshabilita el tooltip
+              data={[chartData]}
+              enableLegends={false}
+              enableTooltip={true}
               yAxisLegend=""
-              xAxisLegend="Hours"
+              xAxisLegend="Time"
               axisBottom={{
-                tickValues: "" // Mostrar solo cada 5 cifras
+                tickValues: workloadData[0]?.data.length > 10 ? "every 2 hours" : ""
               }}
             />
-            {/* Líneas verticales solo para la primera y segunda gráfica */}
-            {index < 2 && (
-              <Box
-                position="absolute"
-                right={0}
-                top={0}
-                bottom={0}
-                width="0px"
-                bgcolor={theme.palette.mode === "dark" ? "white" : "black"} // Cambia de color según el modo
-                zIndex={1} // Asegurar que la línea esté por encima del gráfico
-                height="0%" // Extender la línea hasta el final del contenedor
-              />
-            )}
-            {index < 9 && (
-              <Box
-                position="absolute"
-                right={0}
-                top={0}
-                bottom={0}
-                width="0px" // jp: This is 0% In case that Hans in the future want the line back 
-                bgcolor={theme.palette.mode === "dark" ? "white" : "black"} // Cambia de color según el modo
-                zIndex={4} // Asegurar que la línea esté por encima del gráfico
-                height="100%" // Extender la línea hasta el final del contenedor
-              />
-            )}
           </Box>
         ))}
       </Box>
