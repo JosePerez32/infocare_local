@@ -70,8 +70,8 @@ import Performance from "./scenes/monitoring/performance";
 import DataMonitoring from "./scenes/monitoring/data_monitoring";
 import MonitoringDetails from './scenes/technical/technical_details';
 import Recoverability from "./scenes/monitoring/recoverability";
-import ReportPage from "./scenes/ilmt";
-import QReport from "./scenes/ilmt";
+import ReportPage from "./scenes/repport";
+import QReport from "./scenes/repport";
 import Settings from "./scenes/settings"
 import Statistics from "./scenes/monitoring/nietos/statistics";
 import Design from "./scenes/monitoring/nietos/design";
@@ -651,7 +651,7 @@ function App() {
 
               {/* Common Routes */}
               <Route path="/faq" element={<FAQ />} />
-              <Route path="/ilmt" element={<ReportPage />} />
+              <Route path="/repports" element={<ReportPage />} />
               <Route path="/q-reports" element={<QReport />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/settings/createUser" element={<CreateUser />} />

@@ -228,7 +228,7 @@ const Sidebar = () => {
             <Divider sx={{ my: 2 }} />
             <MenuItem
               title="Reports"
-              to="/ilmt"
+              to="/repports"
               icon={<ReportIcon/>}
               selected={selected}
               setSelected={setSelected}
