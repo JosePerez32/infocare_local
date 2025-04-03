@@ -171,7 +171,7 @@ const Sidebar = () => {
               Infocare
             </Typography>
             <Chip
-              label="v2.0.3"
+              label="v2.0.4"
               size="small"
               sx={{
                 ml: 1,

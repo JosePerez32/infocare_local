@@ -22,12 +22,20 @@ const ReportPage = () => {
   const [selectedMonth, setSelectedMonth] = useState('Select Month');
   const [sources, setSources] = useState([]);
   const organisation = localStorage.getItem('organisation');
-  const token = localStorage.getItem('accessToken');
-
+  //const token = localStorage.getItem('accessToken');
+  const [token, setToken] = useState(localStorage.getItem('accessToken'));
   // Obtener los sources del endpoint
   useEffect(() => {
     const fetchSources = async () => {
+      // Verificación adicional
+      if (!token) {
+        console.error("Token no encontrado - Redirigiendo a login");
+        // Opcional: redirigir al login
+        // navigate('/login');
+        return;
+      }
       try {
+        console.log("Starting request to a /info/sources..."); // Debug 1
         const response = await fetch(
           `${process.env.REACT_APP_API_URL}/info/sources`, {
           method: 'GET',
@@ -37,24 +45,41 @@ const ReportPage = () => {
             'organisation': organisation,
           },
         });
-        console.log(`Organization es: ${organisation}` );
-        if (!response.ok) {
-          throw new Error('Failed to fetch sources');
-        }
-        
-        const data = await response.json();
-        setSources(data);
-        console.log('Fetching compare data with:', {
-          organisation,
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const { sources } = await response.json(); // Destructuración directa
+
+        console.log("Response recived:", { // Debug 2
+          status: response.status,
+          ok: response.ok,
+          headers: Object.fromEntries(response.headers.entries())
         });
+  
+         console.log("Proccessed data:", {
+          esArray: Array.isArray(sources),
+          cantidad: sources.length,
+          primeros3: sources.slice(0, 3) // Para ver muestra de datos
+        });
+
+        setSources(Array.isArray(sources) ? sources : []);
       } catch (error) {
-        console.error("Error fetching sources:", error);
+        console.error("Error completo en fetchSources:", { // Debug 5
+          error: error.message,
+          stack: error.stack,
+          token: token ? "✔ Presente" : "✖ Ausente",
+          organisation: organisation || "✖ No definida"
+        });
         setSources([]);
       }
     };
     
     if (organisation && token) {
       fetchSources();
+    } else {
+      console.warn("No se pudo hacer fetch - Faltan:", { // Debug 6
+        organisation: !organisation,
+        token: !token
+      });
     }
   }, [organisation, token]);
 
@@ -63,8 +88,9 @@ const ReportPage = () => {
     setAnchorElSource(event.currentTarget);
   };
 
-  const handleSourceClose = (source) => {
-    setSelectedSource(source);
+  // Para el botón de Compare (Sources)
+  const handleSourceClose = (source = null) => {
+    if (source) setSelectedSource(source); // Solo actualiza si se selecciona algo
     setAnchorElSource(null);
   };
 
@@ -73,8 +99,9 @@ const ReportPage = () => {
     setAnchorElMonth(event.currentTarget);
   };
 
-  const handleMonthClose = (month) => {
-    setSelectedMonth(month);
+  // Para el botón de Month
+  const handleMonthClose = (month = null) => {
+    if (month) setSelectedMonth(month); // Solo actualiza si se selecciona algo
     setAnchorElMonth(null);
   };
 
@@ -151,30 +178,39 @@ const ReportPage = () => {
 
       {/* Botones de selección */}
       <Box m="10px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
-        {/* Botón de Compare (como en el ejemplo) */}
-        <Button
-          variant="contained"
-          endIcon={<ExpandMoreIcon />}
-          onClick={handleSourceClick}
-          sx={{ width: '150px' }}
-        >
-          Compare
-        </Button>
-        <Menu
-          anchorEl={anchorElSource}
-          open={Boolean(anchorElSource)}
-          onClose={() => setAnchorElSource(null)}
-        >
-          {sources.length > 0 ? (
-            sources.map((name, index) => (
-              <MenuItem key={index} onClick={() => handleSourceClose(name)}>
-                {name}
-              </MenuItem>
-            ))
-          ) : (
-            <MenuItem onClick={() => setAnchorElSource(null)}>No sources available</MenuItem>
-          )}
-        </Menu>
+      {/* Botón de Compare */}
+      <Button
+        variant="contained"
+        endIcon={<ExpandMoreIcon />}
+        onClick={handleSourceClick}
+        sx={{ width: '150px' }}
+      >
+        Compare
+      </Button>
+
+      <Menu
+        anchorEl={anchorElSource}
+        open={Boolean(anchorElSource)}
+        onClose={() => setAnchorElSource(null)}
+      >
+        {sources.length > 0 ? (
+          sources.map((source) => (
+            <MenuItem 
+              key={source.id} 
+              onClick={() => {
+                handleSourceClose(source.name);
+                setAnchorElSource(null); // Cierra el menú al seleccionar
+              }}
+            >
+              {source.name}
+            </MenuItem>
+          ))
+        ) : (
+          <MenuItem onClick={() => setAnchorElSource(null)}>
+            No databases available.
+          </MenuItem>
+        )}
+      </Menu>
 
         {/* Botón de selección de mes */}
         <Button

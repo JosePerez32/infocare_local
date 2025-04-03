@@ -310,7 +310,7 @@ function App() {
       const response = await fetch(process.env.REACT_APP_API_URL+'/info/user', {
         headers: {
           'Authorization': `Bearer ${token}`,
-          'organisation' : organisation,
+          //'organisation' : organisation,
           //'Role': role
         },
       });
@@ -318,7 +318,7 @@ function App() {
       console.log(data)
       setUserInfo(data);
       if (data.organisation) {
-        localStorage.setItem('organization', data.organisation);
+        localStorage.setItem('organisation', data.organisation);
       }
       /*if (data.role) {
         localStorage.setItem('role', data.role);
