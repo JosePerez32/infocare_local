@@ -1,145 +1,281 @@
-import { Box, Typography, Alert } from "@mui/material";
+import { Box, Typography, Alert, Button, Menu, MenuItem } from "@mui/material";
 import { useEffect, useState } from "react";
 import Header from "../../../components/Header";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../../theme";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import LineChart from '../../../components/LineChart';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const CPU = ({ onDataUpdate }) => {
-  const { databaseName } = useParams(); // Get database name from the URL
+const CPU = () => {
+  const { databaseName } = useParams();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [responseData, setResponseData] = useState(52);
-  const [memoryData, setMemoryData] = useState(33);
-  const [spaceData, setSpaceData] = useState(98);
-  const { source } = useParams(); // Retrieve source from the URL parameters
-  const { organization } = useLocation().state || {};
-  const [gaugeOrder, setGaugeOrder] = useState(["CPU USAGE"]); // State for the gauges order
-  const [alertVisible, setAlertVisible] = useState(false); // State to show the alert
+  const [cpuData, setCpuData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [timeRange, setTimeRange] = useState('24h');
+  const [grouping, setGrouping] = useState('hour');
 
-  const texts = ["CPU USAGE"];
+  const [anchorElTime, setAnchorElTime] = useState(null);
+  const [anchorElGroup, setAnchorElGroup] = useState(null);
 
-  // Crear workloadData con el mismo id que el texto mapeado
-  const workloadData = texts.map((text) => ({
-    id: text, // Usar el texto como id
-    color: "hsl(120, 70%, 50%)",
-    data: Array.from({ length: 30 }, (_, i) => ({
-      x: i % 5 === 0 ? i : null, // Solo asigna valor a x cada 5 iteraciones
-      axisBottom: i,
-      y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
-    })).filter((item) => item.x !== null), // Filtra los elementos donde x no sea null,
-  }));
+  // Opciones de formato de fecha
+  const dateFormatOptions = {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  };
+
+  const fetchCpuData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+   
+      const organisation = localStorage.getItem('organisation');
+      const token = localStorage.getItem('accessToken');
+      const now = new Date();
+      const startTime = new Date();
+      
+      switch(timeRange) {
+        case '1h': startTime.setHours(now.getHours() - 1); break;
+        case '24h': startTime.setDate(now.getDate() - 1); break;
+        case '7d': startTime.setDate(now.getDate() - 7); break;
+        case '30d': startTime.setDate(now.getDate() - 30); break;
+        default: startTime.setDate(now.getDate() - 1);
+      }
+      // Mapeo correcto de grouping a los valores que espera el endpoint
+      const getGroupingParam = () => {
+        switch(grouping) {
+          case 'sec': return 'sec';
+          case 'min': return 'min'; 
+          case 'hour': return 'uur';
+          default: return 'uur'; // Valor por defecto
+        }
+      };
+      // Parámetros de la consulta
+      const params = new URLSearchParams({
+        start_time: startTime.toISOString(),
+        rows: '10',
+        grouping: getGroupingParam() // Usamos la función de mapeo
+      });
+
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/metrics/performance/cpu?${params}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'organisation': organisation,
+            'source': databaseName
+          },
+        }
+      );
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${await response.text()}`);
+      }
+      
+      const data = await response.json();
+      transformDataForCharts(data);
+      
+    } catch (error) {
+      console.error("Error fetching CPU data:", error);
+      setError("Failed to load CPU data: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const transformDataForCharts = (apiData) => {
+    try {
+      // Validación y limpieza de datos
+      const safeData = {
+        timestamps: Array.isArray(apiData?.time) ? apiData.time : [],
+        idle: Array.isArray(apiData?.cpu_idle) ? apiData.cpu_idle : [],
+        user: Array.isArray(apiData?.cpu_user) ? apiData.cpu_user : [],
+        system: Array.isArray(apiData?.cpu_system) ? apiData.cpu_system : [],
+        iowait: Array.isArray(apiData?.cpu_iowait) ? apiData.cpu_iowait : []
+      };
+
+      // Asegurar misma longitud de arrays
+      const minLength = Math.min(
+        safeData.timestamps.length,
+        safeData.idle.length,
+        safeData.user.length,
+        safeData.system.length,
+        safeData.iowait.length
+      );
+
+      // Crear datasets para cada métrica
+      const chartData = [
+        {
+          id: 'CPU Idle',
+          color: colors.greenAccent[500],
+          data: minLength > 0 ? 
+               Array(minLength).fill().map((_, i) => ({
+                 x: new Date(safeData.timestamps[i]).toLocaleString('en-US', dateFormatOptions),
+                 y: safeData.idle[i]
+               })) : 
+               [{
+                 x: new Date().toLocaleString('en-US', dateFormatOptions),
+                 y: 0
+               }]
+        },
+        {
+          id: 'CPU User',
+          color: colors.blueAccent[500],
+          data: minLength > 0 ? 
+               Array(minLength).fill().map((_, i) => ({
+                 x: new Date(safeData.timestamps[i]).toLocaleString('en-US', dateFormatOptions),
+                 y: safeData.user[i]
+               })) : 
+               [{
+                 x: new Date().toLocaleString('en-US', dateFormatOptions),
+                 y: 0
+               }]
+        },
+        {
+          id: 'CPU System',
+          color: colors.redAccent[500],
+          data: minLength > 0 ? 
+               Array(minLength).fill().map((_, i) => ({
+                 x: new Date(safeData.timestamps[i]).toLocaleString('en-US', dateFormatOptions),
+                 y: safeData.system[i]
+               })) : 
+               [{
+                 x: new Date().toLocaleString('en-US', dateFormatOptions),
+                 y: 0
+               }]
+        },
+        {
+          id: 'CPU IOWait',
+          color: colors.yellowAccent[500],
+          data: minLength > 0 ? 
+               Array(minLength).fill().map((_, i) => ({
+                 x: new Date(safeData.timestamps[i]).toLocaleString('en-US', dateFormatOptions),
+                 y: safeData.iowait[i]
+               })) : 
+               [{
+                 x: new Date().toLocaleString('en-US', dateFormatOptions),
+                 y: 0
+               }]
+        }
+      ];
+
+      setCpuData(chartData);
+    } catch (transformError) {
+      console.error("Error transforming data:", transformError);
+      setError("Data format error");
+    }
+  };
 
   useEffect(() => {
-    const fetchAvailibilityData = async () => {
-      try {
-        const token = localStorage.getItem('accessToken'); // Retrieve token from localStorage
-
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/dashboards/${organization}/technical/sources/${source}/availability`,
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`, // Add token to Authorization header
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-        const data = await response.json();
-        setResponseData(data.response);
-        setMemoryData(data.memory);
-        setSpaceData(data.space);
-        // Push back the results to the technical_details.jsx page
-        if (onDataUpdate) {
-          onDataUpdate({
-            response: data.response,
-            memory: data.memory,
-            space: data.space,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching availability data:", error);
-      }
-    };
-
-    fetchAvailibilityData();
-  }, [databaseName, organization, source, onDataUpdate]);
-
-  // Functions for the drag and drop
-  const handleDragStart = (index) => (event) => {
-    event.dataTransfer.setData("text/plain", index); // Save the index for the drag element
-  };
-
-  const handleDrop = (index) => (event) => {
-    event.preventDefault();
-    const fromIndex = event.dataTransfer.getData("text/plain"); // Obtiene el índice del elemento arrastrado
-    const newOrder = [...gaugeOrder]; // Copy the currently copy
-    const [movedItem] = newOrder.splice(fromIndex, 1); // Remove the element of the original position
-    newOrder.splice(index, 0, movedItem); // Insert the element in the new position
-    setGaugeOrder(newOrder); // Update the state with the new order
-
-    // Shows a temporary alert
-    setAlertVisible(true);
-    setTimeout(() => setAlertVisible(false), 3000);
-  };
-
-  const handleDragOver = (event) => {
-    event.preventDefault(); // Allow you to drop the element
-  };
+    fetchCpuData();
+  }, [databaseName, timeRange, grouping]);
 
   return (
     <Box m="20px">
-      <Header title={`CPU for ${databaseName}`} subtitle="" />
+      <Header title={`CPU Usage for ${databaseName}`} subtitle="Breakdown by usage type" />
+      
+      {/* Controles de tiempo y agrupación */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+        {/* Botón de rango de tiempo */}
+        <Button
+          variant="contained"
+          onClick={(e) => setAnchorElTime(e.currentTarget)}
+          endIcon={<ExpandMoreIcon />}
+          sx={{ minWidth: 150 }}
+        >
+          {timeRange === '1h' ? 'Last hour' : 
+           timeRange === '24h' ? 'Last 24h' :
+           timeRange === '7d' ? 'Last 7 days' : 
+           timeRange === '30d' ? 'Last 30 days' : 'Time Range'}
+        </Button>
 
-      {/* Alert for the change in the order */}
-      {alertVisible && (
-        <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
-          Gauge chart order changed!
-        </Alert>
-      )}
+        {/* Botón de agrupación */}
+        <Button
+          variant="contained"
+          onClick={(e) => setAnchorElGroup(e.currentTarget)}
+          endIcon={<ExpandMoreIcon />}
+          sx={{ minWidth: 150 }}
+        >
+          {grouping === 'min' ? 'By minutes' :
+           grouping === 'hour' ? 'By hours' : 
+           grouping === 'day' ? 'By days' : 'Group by'}
+        </Button>
 
-      {/* Contenedor de gráficos */}
-      <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
-        {texts.map((text, index) => (
-          <Box key={index} height="200px" position="relative">
-            <Typography variant="h4" gutterBottom>
-               {/* Mostrar el texto mapeado */}
+        {/* Menú para rango de tiempo */}
+        <Menu
+          anchorEl={anchorElTime}
+          open={Boolean(anchorElTime)}
+          onClose={() => setAnchorElTime(null)}
+        >
+          {['1h', '24h', '7d', '30d'].map((range) => (
+            <MenuItem 
+              key={range} 
+              onClick={() => {
+                setTimeRange(range);
+                setAnchorElTime(null);
+              }}
+            >
+              {range === '1h' ? 'Last hour' : 
+               range === '24h' ? 'Last 24h' :
+               range === '7d' ? 'Last 7 days' : 'Last 30 days'}
+            </MenuItem>
+          ))}
+        </Menu>
+
+        {/* Menú para agrupación */}
+        <Menu
+        anchorEl={anchorElGroup}
+        open={Boolean(anchorElGroup)}
+        onClose={() => setAnchorElGroup(null)}
+      >
+        {['min', 'hour'].map((group) => (
+          <MenuItem 
+            key={group}
+            onClick={() => {
+              setGrouping(group);
+              setAnchorElGroup(null);
+            }}
+          >
+            {group === 'min' ? 'By minutes' : 'By hours'}
+          </MenuItem>
+        ))}
+      </Menu>
+      </Box>
+
+      {loading && <Alert severity="info">Loading CPU data...</Alert>}
+      {error && <Alert severity="error">{error}</Alert>}
+
+      {/* Gráfico principal */}
+      <Box height="400px" sx={{ minWidth: 0 }}>
+        <LineChart
+          data={cpuData}
+          enableLegends={true}
+          enableTooltip={true}
+          yAxisLegend="Usage (%)"
+          xAxisLegend="Time"
+          isStacked={true}
+        />
+      </Box>
+
+      {/* Mini gráficos individuales (opcional) */}
+      <Box display="grid" gridTemplateColumns={{ xs: "1fr", md: "repeat(2, 1fr)" }} gap="20px" mt={4}>
+        {cpuData.map((metric, index) => (
+          <Box key={index} height="250px" sx={{ minWidth: 0 }}>
+            <Typography variant="h6" sx={{ textAlign: 'center', mb: 1 }}>
+              {metric.id}
             </Typography>
             <LineChart
-              data={[workloadData[index]]}
-              enableLegends={false} // Deshabilita la leyenda
-              enableTooltip={false} // Deshabilita el tooltip
-              yAxisLegend=""
-              xAxisLegend=""
-              axisBottom={{
-                tickValues: "" // Mostrar solo cada 5 cifras
-              }}
+              data={[metric]}
+              enableTooltip={true}
+              yAxisLegend="%"
+              xAxisLegend="Time"
             />
-            {/* Líneas verticales solo para la primera y segunda gráfica */}
-            {index < 2 && (
-              <Box
-                position="absolute"
-                right={0}
-                top={0}
-                bottom={0}
-                width="0px"
-                bgcolor={theme.palette.mode === "dark" ? "white" : "black"} // Cambia de color según el modo
-                zIndex={1} // Asegurar que la línea esté por encima del gráfico
-                height="0%" // Extender la línea hasta el final del contenedor
-              />
-            )}
-            {index < 9 && (
-              <Box
-                position="absolute"
-                right={0}
-                top={0}
-                bottom={0}
-                width="0px" // jp: This is 0% In case that Hans in the future want the line back 
-                bgcolor={theme.palette.mode === "dark" ? "white" : "black"} // Cambia de color según el modo
-                zIndex={4} // Asegurar que la línea esté por encima del gráfico
-                height="100%" // Extender la línea hasta el final del contenedor
-              />
-            )}
           </Box>
         ))}
       </Box>
