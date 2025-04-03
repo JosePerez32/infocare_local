@@ -234,22 +234,25 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
   );
 
   const getRoleChip = () => {
-    const role = userRole?.toLowerCase();
+    const role = (userRole || '').toLowerCase(); // Fallback a string vacío
     
     let icon = <PersonIcon />;
-    let label = 'Normal User';
-    
-    if (role.includes('admin')) {
-      icon = <AdminPanelSettingsIcon />;
-      label = 'Admin';
-    } else if (role.includes('writer')) {
-      icon = <CreateIcon />;
-      label = 'Writer';
-    } else if (role.includes('reader')) {
-      icon = <VisibilityIcon />;
-      label = 'Reader';
+    let label = 'could_be_you';
+  
+    // Verificación segura
+    if (typeof role === 'string') {
+      if (role.includes('admin')) {
+        icon = <AdminPanelSettingsIcon />;
+        label = 'Admin';
+      } else if (role.includes('writer')) {
+        icon = <CreateIcon />;
+        label = 'Writer';
+      } else if (role.includes('reader')) {
+        icon = <VisibilityIcon />;
+        label = 'Reader';
+      }
     }
-    
+  
     return (
       <Chip
         icon={icon}

@@ -302,7 +302,7 @@ function App() {
       fetchUserInfo(storedToken);
     }
   }, []);
-  const organisation = localStorage.getItem('Organisation');
+  const organisation = localStorage.getItem('organisation');
   const role = localStorage.getItem('role');
 
   const fetchUserInfo = async (token) => {
@@ -320,9 +320,9 @@ function App() {
       if (data.organisation) {
         localStorage.setItem('organisation', data.organisation);
       }
-      /*if (data.role) {
+      if (data.role) {
         localStorage.setItem('role', data.role);
-      }*/
+      }
     } catch (error) {
       console.error("Error fetching user info:", error);
     }
@@ -340,7 +340,7 @@ function App() {
       const tokens = await appID.signin();
       setErrorState(false);
       setIsAuthenticated(true);
-      setUserName(tokens.idTokenPayload.name);
+      setUserName(tokens.idTokenPayload.userName);
       setAccessToken(tokens.idToken);
       localStorage.setItem('accessToken', tokens.idToken);
       await fetchUserInfo(tokens.idToken);
@@ -504,8 +504,8 @@ function App() {
           <Sidebar isSidebar={isSidebar} />
           <main className="content">
             <Topbar 
-              userInfo={organisation}
               userName={role}
+              userInfo={organisation}
               setIsSidebar={setIsSidebar} 
               onLogout={logoutAction} 
             />
