@@ -7,10 +7,27 @@ import { useParams } from "react-router-dom";
 import LineChart from '../../../components/LineChart';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
+// Colores por defecto como fallback
+const DEFAULT_COLORS = {
+  idle: '#4CAF50',
+  user: '#2196F3',
+  system: '#F44336',
+  iowait: '#FFEB3B'
+};
+
 const CPU = () => {
   const { databaseName } = useParams();
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+  
+  // Usamos try-catch para manejar posibles errores al obtener los colores
+  let colors;
+  try {
+    colors = tokens(theme.palette.mode);
+  } catch (error) {
+    console.warn("Error getting theme colors, using defaults:", error);
+    colors = {};
+  }
+
   const [cpuData, setCpuData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -20,13 +37,22 @@ const CPU = () => {
   const [anchorElTime, setAnchorElTime] = useState(null);
   const [anchorElGroup, setAnchorElGroup] = useState(null);
 
-  // Opciones de formato de fecha
   const dateFormatOptions = {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
     hour12: true
+  };
+
+  // Función segura para obtener colores
+  const getChartColors = () => {
+    return {
+      idle: colors?.greenAccent?.[500] || DEFAULT_COLORS.idle,
+      user: colors?.blueAccent?.[500] || DEFAULT_COLORS.user,
+      system: colors?.redAccent?.[500] || DEFAULT_COLORS.system,
+      iowait: colors?.yellowAccent?.[500] || DEFAULT_COLORS.iowait
+    };
   };
 
   const fetchCpuData = async () => {
@@ -46,20 +72,20 @@ const CPU = () => {
         case '30d': startTime.setDate(now.getDate() - 30); break;
         default: startTime.setDate(now.getDate() - 1);
       }
-      // Mapeo correcto de grouping a los valores que espera el endpoint
+
       const getGroupingParam = () => {
         switch(grouping) {
           case 'sec': return 'sec';
           case 'min': return 'min'; 
           case 'hour': return 'uur';
-          default: return 'uur'; // Valor por defecto
+          default: return 'uur';
         }
       };
-      // Parámetros de la consulta
+
       const params = new URLSearchParams({
         start_time: startTime.toISOString(),
         rows: '10',
-        grouping: getGroupingParam() // Usamos la función de mapeo
+        grouping: getGroupingParam()
       });
 
       const response = await fetch(
@@ -91,7 +117,6 @@ const CPU = () => {
 
   const transformDataForCharts = (apiData) => {
     try {
-      // Validación y limpieza de datos
       const safeData = {
         timestamps: Array.isArray(apiData?.time) ? apiData.time : [],
         idle: Array.isArray(apiData?.cpu_idle) ? apiData.cpu_idle : [],
@@ -100,7 +125,6 @@ const CPU = () => {
         iowait: Array.isArray(apiData?.cpu_iowait) ? apiData.cpu_iowait : []
       };
 
-      // Asegurar misma longitud de arrays
       const minLength = Math.min(
         safeData.timestamps.length,
         safeData.idle.length,
@@ -109,11 +133,12 @@ const CPU = () => {
         safeData.iowait.length
       );
 
-      // Crear datasets para cada métrica
+      const chartColors = getChartColors();
+
       const chartData = [
         {
           id: 'CPU Idle',
-          color: colors.greenAccent[500],
+          color: chartColors.idle,
           data: minLength > 0 ? 
                Array(minLength).fill().map((_, i) => ({
                  x: new Date(safeData.timestamps[i]).toLocaleString('en-US', dateFormatOptions),
@@ -126,7 +151,7 @@ const CPU = () => {
         },
         {
           id: 'CPU User',
-          color: colors.blueAccent[500],
+          color: chartColors.user,
           data: minLength > 0 ? 
                Array(minLength).fill().map((_, i) => ({
                  x: new Date(safeData.timestamps[i]).toLocaleString('en-US', dateFormatOptions),
@@ -139,7 +164,7 @@ const CPU = () => {
         },
         {
           id: 'CPU System',
-          color: colors.redAccent[500],
+          color: chartColors.system,
           data: minLength > 0 ? 
                Array(minLength).fill().map((_, i) => ({
                  x: new Date(safeData.timestamps[i]).toLocaleString('en-US', dateFormatOptions),
@@ -152,7 +177,7 @@ const CPU = () => {
         },
         {
           id: 'CPU IOWait',
-          color: colors.yellowAccent[500],
+          color: chartColors.iowait,
           data: minLength > 0 ? 
                Array(minLength).fill().map((_, i) => ({
                  x: new Date(safeData.timestamps[i]).toLocaleString('en-US', dateFormatOptions),
@@ -167,8 +192,12 @@ const CPU = () => {
 
       setCpuData(chartData);
     } catch (transformError) {
-      console.error("Error transforming data:", transformError);
-      setError("Data format error");
+      console.error("Error transforming data:", {
+        error: transformError.message,
+        stack: transformError.stack,
+        apiData: apiData // Para debug
+      });
+      setError("Error processing CPU data. Please try again.");
     }
   };
 
@@ -180,9 +209,7 @@ const CPU = () => {
     <Box m="20px">
       <Header title={`CPU Usage for ${databaseName}`} subtitle="Breakdown by usage type" />
       
-      {/* Controles de tiempo y agrupación */}
       <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-        {/* Botón de rango de tiempo */}
         <Button
           variant="contained"
           onClick={(e) => setAnchorElTime(e.currentTarget)}
@@ -195,19 +222,15 @@ const CPU = () => {
            timeRange === '30d' ? 'Last 30 days' : 'Time Range'}
         </Button>
 
-        {/* Botón de agrupación */}
         <Button
           variant="contained"
           onClick={(e) => setAnchorElGroup(e.currentTarget)}
           endIcon={<ExpandMoreIcon />}
           sx={{ minWidth: 150 }}
         >
-          {grouping === 'min' ? 'By minutes' :
-           grouping === 'hour' ? 'By hours' : 
-           grouping === 'day' ? 'By days' : 'Group by'}
+          {grouping === 'min' ? 'By minutes' : 'By hours'}
         </Button>
 
-        {/* Menú para rango de tiempo */}
         <Menu
           anchorEl={anchorElTime}
           open={Boolean(anchorElTime)}
@@ -228,30 +251,28 @@ const CPU = () => {
           ))}
         </Menu>
 
-        {/* Menú para agrupación */}
         <Menu
-        anchorEl={anchorElGroup}
-        open={Boolean(anchorElGroup)}
-        onClose={() => setAnchorElGroup(null)}
-      >
-        {['min', 'hour'].map((group) => (
-          <MenuItem 
-            key={group}
-            onClick={() => {
-              setGrouping(group);
-              setAnchorElGroup(null);
-            }}
-          >
-            {group === 'min' ? 'By minutes' : 'By hours'}
-          </MenuItem>
-        ))}
-      </Menu>
+          anchorEl={anchorElGroup}
+          open={Boolean(anchorElGroup)}
+          onClose={() => setAnchorElGroup(null)}
+        >
+          {['min', 'hour'].map((group) => (
+            <MenuItem 
+              key={group}
+              onClick={() => {
+                setGrouping(group);
+                setAnchorElGroup(null);
+              }}
+            >
+              {group === 'min' ? 'By minutes' : 'By hours'}
+            </MenuItem>
+          ))}
+        </Menu>
       </Box>
 
       {loading && <Alert severity="info">Loading CPU data...</Alert>}
       {error && <Alert severity="error">{error}</Alert>}
 
-      {/* Gráfico principal */}
       <Box height="400px" sx={{ minWidth: 0 }}>
         <LineChart
           data={cpuData}
@@ -261,23 +282,6 @@ const CPU = () => {
           xAxisLegend="Time"
           isStacked={true}
         />
-      </Box>
-
-      {/* Mini gráficos individuales (opcional) */}
-      <Box display="grid" gridTemplateColumns={{ xs: "1fr", md: "repeat(2, 1fr)" }} gap="20px" mt={4}>
-        {cpuData.map((metric, index) => (
-          <Box key={index} height="250px" sx={{ minWidth: 0 }}>
-            <Typography variant="h6" sx={{ textAlign: 'center', mb: 1 }}>
-              {metric.id}
-            </Typography>
-            <LineChart
-              data={[metric]}
-              enableTooltip={true}
-              yAxisLegend="%"
-              xAxisLegend="Time"
-            />
-          </Box>
-        ))}
       </Box>
     </Box>
   );
