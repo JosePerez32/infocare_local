@@ -40,7 +40,7 @@ const ChangeButtons = ({ databaseName, selectionData  }) => {
           {/* Botón CHANGE */}
           
           <Button
-            variant="outlined"
+            variant="contained"
             sx={{
               flex: 1,
               margin: "0 2px",
