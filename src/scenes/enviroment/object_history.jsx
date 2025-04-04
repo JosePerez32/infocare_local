@@ -6,11 +6,12 @@ import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { useParams, useLocation } from "react-router-dom";
 import LineChart from '../../components/LineChart';
-import BarChart from "../../components/BarChart";
+
 //import Enviroment from ".";
 
 const ObjHistory = ({onDataUpdate}) => { //Ths is just added by Jose
-  const { databaseName } = useParams(); // Get database name from the URL
+  //const { databaseName } = useParams(); // Get database name from the URL
+  const { state } = useLocation();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [responseData, setResponseData] = useState(52);
@@ -20,7 +21,13 @@ const ObjHistory = ({onDataUpdate}) => { //Ths is just added by Jose
   const { organization } = useLocation().state || {};
   const [gaugeOrder, setGaugeOrder] = useState(["table", "index", "view"]); // State for the gauges order
   const [alertVisible, setAlertVisible] = useState(false); // State to show the alert
- 
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+    const [selectedDay, setSelectedDay] = useState(new Date().getDate());
+  const { 
+    databaseName,
+    date
+  } = state || {};
   const texts = ["TABLE", "INDEX", "VIEW"];
   /*const workloadData = [
     {
@@ -50,7 +57,7 @@ const ObjHistory = ({onDataUpdate}) => { //Ths is just added by Jose
   ];*/
   // Definir primero las barras amarilla y azul
 const tableData = Array.from({ length: 3 }, (_, i) => ({
-  x: i,
+  x: date,
   y: Math.floor(Math.random() * 100), // Número aleatorio entre 0 y 99
 }));
 
@@ -123,7 +130,7 @@ const workloadData = [
    // };
 
     fetchAvailibilityData();
-  }, [databaseName, organization,source, onDataUpdate]); //onDataUpdate is just added Jose 
+  }, [databaseName, organization,source, onDataUpdate, selectedYear, selectedMonth, selectedDay]); //onDataUpdate is just added Jose 
   // Funtions for the drag and drop
   const handleDragStart = (index) => (event) => {
     event.dataTransfer.setData("text/plain", index); // Save the index for the drag element 
@@ -160,13 +167,13 @@ const workloadData = [
         </Alert>
       )}
        {/* Contenedor de gráficos */}
-       <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
+       <Box m="2px" display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="10px">
          {["TABLE", "INDEX", "VIEW"].map((text, index) => (
           <Box key={index} height="200px">
             <Typography variant="h4" gutterBottom>
               {text}
             </Typography>
-            <BarChart data={workloadData} yAxisLegend="Workload" xAxisLegend="Hours" />
+            <LineChart data={workloadData} yAxisLegend="Workload" xAxisLegend={date} />
             </Box>
           ))}
           

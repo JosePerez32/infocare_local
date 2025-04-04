@@ -174,11 +174,16 @@ const Objects = ({onDataUpdate}) => { //Ths is just added by Jose
        {/* Contenedor de gráficos */}
        <Box m="10px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
         
-       <ObjectTopButtons databaseName={databaseName} />
+        <ObjectTopButtons 
+        databaseName={databaseName} 
+        selectionData={{
+          firstDate: `${selectedYear}-${selectedMonth}-${selectedDay}`,
+        }}
+        />
        </Box>
        
        <ObjectButtons></ObjectButtons>
-        </Box>
+      </Box>
 
   );
 };

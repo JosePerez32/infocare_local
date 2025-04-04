@@ -1,8 +1,15 @@
 import { Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-const ObjectTopButtons = ({databaseName}) => {
+const ObjectTopButtons = ({databaseName, date}) => {
   const navigate = useNavigate();
-
+  const handleDetailsClick = () => {
+    navigate(`/environment/objects/${databaseName}/history`, { 
+      state: { 
+        databaseName,
+        ...date 
+      } 
+    });
+  };
  return (
           <Box
           display="flex"
@@ -26,7 +33,7 @@ const ObjectTopButtons = ({databaseName}) => {
                 
               },
             }}
-            onClick={() => navigate(`/environment/objects/${databaseName}/history`)} // Surf to a new_page.jsx
+            onClick={handleDetailsClick} // Surf to a new_page.jsx
           >
             History
           </Button>
