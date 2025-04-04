@@ -69,7 +69,7 @@ const Topbar = ({ userName, userInfo, setIsSidebar, onLogout }) => {
   
   const specialCasesMap = {
     'change': (index, parts, pathnames) => 
-      index + 1 < parts.length ? `Change of ${pathnames[index+1]}` : '',
+      index + 1 < parts.length ? `Comaparation of ${pathnames[index+1]}` : '',
     'objects': (index, parts, pathnames) =>
       index + 1 < parts.length ? `Objects of ${pathnames[index+1]}` : ''
   };

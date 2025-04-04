@@ -177,8 +177,7 @@ const Dashboard = ({ accessToken }) => {
             onClick={() => navigate('/monitoring')}
             Icon={HandshakeIcon}
             title="Monitoring"
-            
-            description="The monitoring provides a clear, qualified overview of all licensed environments, with time navigation and drill-down options. It complements, rather than replaces, detailed third-party monitoring tools."
+            description="The monitoring provides a clear, qualified overview of all environments, with time navigation and drill-down options. It complements, rather than replaces, detailed third-party monitoring tools."
           />
         </Grid>
         <Grid item xs={12} md={2.4}>
@@ -186,25 +185,26 @@ const Dashboard = ({ accessToken }) => {
             onClick={() => navigate('/environment')}
             Icon={AutoAwesomeIcon}
             title="Environment"
-            description="The envornment section provides a high level overview of what exists in your environment including summarized execution statistics and daily differences between environments."
+            description="The environment section provides a high level overview of what exists in your environment including summarized execution statistics and differences between environments."
           />
+        </Grid>
+        <Grid item xs={12} md={2.4}>
+        <FeatureCard
+          onClick={() => navigate('/support')}
+          Icon={AutoAwesomeIcon}
+          title="Support"
+          description="Access comprehensive support resources including documentation, troubleshooting guides, and direct assistance options for all your Infocare platform needs."
+        />
         </Grid>
         <Grid item xs={12} md={2.4}>
           <FeatureCard
             Icon={MoreTimeIcon}
-            onClick={() => navigate('/ilmt')}
+            onClick={() => navigate('/repports')}
             title="Reports"
             description="Here you can find monthly status reports of the different environments and our quarter reports. In case you are also an ILMT cients, you can find monthly ILMT reports of your IBM software licenses in your company."
           />
         </Grid>
-        <Grid item xs={12} md={2.4}>
-          <FeatureCard
-          onClick={() => navigate('/ilmt')}
-            Icon={AutoAwesomeIcon}
-            title="ILMT"
-            description="Integration and validation of IBM ILMT data, ensuring accurate license compliance information. (Only available for ILMT-clients)"
-          />
-        </Grid>
+   
         <Grid item xs={12} md={2.4}>
           <FeatureCard
             onClick={() => navigate('/faq')}

@@ -1,8 +1,17 @@
 import { Box, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-const ChangeButtons = ({databaseName}) => {
-  const navigate = useNavigate();
+  // Cambia la definición de ChangeButtons para aceptar un manejador de clic
+const ChangeButtons = ({ databaseName, selectionData  }) => {
 
+  const navigate = useNavigate();
+  const handleDetailsClick = () => {
+    navigate(`/environment/change/${databaseName}/details`, { 
+      state: { 
+        databaseName,
+        ...selectionData 
+      } 
+    });
+  };
  return (
           <Box
           display="flex"
@@ -29,8 +38,9 @@ const ChangeButtons = ({databaseName}) => {
           </Button>
       
           {/* Botón CHANGE */}
+          
           <Button
-            variant="outlined"
+            variant="contained"
             sx={{
               flex: 1,
               margin: "0 2px",
@@ -41,7 +51,7 @@ const ChangeButtons = ({databaseName}) => {
                 color: "white",
               },
             }}
-            onClick={() => navigate(`/environment/change/${databaseName}/details`)} // Surf to a new_page.jsx
+            onClick={handleDetailsClick} // Surf to a new_page.jsx
           >
             Details 
           </Button>

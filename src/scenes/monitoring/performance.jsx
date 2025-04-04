@@ -10,6 +10,7 @@ const Performance = () => {
   const colors = tokens(theme.palette.mode);
   const { databaseName } = useParams(); // Obtiene el nombre del source de la URL
   const navigate = useNavigate();
+  const [alertVisible, setAlertVisible] = useState(false);
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -60,7 +61,7 @@ const Performance = () => {
   const metricConfigs = [
     { key: 'cpu', label: 'CPU', unit: '%', min: 0, max: 100 },
     { key: 'memory', label: 'Memory', unit: '%', min: 0, max: 100 },
-    { key: 'speed', label: 'Speed', unit: 'Mbps', min: 0, max: 1000 },
+    { key: 'speed', label: 'Speed', unit: '%', min: 0, max: 1000 },
     { key: 'workload', label: 'Workload', unit: '%', min: 0, max: 100 },
     { key: 'readiness', label: 'Readiness', unit: '%', min: 0, max: 100 },
     { key: 'connections', label: 'Connections', unit: '', min: 0, max: 1000 }
@@ -81,6 +82,8 @@ const Performance = () => {
   
     // Opcional: Guardar en localStorage (como en tu otro componente)
     localStorage.setItem(`gauge_order_${databaseName}`, JSON.stringify(newOrder));
+    setAlertVisible(true);
+    setTimeout(() => setAlertVisible(false), 3000);
   };
   
   const handleDragOver = (event) => {
@@ -108,13 +111,11 @@ const Performance = () => {
   
   return (
     <Box m="20px">
-      <Header 
-        title="Performance Metrics" 
-        subtitle={`Source: ${databaseName}`} 
-      />
-      
-      <Box display="grid" gridTemplateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap="20px" mt="20px">
-        
+     <Header 
+      title={`Performance of ${databaseName}`} 
+    />
+    {alertVisible && <Alert variant="outlined" severity="success">Gauge chart order changed and saved</Alert>}
+      <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
         {gaugeOrder.map((metricKey, index) => {
         const config = metricConfigs.find(c => c.key === metricKey);
           return (
