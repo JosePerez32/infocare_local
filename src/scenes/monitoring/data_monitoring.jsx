@@ -18,11 +18,11 @@ const Performance = () => {
 
   // Metric configuration - ahora con identificadores únicos
   const metricConfigs = [
-    { id: 'availability', label: 'Disponibility', min: 0, max: 100 },
+    
     { id: 'recoverability', label: 'Recoverability', min: 0, max: 100 },
     { id: 'efficiency', label: 'Performance', min: 0, max: 100 },
     { id: 'organization', label: 'Organization', min: 0, max: 100 },
-    { id: 'security', label: 'Security', min: 0, max: 100 }
+    
   ];
 
   // Fetch performance data
@@ -122,8 +122,7 @@ const Performance = () => {
   return (
     <Box m="20px">
       <Header 
-        title={`Monitoring of rendement`} 
-        subtitle={`Source: ${databaseName}`}
+        title={`Monitoring of ${databaseName}`} 
       />
       
       {alertVisible && (
@@ -132,7 +131,7 @@ const Performance = () => {
         </Alert>
       )}
 
-      <Box display="grid" gridTemplateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap="20px">
+        <Box display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="20px">
         {gaugeOrder.map((metricId, index) => {
           const config = metricConfigs.find(m => m.id === metricId);
           if (!config || !metrics) return null;

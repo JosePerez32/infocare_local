@@ -10,6 +10,7 @@ import ChangeButtons from "./his-det-back";
 import ObjectButtons from "./buttons_objects";
 import ObjectTopButtons from "./buttons_history_details_objects";
 import  LineChart from '../line';
+import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { Bar } from "react-chartjs-2";
 //import CellsImg from "../../../public/assets/cells.png";
 //import Enviroment from ".";
@@ -25,7 +26,14 @@ const Objects = ({onDataUpdate}) => { //Ths is just added by Jose
   const { organization } = useLocation().state || {};
   const [gaugeOrder, setGaugeOrder] = useState(["workload", "change", "objects"]); // State for the gauges order
   const [alertVisible, setAlertVisible] = useState(false); // State to show the alert
-
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedDay, setSelectedDay] = useState(new Date().getDate());
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
   const changeData = [
     {
       id: "Porcent",
@@ -77,7 +85,7 @@ const Objects = ({onDataUpdate}) => { //Ths is just added by Jose
    // };
 
     fetchAvailibilityData();
-  }, [databaseName, organization,source, onDataUpdate]); //onDataUpdate is just added Jose 
+  }, [databaseName, organization,source, onDataUpdate,selectedYear, selectedMonth, selectedDay]); //onDataUpdate is just added Jose 
   // Funtions for the drag and drop
   const handleDragStart = (index) => (event) => {
     event.dataTransfer.setData("text/plain", index); // Save the index for the drag element 
@@ -100,21 +108,60 @@ const Objects = ({onDataUpdate}) => { //Ths is just added by Jose
     event.preventDefault(); // Allow you to drop the element
   };
   return (
-    
-    <Box m="20px">
-      
-      
+    <Box m="20px"> 
     {/* Alert for the change in the order */}
-      <Header title={`Objects` } subtitle=""    />
-    {alertVisible && (
-        <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
-          Gauge chart order changed!
-        </Alert>
-      )}
+        {/* Contenedor para los selectores de fecha */}
+        <Box display="flex" m="50px 0 0 0 " alignItems="center" gap={1}>
+          {/* Selector de Año */}
+          <Typography variant="h2" gutterBottom>Objects of {databaseName} on </Typography>
+
+
+          {/* Selector de Día */}
+          <FormControl sx={{ minWidth: 80 }} size="big">
+            <InputLabel>Day</InputLabel>
+            <Select
+              value={selectedDay}
+              onChange={(e) => setSelectedDay(e.target.value)}
+            >
+              {Array.from({length: daysInMonth}, (_, i) => i + 1).map(day => (
+                <MenuItem key={day} value={day}>{day}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+                    
+          {/* Selector de Mes */}
+          <FormControl sx={{ minWidth: 120 }} size="big">
+            <InputLabel>Month</InputLabel>
+            <Select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+            >
+              {months.map((month, index) => (
+                <MenuItem key={month} value={index + 1}>{month}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl  sx={{ m: "0 0 0px 0", minWidth: 100 }} size="big">
+            <InputLabel>Year</InputLabel>
+            <Select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+            >
+              {Array.from({length: 5}, (_, i) => new Date().getFullYear() - i).map(year => (
+                <MenuItem key={year} value={year}>{year}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+        {alertVisible && (
+          <Alert variant="outlined" severity="success" sx={{ mt: 2 }}>
+            Gauge chart order changed!
+          </Alert>
+        )}
        <Grid container spacing={2}>
           <Grid item xs={6}>
             <Typography variant="h3" gutterBottom sx={{ fontWeight: 'bold', color: 'white' }}>
-              Database: {databaseName} <br /><br />
+             <br />
               
             </Typography>
           </Grid>

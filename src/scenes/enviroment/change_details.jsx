@@ -6,7 +6,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useParams, useLocation } from "react-router-dom";
 
 const Details = () => {
-  const { databaseName, source } = useParams();
+  const { source, databaseName } = useParams();
   const [sourceNames, setSourceNames] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -18,6 +18,17 @@ const Details = () => {
   const dates1 = Array.from({length: 30}, (_, i) => new Date(Date.now() - (i * 86400000)).toLocaleDateString());
   const dates2 = Array.from({length: 30}, (_, i) => new Date(Date.now() - (i * 86400000)).toLocaleDateString());
   // Llamada API para el menú desplegable
+  // Dentro del componente de destino:
+  const location = useLocation();
+
+
+  // console.log("Parámetros recibidos:", {
+  //   firstDate,
+  //   selectedSource,
+  //   secondDate,
+  //   comparisonType
+  // });
+  //Fin de acceder a los parametros de change.jsx
   useEffect(() => {
     const fetchSourceData = async () => {
       try {
@@ -50,95 +61,35 @@ const Details = () => {
     setAnchorEl(null);
   };
 
+  const { state } = useLocation();
+  const { 
+    
+    firstDate,
+    compareOption,
+    secondDate 
+  } = state || {};
   return (
     <Box m="20px">
-      <Header title="Details of change" subtitle=""/>
-      
-      <Grid container spacing={2} alignItems="center">
-        <Grid item xs={6}>
-          <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
-            Source: {databaseName}
-          </Typography>
-        </Grid>
-        <Grid item xs={6}>
-          <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
-            DATE: 
-            <Button 
-              onClick={(e) => setAnchorElDate1(e.currentTarget)}
-              sx={{ 
-                color: 'white', 
-                fontSize: '1.5rem',
-                fontWeight: 'bold',
-                textTransform: 'none',
-                p: 0 // Elimina padding interno para mejor alineación
-              }}
-            >
-              {selectedDate1 || "DATE:"}
-            </Button>
-            <Menu anchorEl={anchorElDate1} open={Boolean(anchorElDate1)} onClose={() => setAnchorElDate1(null)}>
-              {dates1.map((date1, i) => (
-                <MenuItem key={i} onClick={() => { 
-                  setSelectedDate1(date1); 
-                  setAnchorElDate1(null); 
-                }}>
-                  {date1}
-                </MenuItem>
-              ))}
-            </Menu>
-          </Typography>
-        </Grid>
-        <Grid item xs={6}>
-          <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
-            Target: 
-            <Button
-              variant="contained"
-              endIcon={<ExpandMoreIcon />}
-              onClick={handleClick}
-              sx={{ ml: 2, verticalAlign: 'middle' }}
-            >
-              Select
-            </Button>
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-            >
-              {sourceNames.map((name, index) => (
-                <MenuItem key={index} onClick={handleClose}>
-                  {name}
-                </MenuItem>
-              ))}
-            </Menu>
-          </Typography>
-        </Grid>
-        <Grid item xs={6}>
-          <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }}>
-            DATE:   
-            <Button 
-              onClick={(e) => setAnchorElDate2(e.currentTarget)}
-              sx={{ 
-                color: 'white', 
-                fontSize: '1.5rem',
-                fontWeight: 'bold',
-                textTransform: 'none',
-                p: 0 // Elimina padding interno para mejor alineación
-              }}
-            >
-              {selectedDate2 || "DATE:"}
-            </Button>
-            <Menu anchorEl={anchorElDate2} open={Boolean(anchorElDate2)} onClose={() => setAnchorElDate2(null)}>
-              {dates2.map((date2, i) => (
-                <MenuItem key={i} onClick={() => { 
-                  setSelectedDate2(date2); 
-                  setAnchorElDate2(null); 
-                }}>
-                  {date2}
-                </MenuItem>
-              ))}
-            </Menu>
-          </Typography>
-        </Grid>
-      </Grid>
+      <Header title="Comparison details" subtitle=""/>
+      <Box m="10px" display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="10px">
+        <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white' }} gutterBottom>
+          Comparison details for {databaseName.toUpperCase()}  
+        </Typography>
+        <Typography variant="h3" gutterBottom>
+          Date of the source  <strong>{firstDate}</strong>
+        </Typography>
+      </Box>
+      <Box m="10px" display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="10px">
+        <Typography variant="h3"  gutterBottom>
+        Target database <strong>{compareOption.toUpperCase()}</strong> 
+        </Typography>
+        <Typography variant="h3"  gutterBottom>
+        Date of the target  <strong>{secondDate}</strong>
+        </Typography>
+      </Box>
+    
+   
+   
 
       {["TABLE", "INDEX", "VIEW"].map((text, index) => (
         <Box key={index} sx={{ textAlign: 'center' }}>
