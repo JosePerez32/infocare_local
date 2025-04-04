@@ -234,15 +234,7 @@ const ReportPage = () => {
         </Menu>
       </Box>
 
-      <Typography variant="subtitle1" gutterBottom>
-        Company Name: {clientData.company}
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        Client: {clientData.name}
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        Contact: {clientData.email} | {clientData.phone}
-      </Typography>
+      
 
       {/* Tabla de datos */}
       <TableContainer component={Paper} sx={{ mt: 4 }}>

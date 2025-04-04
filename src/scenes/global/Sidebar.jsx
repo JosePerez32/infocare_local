@@ -188,13 +188,8 @@ const Sidebar = () => {
           <MenuOutlinedIcon />
         </IconButton>
       </Box>
-
       <Divider sx={{ my: 1 }} />
-
       <List>
-        
-        
-
         {hasAccess(["writer", "admin"]) && (
           <>
             <MenuItem

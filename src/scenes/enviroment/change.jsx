@@ -416,7 +416,7 @@ const months = [
             <Typography variant="h4" gutterBottom>
               {label}
             </Typography>
-            {chartData ? (              <BarChart data={chartData} yAxisLegend="Count" xAxisLegend="Comparison" />
+            {chartData ? (<BarChart data={chartData} yAxisLegend="Count" xAxisLegend="Comparison" />
             ):(<Typography>Loading data...</Typography>)
             }
 
