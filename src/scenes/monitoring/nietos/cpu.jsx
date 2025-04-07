@@ -31,20 +31,34 @@ const CPU = () => {
   const [cpuData, setCpuData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [timeRange, setTimeRange] = useState('24h');
-  const [grouping, setGrouping] = useState('hour');
+  const [grouping, setGrouping] = useState('uur');
 
-  const [anchorElTime, setAnchorElTime] = useState(null);
+  // Estados para los nuevos selectores
+  const [year, setYear] = useState('2024');
+  const [month, setMonth] = useState('11');
+  const [day, setDay] = useState('22');
+  const [hour, setHour] = useState('11');
+  const [minute, setMinute] = useState('34');
+  const [second, setSecond] = useState('29');
+
+  // Estados para los menús
+  const [anchorElYear, setAnchorElYear] = useState(null);
+  const [anchorElMonth, setAnchorElMonth] = useState(null);
+  const [anchorElDay, setAnchorElDay] = useState(null);
+  const [anchorElHour, setAnchorElHour] = useState(null);
+  const [anchorElMinute, setAnchorElMinute] = useState(null);
+  const [anchorElSecond, setAnchorElSecond] = useState(null);
   const [anchorElGroup, setAnchorElGroup] = useState(null);
 
-  const dateFormatOptions = {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  };
-    
+  // Opciones para los selectores
+  const years = ['2023', '2024', '2025'];
+  const months = Array.from({length: 12}, (_, i) => (i + 1).toString().padStart(2, '0'));
+  const days = Array.from({length: 31}, (_, i) => (i + 1).toString().padStart(2, '0'));
+  const hours = Array.from({length: 24}, (_, i) => i.toString().padStart(2, '0'));
+  const minutes = Array.from({length: 60}, (_, i) => i.toString().padStart(2, '0'));
+  const seconds = Array.from({length: 60}, (_, i) => i.toString().padStart(2, '0'));
+  const groupings = ['uur', 'min', 'sec'];
+
   // Función segura para obtener colores
   const getChartColors = () => {
     return {
@@ -54,91 +68,29 @@ const CPU = () => {
       iowait: colors?.yellowAccent?.[500] || DEFAULT_COLORS.iowait
     };
   };
-  const referenceDate = new Date('2024-11-22T11:34:29+01:00');
-  const minDate = new Date(referenceDate);
-  minDate.setMonth(referenceDate.getMonth() - 1); // Un mes antes
-  const maxDate = new Date(referenceDate);
-  maxDate.setMonth(referenceDate.getMonth() + 1); // Un mes después
-  // Generar 15 fechas (7 antes, la referencia, y 7 después) cada 4 días
-  const generateDateOptions = () => {
-    const options = [];
-    for (let i = -7; i <= 7; i++) {
-      const date = new Date(referenceDate);
-      date.setDate(date.getDate() + (i * 4));
-      options.push({
-        date,
-        label: date.toLocaleDateString('es-ES', { 
-          day: '2-digit', 
-          month: '2-digit', 
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        })
-      });
-    }
-    return options;
+
+  // Construir la fecha seleccionada en formato ISO
+  const buildSelectedDate = () => {
+    return `${year}-${month}-${day}T${hour}:${minute}:${second}Z`;
   };
-  const dateOptions = generateDateOptions();
-  const [selectedDateOption, setSelectedDateOption] = useState(dateOptions[7]); // La fecha central por defecto
 
   const fetchCpuData = async () => {
     try {
-    setLoading(true);
-    setError(null);
-    
-    const organisation = localStorage.getItem('organisation');
-    const token = localStorage.getItem('accessToken');
-    
-    const startTime = new Date(selectedDateOption.date);
-    const endTime = new Date(startTime);
+      setLoading(true);
+      setError(null);
+      
+      const organisation = localStorage.getItem('organisation');
+      const token = localStorage.getItem('accessToken');
+      
+      const startTime = new Date(buildSelectedDate());
+      const endTime = new Date(startTime);
       endTime.setHours(startTime.getHours() + 24); // Rango de 24 horas desde la fecha seleccionada
-    
-    // Validación del rango de fechas
-    // switch(timeRange) {
-    //   case '1h': 
-    //     startTime.setHours(now.getHours() - 1);
-    //     if (startTime < minDate || now > maxDate) {
-    //       setError("Solo se pueden visualizar datos de ±1 mes alrededor de Nov 22, 2024");
-    //       return;
-    //     }
-    //     break;
-    //   case '24h': 
-    //     startTime.setDate(now.getDate() - 1);
-    //     if (startTime < minDate || now > maxDate) {
-    //       setError("Solo se pueden visualizar datos de ±1 mes alrededor de Nov 22, 2024");
-    //       return;
-    //     }
-    //     break;
-    //   case '7d': 
-    //     startTime.setDate(now.getDate() - 7);
-    //     if (startTime < minDate || now > maxDate) {
-    //       setError("Solo se pueden visualizar datos de ±1 mes alrededor de Nov 22, 2024");
-    //       return;
-    //     }
-    //     break;
-      // case '30d': 
-      //   startTime.setDate(now.getDate() - 30);
-      //   if (startTime < minDate || now > maxDate) {
-      //     setError("Solo se pueden visualizar datos de ±1 mes alrededor de Nov 22, 2024");
-      //     return;
-      //   }
-      //   break;
-    //   default: 
-    //     startTime.setDate(now.getDate() - 1);
-    // }
-      const getGroupingParam = () => {
-        switch(grouping) {
-          case 'sec': return 'sec';
-          case 'min': return 'min'; 
-          case 'hour': return 'uur';
-          default: return 'uur';
-        }
-      };
 
       const params = new URLSearchParams({
         start_time: startTime.toISOString(),
-        rows: '10',
-        grouping: getGroupingParam()
+        end_time: endTime.toISOString(),
+        rows: '50',
+        grouping: grouping
       });
 
       const response = await fetch(
@@ -158,7 +110,6 @@ const CPU = () => {
       }
       
       const data = await response.json();
-      console.log('Datos recibidos de la API:', data);
       transformDataForCharts(data);
       
     } catch (error) {
@@ -170,7 +121,6 @@ const CPU = () => {
   };
 
   const transformDataForCharts = (apiData) => {
-    console.log('Datos recibidos para transformación:', apiData); // Ver estructura completa
     try {
       const safeData = {
         timestamps: Array.isArray(apiData?.time) ? apiData.time : [],
@@ -179,14 +129,7 @@ const CPU = () => {
         system: Array.isArray(apiData?.cpu_system) ? apiData.cpu_system : [],
         iowait: Array.isArray(apiData?.cpu_iowait) ? apiData.cpu_iowait : []
       };
-      console.log('Datos sanitizados:', safeData); // Ver datos después de sanitizar
-      console.log('Longitudes:', {
-        timestamps: safeData.timestamps.length,
-        idle: safeData.idle.length,
-        user: safeData.user.length,
-        system: safeData.system.length,
-        iowait: safeData.iowait.length
-      });
+
       const minLength = Math.min(
         safeData.timestamps.length,
         safeData.idle.length,
@@ -196,6 +139,14 @@ const CPU = () => {
       );
 
       const chartColors = getChartColors();
+
+      const dateFormatOptions = {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      };
 
       const chartData = [
         {
@@ -254,77 +205,218 @@ const CPU = () => {
 
       setCpuData(chartData);
     } catch (transformError) {
-      console.error("Error transforming data:", {
-        error: transformError.message,
-        stack: transformError.stack,
-        apiData: apiData // Para debug
-      });
+      console.error("Error transforming data:", transformError);
       setError("Error processing CPU data. Please try again.");
     }
   };
 
+  // Ejecutar la consulta cuando cambien los parámetros
   useEffect(() => {
     fetchCpuData();
-  }, [databaseName, timeRange, grouping]);
+  }, [databaseName, grouping]);
 
   return (
     <Box m="20px">
-      <Header title={`CPU Usage for ${databaseName}`} subtitle="Breakdown by usage type" />
+      <Header title={`Performance of ${databaseName}`} />
+      
       <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+        {/* Selector de Año */}
         <Button
           variant="contained"
-          onClick={(e) => setAnchorElTime(e.currentTarget)}
+          onClick={(e) => setAnchorElYear(e.currentTarget)}
           endIcon={<ExpandMoreIcon />}
-          sx={{ minWidth: 250 }}
         >
-          {selectedDateOption.label}
+          Year: {year}
         </Button>
-
         <Menu
-          anchorEl={anchorElTime}
-          open={Boolean(anchorElTime)}
-          onClose={() => setAnchorElTime(null)}
-          PaperProps={{ style: { maxHeight: 400 } }}
+          anchorEl={anchorElYear}
+          open={Boolean(anchorElYear)}
+          onClose={() => setAnchorElYear(null)}
         >
-          {dateOptions.map((option, index) => (
+          {years.map((yr) => (
             <MenuItem 
-              key={index}
+              key={yr}
               onClick={() => {
-                setSelectedDateOption(option);
-                setAnchorElTime(null);
+                setYear(yr);
+                setAnchorElYear(null);
               }}
-              selected={option.date.getTime() === selectedDateOption.date.getTime()}
             >
-              {option.label}
+              {yr}
             </MenuItem>
           ))}
         </Menu>
-        {/* Selector de agrupación (se mantiene igual) */}
+
+        {/* Selector de Mes */}
+        <Button
+          variant="contained"
+          onClick={(e) => setAnchorElMonth(e.currentTarget)}
+          endIcon={<ExpandMoreIcon />}
+        >
+          Month: {month}
+        </Button>
+        <Menu
+          anchorEl={anchorElMonth}
+          open={Boolean(anchorElMonth)}
+          onClose={() => setAnchorElMonth(null)}
+        >
+          {months.map((m) => (
+            <MenuItem 
+              key={m}
+              onClick={() => {
+                setMonth(m);
+                setAnchorElMonth(null);
+              }}
+            >
+              {m}
+            </MenuItem>
+          ))}
+        </Menu>
+
+        {/* Selector de Día */}
+        <Button
+          variant="contained"
+          onClick={(e) => setAnchorElDay(e.currentTarget)}
+          endIcon={<ExpandMoreIcon />}
+        >
+          Day: {day}
+        </Button>
+        <Menu
+          anchorEl={anchorElDay}
+          open={Boolean(anchorElDay)}
+          onClose={() => setAnchorElDay(null)}
+        >
+          {days.map((d) => (
+            <MenuItem 
+              key={d}
+              onClick={() => {
+                setDay(d);
+                setAnchorElDay(null);
+              }}
+            >
+              {d}
+            </MenuItem>
+          ))}
+        </Menu>
+
+        {/* Selector de Hora */}
+        <Button
+          variant="contained"
+          onClick={(e) => setAnchorElHour(e.currentTarget)}
+          endIcon={<ExpandMoreIcon />}
+        >
+          Hour: {hour}
+        </Button>
+        <Menu
+          anchorEl={anchorElHour}
+          open={Boolean(anchorElHour)}
+          onClose={() => setAnchorElHour(null)}
+        >
+          {hours.map((h) => (
+            <MenuItem 
+              key={h}
+              onClick={() => {
+                setHour(h);
+                setAnchorElHour(null);
+              }}
+            >
+              {h}
+            </MenuItem>
+          ))}
+        </Menu>
+
+        {/* Selector de Minuto */}
+        <Button
+          variant="contained"
+          onClick={(e) => setAnchorElMinute(e.currentTarget)}
+          endIcon={<ExpandMoreIcon />}
+        >
+          Minute: {minute}
+        </Button>
+        <Menu
+          anchorEl={anchorElMinute}
+          open={Boolean(anchorElMinute)}
+          onClose={() => setAnchorElMinute(null)}
+        >
+          {minutes.map((m) => (
+            <MenuItem 
+              key={m}
+              onClick={() => {
+                setMinute(m);
+                setAnchorElMinute(null);
+              }}
+            >
+              {m}
+            </MenuItem>
+          ))}
+        </Menu>
+
+        {/* Selector de Segundo */}
+        <Button
+          variant="contained"
+          onClick={(e) => setAnchorElSecond(e.currentTarget)}
+          endIcon={<ExpandMoreIcon />}
+        >
+          Second: {second}
+        </Button>
+        <Menu
+          anchorEl={anchorElSecond}
+          open={Boolean(anchorElSecond)}
+          onClose={() => setAnchorElSecond(null)}
+        >
+          {seconds.map((s) => (
+            <MenuItem 
+              key={s}
+              onClick={() => {
+                setSecond(s);
+                setAnchorElSecond(null);
+              }}
+            >
+              {s}
+            </MenuItem>
+          ))}
+        </Menu>
+
+        {/* Selector de Agrupación */}
         <Button
           variant="contained"
           onClick={(e) => setAnchorElGroup(e.currentTarget)}
           endIcon={<ExpandMoreIcon />}
-          sx={{ minWidth: 150 }}
         >
-          {grouping === 'min' ? 'By minutes' : 'By hours'}
+          Group: {grouping}
         </Button>
         <Menu
           anchorEl={anchorElGroup}
           open={Boolean(anchorElGroup)}
           onClose={() => setAnchorElGroup(null)}
         >
-          {['min', 'hour'].map((group) => (
+          {groupings.map((g) => (
             <MenuItem 
-              key={group}
+              key={g}
               onClick={() => {
-                setGrouping(group);
+                setGrouping(g);
                 setAnchorElGroup(null);
               }}
             >
-              {group === 'min' ? 'By minutes' : 'By hours'}
+              {g}
             </MenuItem>
           ))}
         </Menu>
+
+        {/* Botón de Ejecución */}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={fetchCpuData}
+          sx={{ ml: 2 }}
+        >
+          Execute
+        </Button>
+      </Box>
+
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="body1">
+          Selected date: {buildSelectedDate()}
+        </Typography>
       </Box>
 
       {loading && <Alert severity="info">Loading CPU data...</Alert>}
