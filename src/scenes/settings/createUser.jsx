@@ -4,13 +4,37 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { UserPlus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const CreateUser = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
+  const navigate = useNavigate();
+
 
   const handleFormSubmit = (values) => {
     console.log(values);
+     // Obtener usuarios existentes de localStorage
+     const existingUsers = JSON.parse(localStorage.getItem('/settings/users')) || [];
+     // Crear nuevo usuario con ID único
+     // Crear nuevo usuario con ID único
+    const newUser = {
+      id: Math.max(...existingUsers.map(u => u.id), 0) + 1,
+      name: `${values.firstName} ${values.lastName}`,
+      email: values.email,
+      phone: values.contact,
+      date: new Date().toLocaleDateString(),
+      type: 'regular', // Valor por defecto
+      address: `${values.address1}, ${values.address2}`
+    };
+
+    // Actualizar y guardar
+    const updatedUsers = [...existingUsers, newUser];
+    localStorage.setItem('/settings/users', JSON.stringify(updatedUsers));
+    
+    // Redirigir a la tabla de usuarios
+    navigate('/settings/users'); // Ajusta esta ruta según tu configuración
   };
+  
 
   return (
     <Box 
@@ -113,6 +137,7 @@ const CreateUser = () => {
                 <Button 
                   type="submit" 
                   variant="contained"
+                  
                   sx={{
                     backgroundColor: '#60A5FA',
                     '&:hover': {

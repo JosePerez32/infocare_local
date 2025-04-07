@@ -36,26 +36,75 @@ import {
 import { tokens } from "../../theme";
 import { mockDataInvoices } from "../../data/mockData";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from 'react';
 
 const NewUsers = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const colors = tokens(theme.palette.mode);
-  const [users, setUsers] = useState(mockDataInvoices);
+ 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-
+  
   // Estados para el dropdown de tipo de usuario
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
+
 
   const userTypes = [
     { value: 'admin', label: 'Admin', icon: <AdminPanelSettings fontSize="small" /> },
     { value: 'user', label: 'Regular User', icon: <Person fontSize="small" /> },
     { value: 'manager', label: 'Manager', icon: <SupervisedUserCircle fontSize="small" /> }
   ];
+  useEffect(() => {
+    const loadUsers = () => {
+      const savedUsers = localStorage.getItem('/settings/users');
+      if (savedUsers) {
+        setUsers(JSON.parse(savedUsers));
+      }
+    };
+    
+    // Escuchar eventos de almacenamiento
+    window.addEventListener('storage', loadUsers);
+    
+    // Cargar al montar
+    loadUsers();
+    
+    return () => {
+      window.removeEventListener('storage', loadUsers);
+    };
+  }, []);
+  const [users, setUsers] = useState(() => {
+    try {
+      // 1. Intentar cargar usuarios de localStorage
+      const savedUsers = localStorage.getItem('/settings/users');
+      
+      // 2. Si no hay datos o es inválido, usar solo mockData
+      if (!savedUsers) return mockDataInvoices;
+      
+      // 3. Parsear cuidadosamente
+      const parsedUsers = JSON.parse(savedUsers);
+      
+      // 4. Verificar que sea un array válido
+      if (!Array.isArray(parsedUsers)) return mockDataInvoices;
+      
+      // 5. Combinar evitando duplicados por ID
+      const combinedUsers = [...mockDataInvoices];
+      
+      parsedUsers.forEach(user => {
+        if (!mockDataInvoices.some(mockUser => mockUser.id === user.id)) {
+          combinedUsers.push(user);
+        }
+      });
+      
+      return combinedUsers;
+    } catch (error) {
+      console.error('Error loading users:', error);
+      return mockDataInvoices; // Fallback seguro
+    }
+  });
 
   const columns = [
     {
@@ -167,17 +216,70 @@ const NewUsers = () => {
     },
   ];
 
-  const handleDeleteUser = () => {
+  const handleDeleteUser = (userId) => {
+    if (window.confirm('Are you sure you want to delete this user permanently?')) {
+      // 1. Filtrar el usuario a eliminar
+      const updatedUsers = users.filter(user => user.id !== userId);
+      
+      // 2. Actualizar el estado local
+      setUsers(updatedUsers);
+      
+      // 3. Actualizar localStorage
+      try {
+        // Separar usuarios mock de los creados
+        const mockUserIds = mockDataInvoices.map(user => user.id);
+        const usersToSave = updatedUsers.filter(user => !mockUserIds.includes(user.id));
+        
+        localStorage.setItem('/settings/users', JSON.stringify(usersToSave));
+        
+        // Opcional: Mostrar notificación
+        setSnackbarMessage('User deleted successfully');
+        setSnackbarOpen(true);
+      } catch (error) {
+        console.error('Failed to delete user from storage:', error);
+        setSnackbarMessage('Error deleting user');
+        setSnackbarOpen(true);
+      }
+    }
     setUsers(users.filter(user => user.id !== userToDelete.id));
     setDeleteDialogOpen(false);
     setSnackbarMessage('User deleted successfully');
     setSnackbarOpen(true);
   };
+    const deleteUserPermanently = (userId) => {
+      // 1. Confirmación
+      if (!window.confirm('This will permanently delete the user. Continue?')) return;
+    
+      // 2. Verificar si es un usuario mock (no se pueden eliminar)
+      const isMockUser = mockDataInvoices.some(user => user.id === userId);
+      
+      if (isMockUser) {
+        setSnackbarMessage('Cannot delete demo users');
+        setSnackbarOpen(true);
+        return;
+      }
+    
+      // 3. Actualizar estado y almacenamiento
+      const updatedUsers = users.filter(user => user.id !== userId);
+      setUsers(updatedUsers);
+      
+      // Guardar solo usuarios no-mock en localStorage
+      const realUsers = updatedUsers.filter(user => 
+        !mockDataInvoices.some(mock => mock.id === user.id)
+      );
+      
+      localStorage.setItem('/settings/users', JSON.stringify(realUsers));
+      
+      // Feedback
+      setSnackbarMessage('User deleted permanently');
+      setSnackbarOpen(true);
+    };
 
   const handleUserTypeChange = (type) => {
     setUsers(users.map(user => 
       user.id === currentUserId ? { ...user, type } : user
     ));
+
     setAnchorEl(null);
     setSnackbarMessage('User type updated');
     setSnackbarOpen(true);
@@ -353,7 +455,32 @@ const NewUsers = () => {
         <DialogActions>
           <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
           <Button 
-            onClick={handleDeleteUser} 
+            onClick={() => {
+              // 1. Verificar si es un usuario mock
+              const isMockUser = mockDataInvoices.some(user => user.id === userToDelete.id);
+              
+              if (isMockUser) {
+                setSnackbarMessage('Cannot delete demo users');
+                setSnackbarOpen(true);
+                setDeleteDialogOpen(false);
+                return;
+              }
+
+              // 2. Eliminar de los usuarios mostrados
+              const updatedUsers = users.filter(user => user.id !== userToDelete.id);
+              setUsers(updatedUsers);
+
+              // 3. Actualizar localStorage (excluyendo mockData)
+              const usersToSave = updatedUsers.filter(user => 
+                !mockDataInvoices.some(mock => mock.id === user.id)
+              );
+              localStorage.setItem('/settings/users', JSON.stringify(usersToSave));
+
+              // 4. Cerrar diálogo y mostrar feedback
+              setDeleteDialogOpen(false);
+              setSnackbarMessage('User deleted successfully');
+              setSnackbarOpen(true);
+            }}
             color="error"
             variant="contained"
           >
