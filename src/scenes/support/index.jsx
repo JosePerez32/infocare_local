@@ -24,7 +24,7 @@ const SupportPage = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const email = "could_be_you@infocare.app";
-  const phone = "+32 16 56 06 12";
+  const phone = "+32 016 29 64 34";
 
   const FeatureCard = ({ Icon, title, content, button }) => (
     <Card 

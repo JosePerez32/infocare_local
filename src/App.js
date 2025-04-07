@@ -85,6 +85,9 @@ import RecoverabilityLogging from "./scenes/monitoring/nietos/logging";
 import Backups from "./scenes/monitoring/nietos/backups";
 import Storage from "./scenes/monitoring/nietos/storage";
 import Support from "./scenes/support"
+import Clientes from "./scenes/settings/clients"
+import NewUsers from "./scenes/settings/newUsers";
+import CrearUsers from "./scenes/settings/createUser";
 
 //import NewPage from "./scenes/enviroment/new_page"; // Import the new component
 //
@@ -633,6 +636,7 @@ function App() {
 
               <Route
                 path="/ticketing"
+                
                 element={
                   <ProtectedRoute allowedRoles={['writer', 'reader', 'admin']}>
                     <Ticketing />
@@ -640,10 +644,11 @@ function App() {
                 }
               />
 
-              <Route
+             
+                <Route
                 path="/clients"
                 element={
-                  <ProtectedRoute allowedRoles={['admin']}>
+                  <ProtectedRoute allowedRoles={['writer']}>
                     <Clients />
                   </ProtectedRoute>
                 }
@@ -654,7 +659,9 @@ function App() {
               <Route path="/repports" element={<ReportPage />} />
               <Route path="/q-reports" element={<QReport />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="/settings/createUser" element={<CreateUser />} />
+              
+              <Route path="/settings/users" element={<NewUsers />} />
+              <Route path="/settings/users/createUser" element={<CrearUsers />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
             </Routes>

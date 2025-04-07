@@ -1,4 +1,4 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button, Tooltip } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import PersonIcon from '@mui/icons-material/Person';
 import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
@@ -19,6 +19,11 @@ const SettingsButtons = () => {
       marginLeft="50px"
     >
       {/* Botón USERS */}
+      <Tooltip 
+        title="Users" 
+        arrow
+        placement="top" // Puedes cambiar a "bottom", "left", "right"
+      >
       <Button
         variant="outlined"
         sx={{
@@ -31,43 +36,64 @@ const SettingsButtons = () => {
             color: "white",
           },
         }}
-        onClick={() => navigate("createUser")} // Navegar a la página de TABLES
-      >
+        onClick={() => navigate("users")} // Navegar a la página de TABLES
+      >Users
         <PersonIcon sx={{ fontSize: "4rem" }}></PersonIcon> 
-      </Button>
+      </Button></Tooltip>
       {/* Botón BELANG */}
+      <Tooltip 
+        title="Importance" 
+        arrow
+        placement="top" // Puedes cambiar a "bottom", "left", "right"
+      >
       <Button
         variant="outlined"
         sx={{
           height: "300px", // Altura fija
           borderColor: "#71D8BD",
           color: "#71D8BD",
-          fontSize: "3rem", // Tamaño del texto más grande
+          fontSize: "1.5rem", // Tamaño del texto más grande
           "&:hover": {
             backgroundColor: "#71D8BD",
             color: "white",
           },
         }}
+        onClick={() => navigate("/clients")}
         //onClick={() => navigate("/environment/change/history/change_details")} // Navegar a la página de INDEX
-      ><AccessibilityNewIcon sx={{ fontSize: "4rem" }}/>
-      </Button>
+      >
+       Importance 
+       <AccessibilityNewIcon sx={{ fontSize: "4rem" }}/>
+      </Button></Tooltip>
       {/* Botón MAPPING */}
+      <Tooltip 
+        title="Importance" 
+        arrow
+        placement="top" // Puedes cambiar a "bottom", "left", "right"
+      >
       <Button
         variant="outlined"
         sx={{
           height: "300px", // Altura fija
           borderColor: "#71D8BD",
           color: "#71D8BD",
-          fontSize: "10rem", // Tamaño del texto más grande
+          fontSize: "1.5rem", // Tamaño del texto más grande
           "&:hover": {
             backgroundColor: "#71D8BD",
             color: "white",
           },
         }}
-       // onClick={() => navigate("/environment/change/history/change_details")} // Navegar a la página de VIEW
-      ><TollIcon sx={{ fontSize: "4rem" }} /> 
+       onClick={() => navigate("/clients")} // Navegar a la página de VIEW
+      >
+      Mapping<TollIcon sx={{ fontSize: "4rem" }} /> 
+
       </Button>
+      </Tooltip>
       {/* Botón OMGEVINGEN */}
+      <Tooltip 
+        title="Environments" 
+        arrow
+        placement="top" // Puedes cambiar a "bottom", "left", "right"
+      >
       <Button
         variant="outlined"
         sx={{
@@ -82,8 +108,9 @@ const SettingsButtons = () => {
         }}
         //onClick={() => navigate("/environment/change/history/change_details")} // Navegar a la página de INDEX
       >
-         <BlurOnIcon sx={{ fontSize: "4rem" }}/><br/> 
+         Environments<BlurOnIcon sx={{ fontSize: "4rem" }}/><br/> 
       </Button>
+      </Tooltip>
     </Box>
   );
 };

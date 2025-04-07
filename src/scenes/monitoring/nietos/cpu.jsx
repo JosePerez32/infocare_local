@@ -83,13 +83,13 @@ const CPU = () => {
       const token = localStorage.getItem('accessToken');
       
       const startTime = new Date(buildSelectedDate());
-      const endTime = new Date(startTime);
-      endTime.setHours(startTime.getHours() + 24); // Rango de 24 horas desde la fecha seleccionada
+      //const endTime = new Date(startTime);
+      //endTime.setHours(startTime.getHours() + 24); // Rango de 24 horas desde la fecha seleccionada
 
       const params = new URLSearchParams({
         start_time: startTime.toISOString(),
-        end_time: endTime.toISOString(),
-        rows: '50',
+        //end_time: endTime.toISOString(),
+        rows: '500',
         grouping: grouping
       });
 
@@ -104,7 +104,7 @@ const CPU = () => {
           },
         }
       );
-      
+      console.log(`${params}`);
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${await response.text()}`);
       }
@@ -123,7 +123,7 @@ const CPU = () => {
   const transformDataForCharts = (apiData) => {
     try {
       const safeData = {
-        timestamps: Array.isArray(apiData?.time) ? apiData.time : [],
+        timestamps: Array.isArray(apiData?.time) ? apiData.time.map(t => t || new Date().toISOString()) : [],
         idle: Array.isArray(apiData?.cpu_idle) ? apiData.cpu_idle : [],
         user: Array.isArray(apiData?.cpu_user) ? apiData.cpu_user : [],
         system: Array.isArray(apiData?.cpu_system) ? apiData.cpu_system : [],

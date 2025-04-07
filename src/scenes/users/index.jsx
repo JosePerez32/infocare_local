@@ -9,6 +9,7 @@ import {
   Stack,
   TextField,
   InputAdornment,
+  Button
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import {
@@ -188,8 +189,19 @@ const Users = () => {
             </IconButton>
           </Tooltip>
         </Stack>
+        
       </Stack>
-
+      <Tooltip 
+        title="Importance" 
+        arrow
+        placement="top" // Puedes cambiar a "bottom", "left", "right"
+      ><Button 
+      sx={{ fontSize: "1.5rem", // Tamaño del texto más grande
+      "&:hover": {
+        backgroundColor: "#71D8BD",
+        color: "white",
+      },
+    }}>Create user</Button></ Tooltip>
       {/* DataGrid */}
       <Paper 
         elevation={0}
