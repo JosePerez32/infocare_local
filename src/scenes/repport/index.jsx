@@ -79,12 +79,19 @@ const generateStructuredData = () => {
       month: randomDate.getMonth()
     };
   });
-
-  // Combinar y ordenar por fecha (más reciente primero)
-  return [...march2025Data, ...randomData].sort((a, b) => 
-    new Date(b.date) - new Date(a.date)
-  );
-};
+  const combinedData = [...march2025Data, ...randomData];
+    
+    return combinedData.sort((a, b) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return dateB - dateA; // Orden descendente
+    });
+  };
+  // // Combinar y ordenar por fecha (más reciente primero)
+  // return [...march2025Data, ...randomData].sort((a, b) => 
+  //   new Date(b.date) - new Date(a.date)
+  // );
+//};
 
 const ReportPage = () => {
   // Estados
@@ -159,6 +166,36 @@ const ReportPage = () => {
     setFilteredData(result);
   }, [tableData, selectedYear, selectedMonth]);
 
+  // Filtrar y ordenar datos según selecciones
+useEffect(() => {
+  if (tableData.length === 0) return;
+  
+  const monthIndex = months.findIndex(m => m === selectedMonth);
+  const yearNum = parseInt(selectedYear);
+  
+  // Filtrar primero
+  let filtered = tableData.filter(item => {
+    // Si no hay filtros, mostrar solo el mes pasado
+    if (selectedYear === 'Year' && selectedMonth === 'Month') {
+      const lastMonth = new Date().getMonth() - 1;
+      const lastYear = new Date().getFullYear();
+      return item.month === lastMonth && item.year === lastYear;
+    }
+    
+    // Aplicar filtros seleccionados
+    return item.year === yearNum && item.month === monthIndex;
+  });
+
+  // Ordenar por fecha descendente (más reciente primero)
+  const sorted = [...filtered].sort((a, b) => {
+    // Convertir a Date objects para comparación precisa
+    const dateA = new Date(a.date.split('/').reverse().join('-'));
+    const dateB = new Date(b.date.split('/').reverse().join('-'));
+    return dateB - dateA;
+  });
+
+  setFilteredData(sorted);
+}, [tableData, selectedYear, selectedMonth]); // Eliminar filteredData de las dependencias
   // Manejadores para los menús
   const handleEnvClick = (event) => setAnchorElEnv(event.currentTarget);
   const handleMonthClick = (event) => setAnchorElMonth(event.currentTarget);
@@ -182,24 +219,55 @@ const ReportPage = () => {
 
 
   // Función para descargar PDF
-  const downloadRowPDF = (rowData) => {
-    const input = document.createElement('div');
-    input.style.padding = '20px';
-    input.innerHTML = `
-      <h3>Report Details</h3>
-      <p><strong>Date:</strong> ${rowData.date}</p>
-      <p><strong>Description:</strong> ${rowData.description}</p>
-      <p><strong>Type:</strong> ${rowData.type}</p>
-      <p><strong>Severity:</strong> ${rowData.severity}</p>
-      <p><strong>Environment:</strong> ${selectedEnv}</p>
-      <p><strong>Period:</strong> ${selectedMonth} ${selectedYear}</p>
-    `;
-    
-    html2canvas(input).then((canvas) => {
-      const pdf = new jsPDF();
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);
+  const downloadRowPDF = async (rowData) => {
+    try {
+      // Crear un elemento temporal fuera del DOM
+      const element = document.createElement('div');
+      element.style.position = 'absolute';
+      element.style.left = '-9999px';
+      element.style.padding = '20px';
+      element.style.backgroundColor = 'white';
+      
+      // Contenido del PDF
+      element.innerHTML = `
+        <h3 style="color: #333; font-family: Arial;">Report Details</h3>
+        <p style="color: #555; font-family: Arial;"><strong>Date:</strong> ${rowData.date}</p>
+        <p style="color: #555; font-family: Arial;"><strong>Description:</strong> ${rowData.description}</p>
+        <p style="color: #555; font-family: Arial;"><strong>Type:</strong> ${rowData.type}</p>
+        <p style="color: #555; font-family: Arial;"><strong>Severity:</strong> ${rowData.severity}</p>
+        <p style="color: #555; font-family: Arial;"><strong>Environment:</strong> ${selectedEnv}</p>
+        <p style="color: #555; font-family: Arial;"><strong>Period:</strong> ${selectedMonth} ${selectedYear}</p>
+      `;
+      
+      // Añadir temporalmente al body
+      document.body.appendChild(element);
+      
+      // Esperar a que el elemento esté en el DOM
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
+      // Capturar con html2canvas
+      const canvas = await html2canvas(element, {
+        scale: 2, // Mejor calidad
+        logging: false, // Desactivar logs
+        useCORS: true, // Para evitar problemas con CORS
+        allowTaint: true // Permitir imágenes externas
+      });
+      
+      // Crear PDF
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = 210; // Ancho A4 en mm
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       pdf.save(`report_${rowData.id}.pdf`);
-    });
+      
+      // Limpiar
+      document.body.removeChild(element);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    }
   };
 
   return (
@@ -208,8 +276,8 @@ const ReportPage = () => {
       
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: '10px' }}>
         <Typography variant="h4">
-          {selectedMonth} {selectedYear !== 'Select Year' ? selectedYear : ''} Report
-          {selectedEnv !== 'Select Environment' ? ` - ${selectedEnv}` : ''}
+          {selectedMonth} {selectedYear !== 'Year' ? selectedYear : ''} Report
+          {selectedEnv !== 'Environment' ? ` - ${selectedEnv}` : ''}
         </Typography>
       </Box>
 

@@ -88,6 +88,7 @@ import Support from "./scenes/support"
 import Clientes from "./scenes/settings/clients"
 import NewUsers from "./scenes/settings/newUsers";
 import CrearUsers from "./scenes/settings/createUser";
+import YourTrack from "./scenes/ticketing/youtrack";
 
 //import NewPage from "./scenes/enviroment/new_page"; // Import the new component
 //
@@ -659,7 +660,7 @@ function App() {
               <Route path="/repports" element={<ReportPage />} />
               <Route path="/q-reports" element={<QReport />} />
               <Route path="/settings" element={<Settings />} />
-              
+              <Route path="/youtrack" element={<YourTrack />} />
               <Route path="/settings/users" element={<NewUsers />} />
               <Route path="/settings/users/createUser" element={<CrearUsers />} />
               <Route path="/calendar" element={<Calendar />} />
