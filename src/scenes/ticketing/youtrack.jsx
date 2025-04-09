@@ -1,59 +1,91 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
+import { Box } from '@mui/material';
+import { useLocation } from 'react-router-dom';
 
-const YouTrackEmbed = () => {
-  const navigate = useNavigate();
+const YouTrackFeedback = () => {
+  const feedbackContainerRef = useRef(null);
+  const [formInstance, setFormInstance] = useState(null);
+  const location = useLocation();
+
+  // Cerrar el formulario cuando cambia la ruta
+  useEffect(() => {
+    if (formInstance && typeof formInstance.closeForm === 'function') {
+      formInstance.closeForm();
+    }
+  }, [location.pathname, formInstance]);
+
+  // Manejar clic fuera del formulario
+  useEffect(() => {
+    console.log('Form instance changed:', formInstance);
+    if (!formInstance) return;
+
+    const handleClickOutside = (event) => {
+      const formElement = document.querySelector('.yt-feedback-form');
+      const feedbackButton = feedbackContainerRef.current;
+      
+      if (formElement && feedbackButton &&
+          !formElement.contains(event.target) && 
+          !feedbackButton.contains(event.target)) {
+        formInstance.closeForm();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [formInstance]);
 
   useEffect(() => {
-    // 1. Verificar si ya tenemos token
-    const token = localStorage.getItem('youtrack_token');
+    let isMounted = true;
+    const script = document.createElement('script');
+    script.src = 'https://infocare.youtrack.cloud/static/simplified/form/form-entry.js?auto=false';
+    script.async = true;
     
-    if (token) {
-      // Si ya está autenticado, puedes cargar directamente el iframe
-      return;
-    }
+    script.onload = () => {
+      if (isMounted && window.YTFeedbackForm && feedbackContainerRef.current) {
+        const form = window.YTFeedbackForm.renderFeedbackButton(
+          feedbackContainerRef.current,
+          {
+            backendURL: 'https://infocare.youtrack.cloud',
+            formUUID: 'd69c967d-3b7d-465f-84d0-d4e8ac9914ce',
+            theme: 'light', 
+            language: 'en'
+          }
+        );
+        if (isMounted) setFormInstance(form);
+      }
+    };
 
-    // 2. Si no hay token, iniciar flujo OAuth
-    const params = new URLSearchParams(window.location.hash.substring(1));
-    const accessToken = params.get('access_token');
-    
-    if (accessToken) {
-      // Guardar token y recargar sin el hash
-      localStorage.setItem('youtrack_token', accessToken);
-      window.location.href = window.location.pathname;
-    } else {
-      // Redirigir a YouTrack para autenticación
-      const authUrl = `https://infocare.youtrack.cloud/hub/auth/login?response_type=token&client_id=fd5169bf-1622-4177-9e82-d055c38761f0&redirect_uri=${encodeURIComponent(window.location.origin + window.location.pathname)}&scope=fd5169bf-1622-4177-9e82-d055c38761f0%20Upsource%20TeamCity%20YouTrack%2520Slack%2520Integration%200-0-0-0-0&state=YOUR_UNIQUE_STATE`;
-      window.location.href = authUrl;
-    }
-  }, [navigate]);
+    script.onerror = () => {
+      console.error('Failed to load YouTrack feedback form script');
+    };
 
-  // Si tenemos token, mostrar iframe
-  if (localStorage.getItem('youtrack_token')) {
-    return (
-      <Box sx={{ height: '80vh' }}>
-        <iframe
-          src={`https://infocare.youtrack.cloud/issues?token=${localStorage.getItem('youtrack_token')}`}
-          title="YouTrack"
-          width="100%"
-          height="100%"
-          frameBorder="0"
-          style={{ border: 'none' }}
-        />
-      </Box>
-    );
-  }
+    document.body.appendChild(script);
 
-  // Mientras se autentica
+    return () => {
+      isMounted = false;
+      document.body.removeChild(script);
+      if (feedbackContainerRef.current) {
+        feedbackContainerRef.current.innerHTML = '';
+      }
+      if (formInstance && typeof formInstance.closeForm === 'function') {
+        formInstance.closeForm();
+      }
+    };
+  }, []);
+
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4 }}>
-      <CircularProgress />
-      <Typography variant="body1" sx={{ mt: 2 }}>
-        Redirecting to YouTrack authentication...
-      </Typography>
-    </Box>
+    <Box 
+      ref={feedbackContainerRef}
+      sx={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        zIndex: 9999
+      }}
+    />
   );
 };
 
-export default YouTrackEmbed;
+export default YouTrackFeedback;

@@ -25,15 +25,22 @@ const UserTicketingSystem = () => {
       <Box sx={{ mb: 3 }}>
         <Button 
           variant="contained" 
-          onClick={handleOpenTicket}
+          onClick={() => {
+            handleOpenTicket(); // Tu función existente
+            setShowYouTrack(true); // Mostrar YouTrackEmbed
+          }}
           sx={{ mb: 2 }}
         >
           Open Ticket
         </Button>
-        
-        {showYouTrack ? (
-          <YouTrackEmbed />
-        ) : (
+        {showYouTrack && (
+          <YouTrackEmbed 
+            position="top-left"
+            theme="dark"
+            language="en"
+            autoOpen={true}
+          />
+        )}
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -54,7 +61,7 @@ const UserTicketingSystem = () => {
               </TableBody>
             </Table>
           </TableContainer>
-        )}
+        
       </Box>
     </Box>
   );

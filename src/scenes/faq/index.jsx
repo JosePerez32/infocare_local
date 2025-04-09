@@ -30,8 +30,8 @@ const FAQ = () => {
       <Header title="FAQ" subtitle="Frequently Asked Questions Page" />
       <MySearchComponent onSearch={handleSearch} />
       {searchResults.map((item) => (
-            <Accordion key={item.id} defaultExpanded={false}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Accordion key={item.id} defaultExpanded={false}  >
+            <AccordionSummary expandIcon={<ExpandMoreIcon/>} sx={{ marginTop: '10px' }}>
               <Typography color={colors.greenAccent[500]} variant="h5">
                 {item.question}
               </Typography>

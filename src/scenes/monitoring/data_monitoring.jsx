@@ -52,7 +52,7 @@ const Performance = () => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
+console.log(`${databaseName}`);
         const data = await response.json();
         setMetrics(data);
 

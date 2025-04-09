@@ -71,9 +71,21 @@ const CPU = () => {
 
   // Construir la fecha seleccionada en formato ISO
   const buildSelectedDate = () => {
-    return `${year}-${month}-${day}T${hour}:${minute}:${second}Z`;
+    // Crear fecha completa
+    const dateStr = `${year}-${month}-${day}T${hour}:${minute}:${second}`;
+    const date = new Date(dateStr);
+    
+    // Manejar casos donde new Date pueda fallar
+    if (isNaN(date.getTime())) {
+      console.error('Invalid date constructed:', dateStr);
+      return new Date().toISOString().replace(/(\.\d{3})Z$/, '.00Z');
+    }
+    
+    // Formatear con exactamente 2 dígitos en milisegundos
+    return date.toISOString().replace(/(\.\d{3})Z$/, '.00Z');
   };
-
+  
+  // Luego en fetchCpuData(), asegúrate de usar la fecha formateada:
   const fetchCpuData = async () => {
     try {
       setLoading(true);
@@ -82,17 +94,16 @@ const CPU = () => {
       const organisation = localStorage.getItem('organisation');
       const token = localStorage.getItem('accessToken');
       
-      const startTime = new Date(buildSelectedDate());
-      //const endTime = new Date(startTime);
-      //endTime.setHours(startTime.getHours() + 24); // Rango de 24 horas desde la fecha seleccionada
-
+      const startTime = buildSelectedDate(); // Ya devuelve el formato correcto
+  
       const params = new URLSearchParams({
-        start_time: startTime.toISOString(),
-        //end_time: endTime.toISOString(),
-        rows: '500',
+        start_time: startTime, // Usar directamente el valor formateado
+        rows: '30',
         grouping: grouping
       });
-
+  
+      console.log('Sending params:', params.toString()); // Para depuración
+  
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/metrics/performance/cpu?${params}`,
         {
@@ -104,7 +115,7 @@ const CPU = () => {
           },
         }
       );
-      console.log(`${params}`);
+      console.log(`Estos son los parametros: ${params}`);
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${await response.text()}`);
       }

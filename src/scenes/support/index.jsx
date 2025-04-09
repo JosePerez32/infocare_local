@@ -182,20 +182,7 @@ const SupportPage = () => {
                   </Typography>
                 </>
               }
-              button={
-                <Button
-                  variant="outlined"
-                  startIcon={<PhoneIcon />}
-                  sx={{
-                    mt: 1,
-                    bgcolor: "#71D8BD",
-                    "&:hover": { bgcolor: "#5abfaa" },
-                  }}
-                  onClick={() => window.location.href = `tel:${phone.replace(/\s/g, '')}`}
-                >
-                  Call Now
-                </Button>
-              }
+              
             />
           </Grid>
 

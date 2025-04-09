@@ -1,11 +1,10 @@
-import { Box, Typography, Alert, Button, Menu, MenuItem } from "@mui/material";
+import { Box, Typography, Alert } from "@mui/material";
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { useParams } from "react-router-dom";
 import LineChart from '../../components/LineChart';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const Workload = () => {
   const { databaseName } = useParams();
@@ -14,65 +13,36 @@ const Workload = () => {
   const [workloadData, setWorkloadData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedDate, setSelectedDate] = useState('');
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  // Prueba estos 3 formatos alternativos:
-  const formatosParaProbar = [
-    new Date().toISOString(),                     // "2025-03-27T16:47:35.790Z"
-    new Date().toISOString().split('.')[0] + "Z", // "2025-03-27T16:47:35Z" (sin ms)
-    new Date().toLocaleDateString('en-CA')        // "2025-03-27" (solo fecha)
-  ];
-  // Generar opciones de fecha (últimos 30 días en formato ISO)
-  const dateOptions = Array.from({ length: 30 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - i);
-    return date.toISOString(); // Formato completo ISO
-  });
-  const organization = localStorage.getItem('organisation');
-  // Manejadores para el menú de fechas
-  const handleDateClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleDateClose = (date) => {
-    setSelectedDate(date);
-    setAnchorEl(null);
-  };
+ 
+  // Fecha fija en el formato requerido por la API
+  const fixedDate = "2025-04-09T13:22:27.050Z";
+  const organisation = localStorage.getItem('organisation');
 
   const fetchWorkloadData = async () => {
-    if (!selectedDate) return;
-  
     try {
       setLoading(true);
       setError(null);
       
       const token = localStorage.getItem('accessToken');
-
-      
-      // Formatear fecha sin milisegundos
-      const formatAPIDate = (date) => {
-        return new Date(date).toISOString().split('.')[0] + "Z";
-      };
-  
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/environment/workload`,
         {
           method: 'GET',
           headers: {
+            'Accept': 'application/json',
+            'organisation': organisation,
+            'source': databaseName,
+            'start_time': getCurrentDateTime(), // Usamos la fecha fija aquí
             'Authorization': `Bearer ${token}`,
-            'organisation': organization,
-            'source': databaseName, // <-- Ahora en headers
-            'start_time': formatAPIDate(selectedDate) // <-- También en headers
           }
         }
       );
-  
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
-  
+
       const data = await response.json();
       transformDataForCharts(data);
       
@@ -83,7 +53,7 @@ const Workload = () => {
           url: `${process.env.REACT_APP_API_URL}/environment/workload`,
           headers: {
             source: databaseName,
-            start_time: selectedDate
+            start_time: getCurrentDateTime()
           }
         }
       });
@@ -92,7 +62,13 @@ const Workload = () => {
       setLoading(false);
     }
   };
-
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const isoString = now.toISOString(); // "2025-03-28T15:30:45.123Z"
+    return isoString;
+    
+   //return isoString.replace(/(\.\d{3})Z$/, '.00Z'); // Fuerza 2 dígitos: "2025-03-28T15:30:45.00Z"
+  };
   // Transformar los datos de la API para los gráficos
   const transformDataForCharts = (apiData) => {
     const metrics = [
@@ -117,42 +93,19 @@ const Workload = () => {
     setWorkloadData(transformedData);
   };
 
-  // Efecto para cargar datos cuando se selecciona fecha
-  useEffect(() => {
-    if (selectedDate) {
-      fetchWorkloadData();
-    }
-  }, [selectedDate]);
+  // Cargar datos al montar el componente
 
+  useEffect(() => {
+    console.log('Fecha enviada a API:', getCurrentDateTime());
+    //console.log('Fecha enviada a API:');
+    fetchWorkloadData();
+  }, []);
   return (
     <Box m="20px">
-      <Header title={`Workload for ${databaseName}`} subtitle="" />
-
-      {/* Selector de fecha */}
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-        <Button
-          variant="contained"
-          endIcon={<ExpandMoreIcon />}
-          onClick={handleDateClick}
-          sx={{ width: '200px' }}
-        >
-          {selectedDate ? new Date(selectedDate).toLocaleDateString() : 'Select Date'}
-        </Button>
-        <Menu
-          anchorEl={anchorEl}
-          open={open}
-          onClose={() => setAnchorEl(null)}
-        >
-          {dateOptions.map((date, index) => (
-            <MenuItem 
-              key={index} 
-              onClick={() => handleDateClose(date)}
-            >
-              {new Date(date).toLocaleDateString()} - {new Date(date).toLocaleTimeString()}
-            </MenuItem>
-          ))}
-        </Menu>
-      </Box>
+      <Header 
+        title={`Workload for ${databaseName}`} 
+        subtitle={`Data for (${new Date().toLocaleString()})`} 
+      />
 
       {/* Mensajes de estado */}
       {loading && <Alert severity="info" sx={{ mb: 2 }}>Loading data...</Alert>}
