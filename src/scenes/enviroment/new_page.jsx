@@ -16,27 +16,39 @@ const Workload = () => {
  
   // Fecha fija en el formato requerido por la API
   const fixedDate = "2025-04-09T13:22:27.050Z";
-  const organisation = localStorage.getItem('organisation');
+  const organisation = localStorage.getItem('organization');
 
   const fetchWorkloadData = async () => {
     try {
       setLoading(true);
       setError(null);
-      
       const token = localStorage.getItem('accessToken');
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/environment/workload`,
-        {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'organisation': organisation,
-            'source': databaseName,
-            'start_time': getCurrentDateTime(), // Usamos la fecha fija aquí
-            'Authorization': `Bearer ${token}`,
-          }
-        }
-      );
+      // const response = await fetch(
+      //   `${process.env.REACT_APP_API_URL}/environment/workload`,
+      //   {
+      //     method: 'GET',
+      //     headers: {
+      //       'Authorization': `Bearer ${token}`,
+      //       'source': databaseName,
+      //       'organisation': organisation,
+      //       'start_time': getCurrentDateTime() // Usamos la fecha fija aquí
+      //     }
+      //   }
+      // );
+
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/environment/workload`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Si es requerido
+          organisation: organisation,
+          source: databaseName,
+          start_time: getCurrentDateTime() // En el body, no en headers
+        },
+      });
+
+
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -61,13 +73,13 @@ const Workload = () => {
     } finally {
       setLoading(false);
     }
-  };
+   };
   const getCurrentDateTime = () => {
     const now = new Date();
     const isoString = now.toISOString(); // "2025-03-28T15:30:45.123Z"
     return isoString;
     
-   //return isoString.replace(/(\.\d{3})Z$/, '.00Z'); // Fuerza 2 dígitos: "2025-03-28T15:30:45.00Z"
+   return isoString.replace(/(\.\d{3})Z$/, '.00Z'); // Fuerza 2 dígitos: "2025-03-28T15:30:45.00Z"
   };
   // Transformar los datos de la API para los gráficos
   const transformDataForCharts = (apiData) => {
@@ -116,7 +128,7 @@ const Workload = () => {
         {workloadData.map((chartData, index) => (
           <Box key={index} height="200px" position="relative">
             <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
-              {chartData.id}
+              
             </Typography>
             <LineChart
               data={[chartData]}

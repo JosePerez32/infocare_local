@@ -28,10 +28,14 @@ const CPU = () => {
     colors = {};
   }
 
-  const [cpuData, setCpuData] = useState([]);
+  const [cpuData, setCpuData] = useState([{
+    id: 'Loading...',
+    color: '#ccc',
+    data: [{ x: '00:00', y: 0 }]
+  }]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [grouping, setGrouping] = useState('uur');
+  const [grouping, setGrouping] = useState('sec');
 
   // Estados para los nuevos selectores
   const [year, setYear] = useState('2024');
@@ -57,8 +61,10 @@ const CPU = () => {
   const hours = Array.from({length: 24}, (_, i) => i.toString().padStart(2, '0'));
   const minutes = Array.from({length: 60}, (_, i) => i.toString().padStart(2, '0'));
   const seconds = Array.from({length: 60}, (_, i) => i.toString().padStart(2, '0'));
-  const groupings = ['uur', 'min', 'sec'];
+  const groupings = ['sec'];
 
+  // 1. Añade un nuevo estado para controlar el intervalo
+  //const [refreshInterval, setRefreshInterval] = useState(null);
   // Función segura para obtener colores
   const getChartColors = () => {
     return {
@@ -94,16 +100,18 @@ const CPU = () => {
       const organisation = localStorage.getItem('organisation');
       const token = localStorage.getItem('accessToken');
       
-      const startTime = buildSelectedDate(); // Ya devuelve el formato correcto
-  
+      // Calcular fecha de inicio (30 horas atrás desde ahora)
+      const now = new Date();
+      const startTime = new Date(now.getTime() - (30 * 60 * 60 * 1000)).toISOString();//.replace(/(\.\d{3})Z$/, '.00Z');
+
       const params = new URLSearchParams({
-        start_time: startTime, // Usar directamente el valor formateado
-        rows: '30',
-        grouping: grouping
+        start_time: startTime,//new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString(),
+        //end_time: new Date().toISOString(),
+        rows: '30', // 6 puntos por hora × 30 horas
+        grouping: 'sec',
+       // sort: 'asc' // Asegurar orden ascendente (más antiguo primero)
       });
-  
-      console.log('Sending params:', params.toString()); // Para depuración
-  
+
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/metrics/performance/cpu?${params}`,
         {
@@ -130,102 +138,128 @@ const CPU = () => {
       setLoading(false);
     }
   };
-
-  const transformDataForCharts = (apiData) => {
-    try {
-      const safeData = {
-        timestamps: Array.isArray(apiData?.time) ? apiData.time.map(t => t || new Date().toISOString()) : [],
-        idle: Array.isArray(apiData?.cpu_idle) ? apiData.cpu_idle : [],
-        user: Array.isArray(apiData?.cpu_user) ? apiData.cpu_user : [],
-        system: Array.isArray(apiData?.cpu_system) ? apiData.cpu_system : [],
-        iowait: Array.isArray(apiData?.cpu_iowait) ? apiData.cpu_iowait : []
-      };
-
-      const minLength = Math.min(
-        safeData.timestamps.length,
-        safeData.idle.length,
-        safeData.user.length,
-        safeData.system.length,
-        safeData.iowait.length
-      );
-
-      const chartColors = getChartColors();
-
-      const dateFormatOptions = {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      };
-
-      const chartData = [
-        {
-          id: 'CPU Idle',
-          color: chartColors.idle,
-          data: minLength > 0 ? 
-               Array(minLength).fill().map((_, i) => ({
-                 x: new Date(safeData.timestamps[i]).toLocaleString('en-US', dateFormatOptions),
-                 y: safeData.idle[i]
-               })) : 
-               [{
-                 x: new Date().toLocaleString('en-US', dateFormatOptions),
-                 y: 0
-               }]
-        },
-        {
-          id: 'CPU User',
-          color: chartColors.user,
-          data: minLength > 0 ? 
-               Array(minLength).fill().map((_, i) => ({
-                 x: new Date(safeData.timestamps[i]).toLocaleString('en-US', dateFormatOptions),
-                 y: safeData.user[i]
-               })) : 
-               [{
-                 x: new Date().toLocaleString('en-US', dateFormatOptions),
-                 y: 0
-               }]
-        },
-        {
-          id: 'CPU System',
-          color: chartColors.system,
-          data: minLength > 0 ? 
-               Array(minLength).fill().map((_, i) => ({
-                 x: new Date(safeData.timestamps[i]).toLocaleString('en-US', dateFormatOptions),
-                 y: safeData.system[i]
-               })) : 
-               [{
-                 x: new Date().toLocaleString('en-US', dateFormatOptions),
-                 y: 0
-               }]
-        },
-        {
-          id: 'CPU IOWait',
-          color: chartColors.iowait,
-          data: minLength > 0 ? 
-               Array(minLength).fill().map((_, i) => ({
-                 x: new Date(safeData.timestamps[i]).toLocaleString('en-US', dateFormatOptions),
-                 y: safeData.iowait[i]
-               })) : 
-               [{
-                 x: new Date().toLocaleString('en-US', dateFormatOptions),
-                 y: 0
-               }]
-        }
-      ];
-
-      setCpuData(chartData);
-    } catch (transformError) {
-      console.error("Error transforming data:", transformError);
-      setError("Error processing CPU data. Please try again.");
-    }
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const isoString = now.toISOString(); // "2025-03-28T15:30:45.123Z"
+    return isoString;
+    
+   //return isoString.replace(/(\.\d{3})Z$/, '.00Z'); // Fuerza 2 dígitos: "2025-03-28T15:30:45.00Z"
   };
-
+    const transformDataForCharts = (apiData) => {
+      try {
+        const safeData = {
+          timestamps: Array.isArray(apiData?.time) ? apiData.time : [],
+          idle: Array.isArray(apiData?.cpu_idle) ? apiData.cpu_idle.map(v => v || 0) : [],
+          user: Array.isArray(apiData?.cpu_user) ? apiData.cpu_user.map(v => v || 0) : [],
+          system: Array.isArray(apiData?.cpu_system) ? apiData.cpu_system.map(v => v || 0) : [],
+          iowait: Array.isArray(apiData?.cpu_iowait) ? apiData.cpu_iowait.map(v => v || 0) : []
+        };
+    
+        // Ordenar los datos cronológicamente (más antiguo primero)
+        const allData = safeData.timestamps
+          .map((timestamp, index) => ({
+            timestamp,
+            idle: safeData.idle[index],
+            user: safeData.user[index],
+            system: safeData.system[index],
+            iowait: safeData.iowait[index]
+          })).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    
+        const chartColors = getChartColors();
+    
+          // Función para formatear el eje X (mostrar hora cada 6 horas)
+          const formatXAxis = (timestamp) => {
+            const date = new Date(timestamp);
+            const hours = date.getHours();
+            // Mostrar etiqueta completa cada 6 horas
+            if (hours % 6 === 0) {
+              return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            return ''; // No mostrar etiqueta para otros puntos
+          };
+    
+        const chartData = [
+          {
+            id: 'CPU Idle',
+            color: chartColors.idle,
+            data: allData.map(item => ({
+              x: item.timestamp, // Usar el timestamp directamente
+              y: item.idle || 0
+            }))
+          },
+          // Repetir para las otras series (user, system, iowait)
+          {
+            id: 'CPU User',
+            color: chartColors.user,
+            data: allData.map(item => ({
+              x: item.timestamp, // Usar el timestamp directamente
+              y: item.user || 0
+            }))
+          },
+          {
+            id: 'CPU System',
+            color: chartColors.system,
+            data: allData.map(item => ({
+              x: item.timestamp, // Usar el timestamp directamente
+              y: item.system || 0
+            }))
+          },
+          {
+            id: 'CPU IOWait',
+            color: chartColors.iowait,
+            data: allData.map(item => ({
+              x: item.timestamp, // Usar el timestamp directamente
+              y: item.iowait || 0
+            }))
+          }
+        ];
+         // Verificación adicional antes de establecer el estado
+        // if (chartData.some(series => !series.data || series.data.length === 0)) {
+        //   throw new Error("Invalid data format");
+        // }
+        setCpuData(chartData);
+      } catch (error){//transformError) {
+        console.error("Error transforming data:", error);//transformError);
+        setError("Error processing CPU data. Please try again.");
+        //setCpuData([]); // Establecer array vacío para evitar errores
+      }
+    };
+    
+  const formatXAxisTicks = (timestamp) => {
+    const date = new Date(timestamp);
+    const hours = date.getHours();
+    
+    // Mostrar solo cada 5 horas (0, 5, 10, 15, 20, 25)
+    if (hours % 5 === 0) {
+      return `${hours.toString().padStart(2, '0')}:00`;
+    }
+    return '';
+  };
+  
   // Ejecutar la consulta cuando cambien los parámetros
-  useEffect(() => {
-    fetchCpuData();
-  }, [databaseName, grouping]);
-
+    useEffect(() => {
+      let intervalId;
+      let isMounted = true;
+      
+      const fetchData = async () => {
+        if (!isMounted) return;
+        try {
+          await fetchCpuData();
+        } catch (error) {
+          console.error("Error in data fetch:", error);
+        }
+      };
+    
+      fetchData();
+      intervalId = setInterval(fetchData, 15000);
+    
+      return () => {
+        isMounted = false;
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+      };
+    }, [databaseName, grouping]);
   return (
     <Box m="20px">
       <Header title={`Performance of ${databaseName}`} />
@@ -423,10 +457,10 @@ const CPU = () => {
           Execute
         </Button>
       </Box>
-
+   
       <Box sx={{ mb: 2 }}>
         <Typography variant="body1">
-          Selected date: {buildSelectedDate()}
+          Selected date: {getCurrentDateTime()}
         </Typography>
       </Box>
 
@@ -435,12 +469,36 @@ const CPU = () => {
 
       <Box height="400px" sx={{ minWidth: 0 }}>
         <LineChart
+          animate={false}
+          key={Date.now()}
           data={cpuData}
           enableLegends={true}
           enableTooltip={true}
           yAxisLegend="Usage (%)"
-          xAxisLegend="Time"
+          xAxisLegend="Last 30 Hours"
+          axisBottom={{
+            tickValues: "every 6 hours",
+            format: (value) => {
+              const date = new Date(value);
+              return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            },
+            tickRotation: -45,
+            legendPosition: 'middle',
+            legendOffset: 40
+          }}
+          margin={{ top: 20, right: 30, bottom: 80, left: 60 }}
+          xScale={{
+            type: 'time',
+            format: '%Y-%m-%dT%H:%M:%S.%LZ',
+            precision: 'minute',
+            useUTC: true
+          }}
+          axisLeft={{
+            legendOffset: -50,
+            legendPosition: 'middle'
+          }}
           isStacked={true}
+          curve="linear"
         />
       </Box>
     </Box>
