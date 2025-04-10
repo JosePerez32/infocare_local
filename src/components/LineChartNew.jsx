@@ -1,98 +1,116 @@
-import { ResponsiveLine } from "@nivo/line"; 
+import { ResponsiveLine } from "@nivo/line";
 import { useTheme } from "@mui/material";
 import { tokens } from "../theme";
 
 const LineChart = ({ 
   data, 
-  isCustomLineColors = false, 
-  isDashboard = false, 
-  yAxisLegend, 
-  xAxisLegend,
-  isTimeScale = true // Nueva prop para indicar escala temporal
+  isTimeScale = true,
+  yAxisLegend = "Value",
+  xAxisLegend = "Time",
+  margin = { top: 50, right: 30, bottom: 70, left: 60 },
+  showPoints = true
 }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  if (data.length === 0) {
-    return <div>No data available</div>;
+  if (!data || data.length === 0 || !data[0]?.data || data[0].data.length === 0) {
+    return <div>No valid data available</div>;
   }
 
-  // Configuración del eje X basada en el tipo de escala
+  // Configuración del eje X optimizada
   const axisBottomConfig = {
     orient: "bottom",
-    tickSize: 0,
-    tickPadding: 5,
+    tickValues: "every 5 hours", // Mostrar una etiqueta cada 5 horas
+    format: (value) => {
+      const date = new Date(value);
+      // Formato: "HH:MM\nMM/DD" (hora y fecha en dos líneas)
+      return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}\n${date.getMonth()+1}/${date.getDate()}`;
+    },
     tickRotation: 0,
-    legend: isDashboard ? undefined : xAxisLegend,
-    legendOffset: 36,
+    legend: xAxisLegend,
+    legendOffset: 40,
     legendPosition: "middle",
-    ...(isTimeScale && {
-      format: (value) => {
-        const date = new Date(value);
-        const hours = date.getHours();
-        // Mostrar solo cada 5 horas (0, 5, 10, 15, 20, 25)
-        if (hours % 5 === 0) {
-          return `${hours.toString().padStart(2, '0')}:00`;
-        }
-        return '';
-      },
-      tickValues: 6 // Mostrar exactamente 6 marcas
-    })
+    tickPadding: 10
   };
 
   return (
     <ResponsiveLine
       data={data}
       theme={{
-        // ... (mantén el theme existente)
+        axis: {
+          domain: { line: { stroke: colors.grey[100] } },
+          legend: { text: { fill: colors.grey[100] } },
+          ticks: {
+            line: { stroke: colors.grey[100], strokeWidth: 1 },
+            text: { 
+              fill: colors.grey[100],
+              fontSize: 12 
+            }
+          }
+        },
+        grid: { line: { stroke: colors.grey[800], strokeWidth: 0.5 } },
+        legends: { text: { fill: colors.grey[100] } },
+        tooltip: {
+          container: {
+            background: colors.primary[900],
+            color: colors.grey[100],
+            fontSize: 14,
+            borderRadius: 4,
+            boxShadow: "0 3px 9px rgba(0, 0, 0, 0.5)"
+          }
+        }
       }}
-      colors={isDashboard ? { datum: "color" } : { scheme: "nivo" }}
-      margin={{ top: 50, right: 30, bottom: 50, left: 60 }}
+      colors={{ datum: "color" }}
+      margin={margin}
       xScale={{
-        type: isTimeScale ? "time" : "point",
+        type: "time",
         format: "%Y-%m-%dT%H:%M:%S.%LZ",
-        precision: "hour",
-        useUTC: true
+        precision: "minute",
+        useUTC: true,
+        min: "auto",
+        max: "auto"
       }}
       yScale={{
         type: "linear",
-        min: "auto",
+        min: 0,
         max: "auto",
-        stacked: true,
-        reverse: false,
+        stacked: false,
+        reverse: false
       }}
-      yFormat=" >-.2f"
-      curve="catmullRom"
+      curve="linear"
       axisTop={null}
       axisRight={null}
       axisBottom={axisBottomConfig}
       axisLeft={{
         orient: "left",
         tickValues: 5,
-        tickSize: 3,
+        tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : yAxisLegend,
-        legendOffset: -40,
-        legendPosition: "middle",
+        legend: yAxisLegend,
+        legendOffset: -45,
+        legendPosition: "middle"
       }}
       enableGridX={false}
-      enableGridY={false}
-      pointSize={8}
-      pointColor={{ theme: "background" }}
+      enableGridY={true}
+      pointSize={6}
+      pointColor={{ from: "serieColor" }}
       pointBorderWidth={2}
-      pointBorderColor={{ from: "serieColor" }}
+      pointBorderColor={{ from: "serieColor", modifiers: [["darker", 0.3]] }}
       pointLabelYOffset={-12}
+      enableSlices="x"
       useMesh={true}
+      enableArea={false}
+      enablePoints={showPoints}
+      lineWidth={2}
       legends={[
         {
-          dataFrom: "keys",
-          anchor: "top",
-          direction: "row",
+          anchor: "top-right",
+          direction: "column",
           justify: false,
-          translateX: 0,
-          translateY: -40,
-          itemsSpacing: 10,
+          translateX: 20,
+          translateY: 0,
+          itemsSpacing: 0,
           itemDirection: "left-to-right",
           itemWidth: 80,
           itemHeight: 20,
@@ -105,12 +123,13 @@ const LineChart = ({
               on: "hover",
               style: {
                 itemBackground: "rgba(0, 0, 0, .03)",
-                itemOpacity: 1,
-              },
-            },
-          ],
-        },
+                itemOpacity: 1
+              }
+            }
+          ]
+        }
       ]}
+      motionConfig="gentle"
     />
   );
 };
