@@ -14,31 +14,13 @@ const Chanhist = () => {
   // Datos estáticos para las gráficas (puedes mantenerlos)
   const workloadData = [
     {
-      id: "Source only",
-      color: "hsl(0, 0%, 0%)",
-      data: Array.from({ length: 30 }, (_, i) => ({
-        x: i % 5 === 0 ? i : null,
-        y: Math.floor(Math.random() * 100),
-      })).filter((item) => item.x !== null),
-    },
-    // ... (otros datos de gráficas)
-    {
-      id: "Difference",
-      color: "hsl(0, 0%, 0%)",
-      data: Array.from({ length: 30 }, (_, i) => ({
-        x: i % 5 === 0 ? i : null,
-        y: Math.floor(Math.random() * 100),
-      })).filter((item) => item.x !== null),
-    },
-    // ... (otros datos de gráficas)
-    {
       id: "Target only",
       color: "hsl(0, 0%, 0%)",
       data: Array.from({ length: 30 }, (_, i) => ({
         x: i % 5 === 0 ? i : null,
         y: Math.floor(Math.random() * 100),
       })).filter((item) => item.x !== null),
-    }
+    },
     // ... (otros datos de gráficas)
   ];
 
@@ -90,7 +72,7 @@ const Chanhist = () => {
       <Header title="Change of history" subtitle=""/>
       
       <Box m="10px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
-        {/* <Button
+        <Button
           variant="contained"
           endIcon={<ExpandMoreIcon />}
           onClick={handleClick}
@@ -113,7 +95,7 @@ const Chanhist = () => {
             
             <MenuItem onClick={handleClose}>No sources available</MenuItem>
           )}
-        </Menu> */}
+        </Menu>
       </Box>
 
       {/* Gráficas (se mantienen igual) */}
