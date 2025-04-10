@@ -10,7 +10,6 @@ import ChangeButtons from "./his-det-back";
 import  LineChart from '../line';
 import { Bar } from "react-chartjs-2";
 import { Menu, Button } from "@mui/material";
-import { Menu, Button } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
