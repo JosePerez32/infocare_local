@@ -1,10 +1,11 @@
 import { Box, Typography, Alert } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Header from "../../components/Header";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { useParams } from "react-router-dom";
 import LineChart from '../../components/LineChart';
+import LineChartWork from '../../components/LineChartWork';
 
 const Workload = () => {
   const { databaseName } = useParams();
@@ -13,42 +14,37 @@ const Workload = () => {
   const [workloadData, setWorkloadData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
- 
-  // Fecha fija en el formato requerido por la API
-  const fixedDate = "2025-04-09T13:22:27.050Z";
   const organisation = localStorage.getItem('organization');
 
-  const fetchWorkloadData = async () => {
+  // Función para obtener la fecha actual en formato ISO
+  const getCurrentDateTime = useCallback(() => {
+    const now = new Date();
+    return now.toISOString();
+  }, []);
+
+  // Función para obtener la fecha de hace 30 horas
+  const getThirtyHoursAgoDateTime = useCallback(() => {
+    const now = new Date();
+    now.setHours(now.getHours() - 30);
+    return now.toISOString();
+  }, []);
+
+  const fetchWorkloadData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const token = localStorage.getItem('accessToken');
-      // const response = await fetch(
-      //   `${process.env.REACT_APP_API_URL}/environment/workload`,
-      //   {
-      //     method: 'GET',
-      //     headers: {
-      //       'Authorization': `Bearer ${token}`,
-      //       'source': databaseName,
-      //       'organisation': organisation,
-      //       'start_time': getCurrentDateTime() // Usamos la fecha fija aquí
-      //     }
-      //   }
-      // );
-
-
+      
       const response = await fetch(`${process.env.REACT_APP_API_URL}/environment/workload`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Si es requerido
+          'Authorization': `Bearer ${token}`,
           organisation: organisation,
           source: databaseName,
-          start_time: getCurrentDateTime() // En el body, no en headers
+          start_time: getThirtyHoursAgoDateTime() // Y la fecha actual como fin       
         },
       });
-
-
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -59,28 +55,13 @@ const Workload = () => {
       transformDataForCharts(data);
       
     } catch (error) {
-      console.error("Fetch error:", {
-        message: error.message,
-        config: {
-          url: `${process.env.REACT_APP_API_URL}/environment/workload`,
-          headers: {
-            source: databaseName,
-            start_time: getCurrentDateTime()
-          }
-        }
-      });
+      console.error("Fetch error:", error.message);
       setError(error.message);
     } finally {
       setLoading(false);
     }
-   };
-  const getCurrentDateTime = () => {
-    const now = new Date();
-    const isoString = now.toISOString(); // "2025-03-28T15:30:45.123Z"
-    return isoString;
-    
-   return isoString.replace(/(\.\d{3})Z$/, '.00Z'); // Fuerza 2 dígitos: "2025-03-28T15:30:45.00Z"
-  };
+  }, [databaseName, organisation, getCurrentDateTime, getThirtyHoursAgoDateTime]);
+
   // Transformar los datos de la API para los gráficos
   const transformDataForCharts = (apiData) => {
     const metrics = [
@@ -93,52 +74,66 @@ const Workload = () => {
       { key: 'wait_times', label: 'Wait Times' }
     ];
 
+    // Ordenar los timestamps de más antiguo a más reciente
+    const sortedTimestamps = [...apiData.timestamps].sort((a, b) => new Date(a) - new Date(b));
+
     const transformedData = metrics.map(metric => ({
       id: metric.label,
       color: `hsl(${Math.random() * 360}, 70%, 50%)`,
-      data: apiData.timestamps.map((timestamp, index) => ({
-        x: new Date(timestamp).toLocaleTimeString(),
-        y: apiData[metric.key][index] || 0
-      }))
+      data: sortedTimestamps.map((timestamp, index) => {
+        const date = new Date(timestamp);
+        console.log(date.getHours());
+        
+        return {
+          x: date.toLocaleTimeString([], {
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+          }),
+          y: apiData[metric.key][index] || 0
+        };
+      })
     }));
 
     setWorkloadData(transformedData);
   };
 
-  // Cargar datos al montar el componente
-
+  // Cargar datos al montar el componente y cada 15 segundos
   useEffect(() => {
-    console.log('Fecha enviada a API:', getCurrentDateTime());
-    //console.log('Fecha enviada a API:');
-    fetchWorkloadData();
-  }, []);
+    fetchWorkloadData(); // Carga inicial
+    
+    const intervalId = setInterval(() => {
+      fetchWorkloadData();
+    }, 15000); // 15 segundos
+
+    return () => clearInterval(intervalId); // Limpieza al desmontar
+  }, [fetchWorkloadData]);
+
   return (
     <Box m="20px">
       <Header 
         title={`Workload for ${databaseName}`} 
-        subtitle={`Data for (${new Date().toLocaleString()})`} 
+        subtitle={`Data from last 30 hours (as of ${new Date().toLocaleString()})`} 
       />
 
       {/* Mensajes de estado */}
-      {loading && <Alert severity="info" sx={{ mb: 2 }}>Loading data...</Alert>}
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {/* {loading && <Alert severity="info" sx={{ mb: 2 }}>Loading data...</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>} */}
 
       {/* Gráficos */}
-      <Box m="2px" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="10px">
+      <Box m="2px" display="grid" gridTemplateColumns="repeat(2, 1fr)" gap="10px">
         {workloadData.map((chartData, index) => (
-          <Box key={index} height="200px" position="relative">
+          <Box key={index} height="230px" position="relative">
             <Typography variant="h6" gutterBottom sx={{ textAlign: 'center' }}>
-              
+              {chartData.id}
             </Typography>
-            <LineChart
+            <LineChartWork
               data={[chartData]}
               enableLegends={false}
               enableTooltip={true}
               yAxisLegend=""
-              xAxisLegend="Time"
-              axisBottom={{
-                tickValues: workloadData[0]?.data.length > 10 ? "every 2 hours" : ""
-              }}
+             // xAxisLegend="Time"
             />
           </Box>
         ))}
