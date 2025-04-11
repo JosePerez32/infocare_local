@@ -58,14 +58,14 @@ const months = [
   const [anchorEl, setAnchorEl] = useState(null);
   //const [compareData, setCompareData] = useState(null);
   const [selectedOption, setSelectedOption] = useState('Compare'); // Valor inicial
-  //const organisation = localStorage.getItem('organisation');
+  const organisation = localStorage.getItem('organisation');
   //const { source } = useParams(); // Asegúrate de que esto viene de la URL
   const { organization } = useLocation().state || {}; // Esto podría ser undefined
   const location = useLocation();
   const open = Boolean(anchorEl);
   const [sourceNames, setSourceNames] = useState([]); // Nuevo estado para los nombres
   //jp: API integration
-  const { organisation = "cloud_be_you", source = databaseName } = location.state || {}; 
+  //const { organisation = "cloud_be_you", source = databaseName } = location.state || {}; 
   //jp: API integration for the graphics/barcharts
   const [tableData, setTableData] = useState(null);
   const [indexData, setIndexData] = useState(null);
@@ -80,7 +80,7 @@ const months = [
     // }));
   }, [selectedYear, selectedMonth, selectedDay]);
   //}, []); // <- Array vacío para que solo se ejecute una vez
-  console.log("Datos obtenidos:", { databaseName, organisation, source });
+  console.log("Datos obtenidos:", { databaseName, organisation});
   // const handleButtonClick = (buttonType) => {
   //   navigate(`/details/${databaseName}`, { 
   //     state: {
@@ -108,9 +108,9 @@ const months = [
   
   const fetchCompareData = async () => {
     const token = localStorage.getItem('accessToken');
-    const org = localStorage.getItem('organisation') || "cloud_be_you"; // Fallback
-    if (!organisation || !source) {
-      console.error("Faltan parámetros:", { organisation, source });
+    const organisation = localStorage.getItem('organisation'); // Fallback
+    if (!organisation || !databaseName) {
+      console.error("Faltan parámetros:", { organisation, databaseName });
       return;
     }
     try {
@@ -121,17 +121,14 @@ const months = [
         {
           headers: {
             'Authorization': `Bearer ${token}`,
-            'organisation': org
+            'organisation': organisation
           }
         }
       );
       const { sources } = await sourcesResponse.json(); // Destructuración directa
-     
-
-
       console.log('Fetching compare data with:', {
         organisation,
-        source
+        databaseName
       });
       const compareResponse = await fetch(
         `${process.env.REACT_APP_API_URL}/environment/compare`,
@@ -139,12 +136,17 @@ const months = [
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
-            'organisation': org,
+            'organisation': organisation,
             'source': databaseName
           }
         }
       );
+      if (!compareResponse.ok) {
+        const errorText = await compareResponse.text();
+        throw new Error(`Error ${compareResponse.status}: ${errorText}`);
+      }
       const compareData = await compareResponse.json();
+      console.log('---------'+compareData)
           // Actualiza cada estado por separado
           setTableData(compareData.tables);
           setIndexData(compareData.indexes);
@@ -189,9 +191,11 @@ const months = [
         break;
       case 'indexes':
         data = indexData;
+        console.log(`Datos para ${type}:`, data);
         break;
       case 'views':
         data = viewsData;
+        console.log(`Datos para ${type}:`, data);
         break;
       default:
         return null;
@@ -237,7 +241,7 @@ const months = [
     console.log("Valores actuales:", {
       databaseName, // ¿Es prd_lst?
       organisation, // ¿Tiene valor?
-      source,       // ¿Tiene valor?
+      //source,       // ¿Tiene valor?
       apiUrl: process.env.REACT_APP_API_URL
     });
   return (

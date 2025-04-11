@@ -19,7 +19,7 @@ const ObjectTopButtons = ({databaseName, date}) => {
         >
           {/* Botón WORKLOAD */}
           <Button
-            variant="outlined"
+            variant="contained"
             sx={{
               flex: 1,
               margin: "0 1px",
@@ -30,14 +30,12 @@ const ObjectTopButtons = ({databaseName, date}) => {
               "&:hover": {
                 backgroundColor: "#71D8BD",
                 color: "white",
-                
               },
             }}
             onClick={handleDetailsClick} // Surf to a new_page.jsx
           >
             History
           </Button>
-      
           {/* Botón CHANGE */}
           <Button
             variant="outlined"
@@ -51,7 +49,6 @@ const ObjectTopButtons = ({databaseName, date}) => {
               "&:hover": {
                 backgroundColor: "#71D8BD",
                 color: "white",
-                
               },
             }}
             onClick={() => navigate(`/environment/objects/${databaseName}/details`)} // Surf to a new_page.jsx
