@@ -23,7 +23,7 @@ const CPU = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
-
+  const [cpuSimpleData, setCpuSimpleData] = useState([]);
   // Función para obtener colores del tema o usar defaults
   const getChartColors = () => ({
     idle: colors?.greenAccent?.[500] || DEFAULT_COLORS.idle,
@@ -49,7 +49,7 @@ const CPU = () => {
       const params = new URLSearchParams({
         start_time: startTime,
         end_time: endTime,
-        rows: '30', // 6 puntos por hora × 30 horas
+        rows: '86400', // 6 puntos por hora × 30 horas
         grouping: 'sec'
       });
 
@@ -73,7 +73,7 @@ const CPU = () => {
       const data = await response.json();
       transformDataForCharts(data);
       setLastUpdated(new Date());
-      
+      console.log(data);
     } catch (error) {
       console.error("Error fetching CPU data:", error);
       setError("Failed to load CPU data. Please check if the table 'AGG_PRD_LST_CPU_USAGE' exists in your database.");
@@ -85,14 +85,16 @@ const CPU = () => {
   // Transformar los datos para el gráfico
   const transformDataForCharts = (apiData) => {
     try {
+      
       const safeData = {
         timestamps: Array.isArray(apiData?.time) ? apiData.time : [],
         idle: Array.isArray(apiData?.cpu_idle) ? apiData.cpu_idle : [],
         user: Array.isArray(apiData?.cpu_user) ? apiData.cpu_user : [],
         system: Array.isArray(apiData?.cpu_system) ? apiData.cpu_system : [],
-        iowait: Array.isArray(apiData?.cpu_iowait) ? apiData.cpu_iowait : []
+        iowait: Array.isArray(apiData?.cpu_iowait) ? apiData.cpu_iowait : [],
+    
       };
-
+      
       // Validar que tenemos datos suficientes
       if (safeData.timestamps.length === 0) {
         throw new Error("No timestamp data available");
@@ -154,6 +156,21 @@ const CPU = () => {
     };
   }, [databaseName]);
 
+// Función para reducir los datos (defínela fuera del componente CPU)
+const reduceCpuDataSimple = (fullData, totalHours = 30, desiredPoints = 6) => {
+  if (!fullData || fullData.length === 0 || !fullData[0]?.data) return fullData;
+  
+  // Calcular el intervalo basado en la cantidad de datos originales
+  const totalPoints = fullData[0].data.length;
+  const sampleInterval = Math.floor(totalPoints / desiredPoints);
+  
+  return fullData.map(series => ({
+    ...series,
+    data: series.data
+      .filter((_, index) => index % sampleInterval === 0)
+      .slice(0, desiredPoints)
+  }));
+};
   // Verificar si los datos son válidos
   const isValidData = cpuData.length > 0 && cpuData[0].data.length > 0;
 
@@ -166,14 +183,14 @@ const CPU = () => {
           {lastUpdated ? `Last updated: ${lastUpdated.toLocaleTimeString()}` : "Loading initial data..."}
         </Typography>
       </Box>
-
+{/*
       {loading && <Alert severity="info">Loading CPU data...</Alert>}
       {error && <Alert severity="error">{error}</Alert>}
-
+*/}
       <Box height="400px">
         {isValidData ? (
           <NewLineChart
-          data={cpuData}
+          data={reduceCpuDataSimple(cpuData,30,6)}
           isTimeScale={true}
           yAxisLegend="Usage (%)"
           xAxisLegend="Last 30 Hours"

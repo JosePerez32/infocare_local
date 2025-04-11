@@ -4,7 +4,7 @@ import { tokens } from "../theme";
 
 const LineChart = ({ 
   data, 
-  isTimeScale = true,
+  //isTimeScale = true,
   yAxisLegend = "Value",
   xAxisLegend = "Time",
   margin = { top: 50, right: 30, bottom: 70, left: 60 },
